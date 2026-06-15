@@ -1,0 +1,477 @@
+/* ═══════════════════════════════════════════════════════════════
+   RH BURKINA — Thème Violet / Mauve
+   Palette : #3D2B7A | #5A4A8A | #7B68AE | #9B8BC8 | #BFB3E0
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── En-tête unifié pour tous les formulaires ────────────────── */
+.rh_form_header {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    background: linear-gradient(135deg, #3D2B7A 0%, #7B68AE 100%);
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    color: #fff;
+    box-shadow: 0 6px 20px rgba(61, 43, 122, 0.3);
+}
+
+.rh_form_header_left {
+    flex-shrink: 0;
+}
+
+.rh_photo {
+    border-radius: 50% !important;
+    width: 80px !important;
+    height: 80px !important;
+    border: 3px solid rgba(255,255,255,0.4) !important;
+    object-fit: cover;
+}
+
+.rh_form_header_body {
+    flex: 1;
+}
+
+.rh_form_title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.rh_form_title .o_field_widget,
+.rh_form_title input,
+.rh_form_subtitle .o_field_widget,
+.rh_form_subtitle input,
+.rh_form_subtitle span {
+    color: #ffffff !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+}
+
+.rh_field_nom .o_field_char,
+.rh_field_prenom .o_field_char {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #ffffff !important;
+    letter-spacing: 1px;
+}
+
+.rh_badge_matricule .o_field_char {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: rgba(255,255,255,0.75) !important;
+    background: rgba(255,255,255,0.15) !important;
+    border-radius: 20px;
+    padding: 3px 12px;
+}
+
+.rh_field_poste .o_field_many2one {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.85) !important;
+}
+
+.rh_form_subtitle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+    color: rgba(255,255,255,0.8);
+    font-size: 0.9rem;
+}
+
+.rh_form_header_right {
+    flex-shrink: 0;
+}
+
+/* Badge de statut dans le header */
+.rh_form_header_right .o_field_widget .badge {
+    font-size: 0.85rem;
+    padding: 6px 14px;
+    border-radius: 20px;
+}
+
+/* ── Listes ────────────────────────────────────────────────────── */
+.o_list_view thead th {
+    background-color: #f4f2fa;
+    color: #3D2B7A;
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.o_list_view tbody tr:hover td {
+    background-color: #f0eef8 !important;
+}
+
+/* ── Formulaires généraux (ancien style conservé) ─────────────── */
+.rh_burkina_sheet {
+    padding: 20px;
+    border-radius: 12px;
+    background: #ffffff;
+    box-shadow: 0 2px 12px rgba(91, 74, 138, 0.12);
+}
+
+.rh_burkina_badge {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.2);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TABLEAU DE BORD
+   ═══════════════════════════════════════════════════════════════ */
+
+.rh_dashboard_form .o_form_sheet_bg {
+    background: #f0eef8;
+    padding: 0 !important;
+}
+
+.rh_dashboard_form .o_form_sheet {
+    max-width: 100% !important;
+    width: 100%;
+    margin: 0 !important;
+    padding: 20px 24px !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+}
+
+.rh_dashboard_form .o_FormRenderer_chatterContainer {
+    display: none;
+}
+
+.rh_dashboard_form .o_form_view {
+    height: 100%;
+}
+
+/* Masquer les contrôles inutiles sur le tableau de bord */
+.rh_dashboard_form .o_cp_action_menus,
+.rh_dashboard_form .o_form_buttons_edit,
+.rh_dashboard_form .o_cp_buttons .o_form_button_create {
+    display: none !important;
+}
+
+/* ── BANNER HEADER ────────────────────────────────────────────── */
+.rh_db_banner {
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    background: linear-gradient(135deg, #3D2B7A 0%, #5A4A8A 30%, #7B68AE 65%, #9B8BC8 100%);
+    border-radius: 20px;
+    padding: 28px 36px;
+    margin-bottom: 32px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(61, 43, 122, 0.4);
+}
+
+/* Reflet clair en haut à gauche */
+.rh_db_banner::before {
+    content: '';
+    position: absolute;
+    top: -40px; left: -40px;
+    width: 200px; height: 200px;
+    background: radial-gradient(circle, rgba(255,255,255,0.12) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+/* Reflet doux à droite */
+.rh_db_banner::after {
+    content: '';
+    position: absolute;
+    bottom: -30px; right: -30px;
+    width: 250px; height: 250px;
+    background: radial-gradient(circle, rgba(191, 179, 224, 0.25) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.rh_db_banner_logo {
+    flex-shrink: 0;
+    z-index: 2;
+}
+
+.rh_db_logo_img {
+    width: 110px;
+    height: 110px;
+    object-fit: contain;
+    border-radius: 16px;
+    background: #ffffff;
+    padding: 6px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
+
+.rh_db_banner_center {
+    flex: 1;
+    text-align: center;
+    z-index: 2;
+}
+
+.rh_db_main_title {
+    font-size: 2.8rem;
+    font-weight: 900;
+    color: #ffffff;
+    letter-spacing: 5px;
+    text-shadow: 0 3px 12px rgba(0, 0, 0, 0.35);
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+.rh_db_tagline {
+    font-size: 0.95rem;
+    color: #E8E0FF;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.rh_db_subtitle {
+    font-size: 0.78rem;
+    color: rgba(255, 255, 255, 0.7);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.rh_db_banner_right {
+    flex-shrink: 0;
+    z-index: 2;
+}
+
+.rh_db_date_box {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 14px 20px;
+    text-align: center;
+    min-width: 130px;
+    -webkit-backdrop-filter: blur(4px);
+    backdrop-filter: blur(4px);
+}
+
+.rh_db_date_label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(255, 255, 255, 0.7);
+    display: block;
+    margin-bottom: 6px;
+}
+
+.rh_db_date_val .o_field_date,
+.rh_db_date_val span {
+    color: #ffffff !important;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+/* ── SECTIONS ─────────────────────────────────────────────────── */
+.rh_db_section {
+    margin-bottom: 28px;
+}
+
+.rh_db_section_title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    padding: 10px 16px;
+    border-radius: 10px;
+    margin-bottom: 14px;
+}
+
+/* Toutes les sections en dégradés violets */
+.rh_db_section_green {
+    background: rgba(61, 43, 122, 0.08);
+    color: #3D2B7A;
+    border-left: 5px solid #3D2B7A;
+}
+.rh_db_section_blue {
+    background: rgba(90, 74, 138, 0.08);
+    color: #5A4A8A;
+    border-left: 5px solid #5A4A8A;
+}
+.rh_db_section_orange {
+    background: rgba(123, 104, 174, 0.08);
+    color: #6B5B9E;
+    border-left: 5px solid #7B68AE;
+}
+.rh_db_section_red {
+    background: rgba(155, 139, 200, 0.12);
+    color: #5A4A8A;
+    border-left: 5px solid #9B8BC8;
+}
+.rh_db_section_purple {
+    background: rgba(191, 179, 224, 0.15);
+    color: #4A3A7A;
+    border-left: 5px solid #BFB3E0;
+}
+
+/* ── CARDS GRID ───────────────────────────────────────────────── */
+.rh_db_cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+}
+
+.rh_db_card {
+    background: #ffffff;
+    border-radius: 14px;
+    padding: 20px 16px;
+    text-align: center;
+    box-shadow: 0 2px 10px rgba(61, 43, 122, 0.08);
+    border: 1px solid #e8e4f4;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.rh_db_card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 28px rgba(61, 43, 122, 0.18);
+}
+
+/* Bande colorée en haut de chaque carte */
+.rh_db_card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 5px;
+    border-radius: 14px 14px 0 0;
+}
+
+.rh_db_card_green::before  { background: linear-gradient(90deg, #3D2B7A, #5A4A8A); }
+.rh_db_card_blue::before   { background: linear-gradient(90deg, #5A4A8A, #7B68AE); }
+.rh_db_card_orange::before { background: linear-gradient(90deg, #6B5B9E, #8B7BBE); }
+.rh_db_card_red::before    { background: linear-gradient(90deg, #7B68AE, #9B8BC8); }
+.rh_db_card_purple::before { background: linear-gradient(90deg, #9B8BC8, #BFB3E0); }
+.rh_db_card_grey::before   { background: linear-gradient(90deg, #BFB3E0, #D5CEEE); }
+.rh_db_card_gold::before   { background: linear-gradient(90deg, #4A3A7A, #7B68AE); }
+
+.rh_db_card_icon {
+    font-size: 2rem;
+    margin-bottom: 10px;
+    display: block;
+    line-height: 1;
+}
+
+.rh_db_card_number {
+    font-size: 2.4rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 8px;
+}
+
+/* Couleurs des chiffres — dégradé violet */
+.rh_db_card_green  .rh_db_card_number { color: #3D2B7A; }
+.rh_db_card_blue   .rh_db_card_number { color: #5A4A8A; }
+.rh_db_card_orange .rh_db_card_number { color: #6B5B9E; }
+.rh_db_card_red    .rh_db_card_number { color: #7B68AE; }
+.rh_db_card_purple .rh_db_card_number { color: #8B7BBE; }
+.rh_db_card_grey   .rh_db_card_number { color: #9B8BC8; }
+.rh_db_card_gold   .rh_db_card_number { color: #4A3A7A; }
+
+.rh_db_card_label {
+    font-size: 0.72rem;
+    color: #7B68AE;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    line-height: 1.3;
+}
+
+/* Carte large pour la masse salariale */
+.rh_db_card_wide {
+    grid-column: span 2;
+}
+
+.rh_db_salary .o_field_float,
+.rh_db_salary .o_field_widget {
+    font-size: 1.8rem !important;
+    font-weight: 900;
+    color: inherit;
+}
+
+/* Alignement des champs numériques dans les cartes */
+.rh_db_card_number .o_field_integer,
+.rh_db_card_number .o_field_float,
+.rh_db_card_number .o_field_widget {
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit !important;
+    border: none !important;
+    background: transparent !important;
+    text-align: center;
+    width: 100%;
+    padding: 0 !important;
+    margin: 0 !important;
+    box-shadow: none !important;
+}
+
+.rh_db_card_number .o_field_integer input,
+.rh_db_card_number .o_field_float input {
+    text-align: center;
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+    border: none !important;
+    background: transparent !important;
+    padding: 0 !important;
+}
+
+/* ── NOTES SECTION ────────────────────────────────────────────── */
+.rh_db_notes_section {
+    margin-top: 8px;
+    padding: 16px;
+    background: #fff;
+    border-radius: 12px;
+    border: 1px solid #e8e4f4;
+}
+
+.rh_db_notes_section .o_field_text {
+    border: none;
+    background: transparent;
+    min-height: 60px;
+}
+
+/* ── RESPONSIVE ───────────────────────────────────────────────── */
+@media (max-width: 900px) {
+    .rh_db_banner {
+        flex-direction: column;
+        text-align: center;
+        padding: 20px;
+        gap: 16px;
+    }
+
+    .rh_db_main_title {
+        font-size: 2rem;
+        letter-spacing: 3px;
+    }
+
+    .rh_db_cards {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .rh_db_card_wide {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 560px) {
+    .rh_db_cards {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .rh_db_main_title {
+        font-size: 1.6rem;
+    }
+}

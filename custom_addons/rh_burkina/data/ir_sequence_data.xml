@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_rh_employe" model="ir.sequence">
+            <field name="name">Séquence employés RH</field>
+            <field name="code">rh.employe</field>
+            <field name="prefix">EMP-</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+        <record id="seq_rh_bulletin_paie" model="ir.sequence">
+            <field name="name">Séquence bulletins de paie RH</field>
+            <field name="code">rh.bulletin.paie</field>
+            <field name="prefix">BP-</field>
+            <field name="padding">5</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+        <record id="seq_rh_candidat" model="ir.sequence">
+            <field name="name">Séquence candidats RH</field>
+            <field name="code">rh.candidat</field>
+            <field name="prefix">CAND-</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+        <record id="seq_rh_conge" model="ir.sequence">
+            <field name="name">Séquence congés RH</field>
+            <field name="code">rh.conge</field>
+            <field name="prefix">CNG-</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+        <record id="seq_rh_contrat" model="ir.sequence">
+            <field name="name">Séquence contrats RH</field>
+            <field name="code">rh.contrat</field>
+            <field name="prefix">CTR-</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+        <record id="seq_rh_paie" model="ir.sequence">
+            <field name="name">Séquence périodes de paie RH</field>
+            <field name="code">rh.paie</field>
+            <field name="prefix">PAI-</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+        <record id="seq_rh_recrutement" model="ir.sequence">
+            <field name="name">Séquence recrutements RH</field>
+            <field name="code">rh.recrutement</field>
+            <field name="prefix">REC-</field>
+            <field name="padding">4</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+    </data>
+</odoo>

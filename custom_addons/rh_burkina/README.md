@@ -41,6 +41,11 @@ avant toute mise en production.
 | Congés spéciaux | maternité 98 jours calendaires (justificatif) ; mariage, naissance, décès : durées à renseigner ; maladie : certificat | à vérifier |
 | Acquisition des congés | prorata calendaire des jours sous contrat dans le mois ; suspensions non déduites ; solde rattaché à l'année de début du congé | à vérifier |
 | Heures supplémentaires | rang de l'heure compté par semaine et par type d'heures | à vérifier |
+| Paie – prorata | entrée/sortie : salaire × jours sous contrat / 30 ; absences non payées : salaire × jours calendaires / 30 | à vérifier |
+| Paie – ancienneté et heures sup. | prime d'ancienneté imposable et cotisable, sur le salaire de base ; taux horaire = salaire × 12 / (heures hebdo × 52) | à vérifier |
+| Paie – indemnités | logement, transport, fonction : soumises à cotisation, exonérées d'IUTS dans leur plafond ; primes fixes non proratisées | à vérifier |
+| Paie – quotité saisissable | appliquée au net après cotisations et IUTS, sur les retenues et échéances de prêts | à vérifier |
+| Déclarations | états Excel internes CNSS, IUTS, récapitulatif annuel : format officiel à vérifier (CNSS, DGI) | à vérifier |
 
 **Laissés vides, à renseigner :** barème de la prime d'ancienneté, congés
 supplémentaires pour ancienneté, quotité saisissable, barème CARFO. Tant que
@@ -73,10 +78,24 @@ Le groupe technique « accès aux salaires » protège les champs confidentiels
 | 2 | Dossier du personnel (extension `hr.employee`), historique, documents, diplômes, contacts | ✅ |
 | 3 | Contrats : période d'essai, CDD, préavis, SMIG | ✅ |
 | 4 | Jours fériés, présences, retards, heures sup., congés | ✅ |
-| 5 | Paie | à venir |
+| 5 | Paie : bulletins, CNSS/CARFO, IUTS, primes, retenues, prêts, déclarations, exports | ✅ |
 | 6 | Recrutement | à venir |
 | 7 | Évaluations, formations, discipline | à venir |
 | 8 | Sortie, rapports, tableau de bord, automatisations, démo | à venir |
+
+## Paie : ordre de calcul
+
+1. Salaire de base au prorata des jours sous contrat, moins les absences non rémunérées
+2. + Prime d'ancienneté (barème des paramètres généraux)
+3. + Heures supplémentaires validées, majorées par tranche
+4. + Primes et indemnités = **salaire brut**
+5. Cotisations sur le brut soumis, plafonné (barème du régime de l'employé)
+6. Base IUTS = brut imposable − cotisations − indemnités exonérées (plafonds) − abattement ; IUTS progressif puis réduction pour charges de famille
+7. − Retenues et échéances de prêts (contrôle de la quotité saisissable)
+8. = **Net à payer**, arrondi à l'unité (XOF)
+
+Un bulletin validé est verrouillé : on le corrige en l'annulant puis en
+établissant un nouveau bulletin, tant que la période n'est pas clôturée.
 
 ## Installation et tests
 

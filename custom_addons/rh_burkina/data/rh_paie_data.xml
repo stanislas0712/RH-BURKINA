@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- ⚠️ Traitement social et fiscal À VÉRIFIER (CGI, CNSS) avant usage. -->
+    <record id="type_prime_logement" model="rh.type.prime">
+        <field name="name">Indemnité de logement</field>
+        <field name="code">IND_LOG</field>
+        <field name="sequence">10</field>
+        <field name="imposable" eval="True"/>
+        <field name="exoneration_iuts">logement</field>
+        <field name="soumis_cotisation" eval="True"/>
+        <field name="description">Exonérée d'IUTS dans la limite du plafond du barème en vigueur (à vérifier). Assujettissement CNSS à vérifier.</field>
+    </record>
+    <record id="type_prime_transport" model="rh.type.prime">
+        <field name="name">Indemnité de transport</field>
+        <field name="code">IND_TRANS</field>
+        <field name="sequence">20</field>
+        <field name="imposable" eval="True"/>
+        <field name="exoneration_iuts">transport</field>
+        <field name="soumis_cotisation" eval="True"/>
+        <field name="description">Exonérée d'IUTS dans la limite du plafond du barème en vigueur (à vérifier). Assujettissement CNSS à vérifier.</field>
+    </record>
+    <record id="type_prime_fonction" model="rh.type.prime">
+        <field name="name">Indemnité de fonction</field>
+        <field name="code">IND_FONC</field>
+        <field name="sequence">30</field>
+        <field name="imposable" eval="True"/>
+        <field name="exoneration_iuts">fonction</field>
+        <field name="soumis_cotisation" eval="True"/>
+        <field name="description">Exonérée d'IUTS dans la limite du plafond du barème en vigueur (à vérifier).</field>
+    </record>
+    <record id="type_prime_rendement" model="rh.type.prime">
+        <field name="name">Prime de rendement</field>
+        <field name="code">PRIME_REND</field>
+        <field name="sequence">40</field>
+        <field name="recurrence">ponctuel</field>
+    </record>
+    <record id="type_retenue_syndicat" model="rh.type.retenue">
+        <field name="name">Cotisation syndicale</field>
+        <field name="code">SYNDICAT</field>
+        <field name="sequence">10</field>
+    </record>
+    <record id="type_retenue_mutuelle" model="rh.type.retenue">
+        <field name="name">Mutuelle de santé</field>
+        <field name="code">MUTUELLE</field>
+        <field name="sequence">20</field>
+        <field name="base_calcul">base</field>
+    </record>
+    <record id="type_retenue_saisie" model="rh.type.retenue">
+        <field name="name">Saisie sur salaire / cession</field>
+        <field name="code">SAISIE</field>
+        <field name="sequence">30</field>
+    </record>
+</odoo>

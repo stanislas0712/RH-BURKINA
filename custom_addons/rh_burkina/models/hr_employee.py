@@ -240,6 +240,17 @@ class HrEmployee(models.Model):
     presence_ids = fields.One2many(
         'rh.presence', 'employee_id', string='Présences',
         groups=GROUPES_DOSSIER)
+    bulletin_ids = fields.One2many(
+        'rh.bulletin.paie', 'employee_id', string='Bulletins de paie',
+        groups=GROUPES_DOSSIER)
+    pret_ids = fields.One2many(
+        'rh.pret', 'employee_id', string='Prêts et avances',
+        groups=GROUPES_DOSSIER)
+    prime_ids = fields.One2many(
+        'rh.prime', 'employee_id', string='Primes', groups=GROUPES_SALAIRE)
+    retenue_ids = fields.One2many(
+        'rh.retenue', 'employee_id', string='Retenues',
+        groups=GROUPES_SALAIRE)
     retard_minutes_mois = fields.Integer(
         string='Retards du mois (min)', compute='_compute_retards_mois',
         groups=GROUPES_DOSSIER)

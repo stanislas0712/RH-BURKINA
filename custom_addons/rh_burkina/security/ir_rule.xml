@@ -361,6 +361,101 @@
         <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
     </record>
 
+    <!-- ═══════════════ Paie ═══════════════ -->
+    <record id="rule_rh_paie_company" model="ir.rule">
+        <field name="name">RH Burkina – Périodes de paie : multi-société</field>
+        <field name="model_id" ref="model_rh_paie"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_prime_company" model="ir.rule">
+        <field name="name">RH Burkina – Primes : multi-société</field>
+        <field name="model_id" ref="model_rh_prime"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_retenue_company" model="ir.rule">
+        <field name="name">RH Burkina – Retenues : multi-société</field>
+        <field name="model_id" ref="model_rh_retenue"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_type_prime_company" model="ir.rule">
+        <field name="name">RH Burkina – Types de primes : multi-société</field>
+        <field name="model_id" ref="model_rh_type_prime"/>
+        <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+    </record>
+    <record id="rule_rh_type_retenue_company" model="ir.rule">
+        <field name="name">RH Burkina – Types de retenues : multi-société</field>
+        <field name="model_id" ref="model_rh_type_retenue"/>
+        <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+    </record>
+    <record id="rule_rh_bulletin_paie_company" model="ir.rule">
+        <field name="name">RH Burkina – Bulletins : multi-société</field>
+        <field name="model_id" ref="model_rh_bulletin_paie"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_bulletin_paie_soi" model="ir.rule">
+        <field name="name">RH Burkina – Bulletins : les siens validés</field>
+        <field name="model_id" ref="model_rh_bulletin_paie"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id), ('state', 'in', ('valide', 'paye'))]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_employe'))]"/>
+    </record>
+    <record id="rule_rh_bulletin_paie_paie" model="ir.rule">
+        <field name="name">RH Burkina – Bulletins : paie, DG, auditeur</field>
+        <field name="model_id" ref="model_rh_bulletin_paie"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_paie')), Command.link(ref('group_rh_responsable')), Command.link(ref('group_rh_dg')), Command.link(ref('group_rh_auditeur'))]"/>
+    </record>
+    <record id="rule_rh_ligne_bulletin_company" model="ir.rule">
+        <field name="name">RH Burkina – Lignes de bulletin : multi-société</field>
+        <field name="model_id" ref="model_rh_ligne_bulletin"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_ligne_bulletin_soi" model="ir.rule">
+        <field name="name">RH Burkina – Lignes de bulletin : les siens validés</field>
+        <field name="model_id" ref="model_rh_ligne_bulletin"/>
+        <field name="domain_force">[('bulletin_id.employee_id.user_id', '=', user.id), ('bulletin_id.state', 'in', ('valide', 'paye'))]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_employe'))]"/>
+    </record>
+    <record id="rule_rh_ligne_bulletin_paie" model="ir.rule">
+        <field name="name">RH Burkina – Lignes de bulletin : paie, DG, auditeur</field>
+        <field name="model_id" ref="model_rh_ligne_bulletin"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_paie')), Command.link(ref('group_rh_responsable')), Command.link(ref('group_rh_dg')), Command.link(ref('group_rh_auditeur'))]"/>
+    </record>
+    <record id="rule_rh_pret_company" model="ir.rule">
+        <field name="name">RH Burkina – Prêts : multi-société</field>
+        <field name="model_id" ref="model_rh_pret"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_pret_soi" model="ir.rule">
+        <field name="name">RH Burkina – Prêts : les siens</field>
+        <field name="model_id" ref="model_rh_pret"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_employe'))]"/>
+    </record>
+    <record id="rule_rh_pret_paie" model="ir.rule">
+        <field name="name">RH Burkina – Prêts : paie, DG, auditeur</field>
+        <field name="model_id" ref="model_rh_pret"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_paie')), Command.link(ref('group_rh_responsable')), Command.link(ref('group_rh_dg')), Command.link(ref('group_rh_auditeur'))]"/>
+    </record>
+    <record id="rule_rh_echeance_pret_company" model="ir.rule">
+        <field name="name">RH Burkina – Échéances : multi-société</field>
+        <field name="model_id" ref="model_rh_echeance_pret"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_echeance_pret_soi" model="ir.rule">
+        <field name="name">RH Burkina – Échéances : les siens</field>
+        <field name="model_id" ref="model_rh_echeance_pret"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_employe'))]"/>
+    </record>
+    <record id="rule_rh_echeance_pret_paie" model="ir.rule">
+        <field name="name">RH Burkina – Échéances : paie, DG, auditeur</field>
+        <field name="model_id" ref="model_rh_echeance_pret"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_paie')), Command.link(ref('group_rh_responsable')), Command.link(ref('group_rh_dg')), Command.link(ref('group_rh_auditeur'))]"/>
+    </record>
+
     <record id="rule_rh_historique_salaire" model="ir.rule">
         <field name="name">RH Burkina – Historique : tout (accès salaires)</field>
         <field name="model_id" ref="model_rh_historique_poste"/>

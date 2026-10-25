@@ -56,6 +56,9 @@ class RhHeureSup(models.Model):
                               compute='_compute_majoration')
     taux_moyen = fields.Float(string='Majoration moyenne (%)',
                               compute='_compute_majoration')
+    bulletin_id = fields.Many2one('rh.bulletin.paie',
+                                  string='Payé sur le bulletin',
+                                  readonly=True, copy=False)
 
     @api.depends('date')
     def _compute_semaine(self):

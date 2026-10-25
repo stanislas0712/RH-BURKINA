@@ -68,8 +68,56 @@
               action="action_rh_solde_conge"
               sequence="50"/>
 
-    <!-- Les menus Paie, Recrutement, etc. sont ajoutés dans les phases
-         suivantes. -->
+    <!-- ═══════════════ Paie ═══════════════ -->
+    <menuitem id="menu_rh_paie"
+              name="Paie"
+              parent="menu_rh_root"
+              groups="group_rh_paie,group_rh_responsable,group_rh_dg,group_rh_auditeur"
+              sequence="40"/>
+    <menuitem id="menu_rh_paie_periodes"
+              name="Périodes de paie"
+              parent="menu_rh_paie"
+              action="action_rh_paie"
+              sequence="10"/>
+    <menuitem id="menu_rh_paie_bulletins"
+              name="Bulletins"
+              parent="menu_rh_paie"
+              action="action_rh_bulletin_paie"
+              sequence="20"/>
+    <menuitem id="menu_rh_paie_primes"
+              name="Primes"
+              parent="menu_rh_paie"
+              action="action_rh_prime"
+              sequence="30"/>
+    <menuitem id="menu_rh_paie_retenues"
+              name="Retenues"
+              parent="menu_rh_paie"
+              action="action_rh_retenue"
+              sequence="40"/>
+    <menuitem id="menu_rh_paie_prets"
+              name="Prêts &amp; avances"
+              parent="menu_rh_paie"
+              action="action_rh_pret"
+              sequence="50"/>
+    <menuitem id="menu_rh_paie_declarations"
+              name="Déclarations (CNSS, IUTS, récapitulatif annuel)"
+              parent="menu_rh_paie"
+              action="action_rh_wizard_declaration"
+              sequence="60"/>
+    <menuitem id="menu_rh_paie_export"
+              name="Export des paiements"
+              parent="menu_rh_paie"
+              action="action_rh_wizard_export_paiement"
+              sequence="70"/>
+    <menuitem id="menu_rh_mes_bulletins"
+              name="Mes bulletins"
+              parent="menu_rh_personnel"
+              action="action_rh_mes_bulletins"
+              groups="group_rh_employe"
+              sequence="2"/>
+
+    <!-- Les menus Recrutement, Talents, Discipline sont ajoutés dans les
+         phases suivantes. -->
 
     <!-- ═══════════════ Configuration ═══════════════ -->
     <menuitem id="menu_rh_configuration"
@@ -129,6 +177,16 @@
               parent="menu_rh_configuration"
               action="action_rh_jour_ferie"
               sequence="40"/>
+    <menuitem id="menu_rh_config_type_prime"
+              name="Types de primes"
+              parent="menu_rh_config_types"
+              action="action_rh_type_prime"
+              sequence="20"/>
+    <menuitem id="menu_rh_config_type_retenue"
+              name="Types de retenues"
+              parent="menu_rh_config_types"
+              action="action_rh_type_retenue"
+              sequence="30"/>
     <menuitem id="menu_rh_config_type_document"
               name="Types de documents"
               parent="menu_rh_config_types"

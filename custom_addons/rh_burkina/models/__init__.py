@@ -19,3 +19,8 @@ from . import rh_jour_ferie
 from . import rh_presence
 from . import rh_heure_sup
 from . import rh_conge
+from . import rh_prime
+from . import rh_retenue
+from . import rh_pret
+from . import rh_bulletin_paie
+from . import rh_paie

@@ -177,6 +177,54 @@
                                 </list>
                             </field>
                         </page>
+                        <page string="Paie" name="paie" groups="rh_burkina.group_rh_paie,rh_burkina.group_rh_responsable,rh_burkina.group_rh_dg,rh_burkina.group_rh_auditeur">
+                            <separator string="Primes et indemnités"/>
+                            <field name="prime_ids" context="{'default_employee_id': id}">
+                                <list>
+                                    <field name="type_prime_id"/>
+                                    <field name="recurrence"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="montant"/>
+                                    <field name="taux"/>
+                                    <field name="date_debut"/>
+                                    <field name="date_fin"/>
+                                </list>
+                            </field>
+                            <separator string="Retenues"/>
+                            <field name="retenue_ids" context="{'default_employee_id': id}">
+                                <list>
+                                    <field name="type_retenue_id"/>
+                                    <field name="recurrence"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="montant"/>
+                                    <field name="taux"/>
+                                    <field name="date_debut"/>
+                                    <field name="date_fin"/>
+                                </list>
+                            </field>
+                            <separator string="Prêts et avances"/>
+                            <field name="pret_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="type_pret"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="montant"/>
+                                    <field name="solde_restant"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                            <separator string="Bulletins"/>
+                            <field name="bulletin_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="paie_id"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="brut"/>
+                                    <field name="net_a_payer"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
                         <page string="Diplômes" name="diplomes">
                             <field name="diplome_ids" context="{'default_employee_id': id}">
                                 <list editable="bottom" delete="0">
@@ -373,6 +421,31 @@
                                     <field name="heure_depart" widget="float_time"/>
                                     <field name="heures_travaillees" widget="float_time"/>
                                     <field name="retard_minutes"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Mes bulletins" name="bulletins">
+                            <field name="bulletin_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="paie_id"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="brut"/>
+                                    <field name="net_a_payer"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Mes prêts" name="prets">
+                            <field name="pret_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="type_pret"/>
+                                    <field name="date_octroi"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="montant"/>
+                                    <field name="solde_restant"/>
+                                    <field name="state" widget="badge"/>
                                 </list>
                             </field>
                         </page>

@@ -16,6 +16,7 @@ confirmées avant la mise en production.
     'license': 'LGPL-3',
     'category': 'Human Resources',
     'depends': ['base', 'mail', 'hr'],
+    'external_dependencies': {'python': ['xlsxwriter']},
     'data': [
         # Sécurité
         'security/res_groups_data.xml',
@@ -29,6 +30,7 @@ confirmées avant la mise en production.
         'data/ir_cron_data.xml',
         'data/rh_jour_ferie_data.xml',
         'data/rh_type_conge_data.xml',
+        'data/rh_paie_data.xml',
         # Vues
         'views/rh_structure_views.xml',
         'views/rh_parametres_views.xml',
@@ -37,6 +39,7 @@ confirmées avant la mise en production.
         'views/rh_contrat_views.xml',
         'views/rh_temps_views.xml',
         'views/rh_conge_views.xml',
+        'views/rh_paie_views.xml',
         'views/menus.xml',
     ],
     'assets': {

@@ -1,0 +1,740 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ═══════════════ Périodes de paie ═══════════════ -->
+    <record id="view_rh_paie_form" model="ir.ui.view">
+        <field name="name">rh.paie.form</field>
+        <field name="model">rh.paie</field>
+        <field name="arch" type="xml">
+            <form string="Période de paie">
+                <header>
+                    <button name="action_generer_bulletins" type="object" string="Générer / recalculer les bulletins" class="btn-primary"
+                            invisible="state == 'cloture'" groups="rh_burkina.group_rh_paie,rh_burkina.group_rh_responsable"/>
+                    <button name="action_valider_bulletins" type="object" string="Valider les bulletins calculés"
+                            invisible="state != 'en_cours'" groups="rh_burkina.group_rh_paie,rh_burkina.group_rh_responsable"
+                            confirm="Les bulletins validés seront verrouillés. Continuer ?"/>
+                    <button name="action_marquer_payes" type="object" string="Marquer payés"
+                            invisible="state != 'en_cours'" groups="rh_burkina.group_rh_paie,rh_burkina.group_rh_responsable"/>
+                    <button name="action_cloturer" type="object" string="Clôturer la période"
+                            invisible="state != 'en_cours'" groups="rh_burkina.group_rh_paie,rh_burkina.group_rh_responsable"
+                            confirm="Après clôture, plus aucun bulletin de la période ne pourra être modifié ni annulé. Clôturer ?"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_voir_bulletins" type="object" class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="bulletin_count" widget="statinfo" string="Bulletins"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <div class="text-muted"><field name="name"/></div>
+                        <h1><field name="libelle"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date_debut" readonly="bulletin_count"/>
+                            <field name="date_fin"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="bulletin_count"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="total_brut"/>
+                            <field name="total_cotisations"/>
+                            <field name="total_iuts"/>
+                            <field name="total_net"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Anomalies" name="anomalies">
+                            <field name="nb_anomalies" invisible="1"/>
+                            <div class="alert alert-success" role="status" invisible="nb_anomalies">
+                                Aucune anomalie détectée.
+                            </div>
+                            <div class="alert alert-warning" role="alert" invisible="not nb_anomalies">
+                                <field name="anomalies" nolabel="1"/>
+                            </div>
+                        </page>
+                        <page string="Bulletins" name="bulletins">
+                            <field name="bulletin_ids" readonly="1">
+                                <list decoration-danger="erreur_calcul" decoration-muted="state == 'annule'">
+                                    <field name="name"/>
+                                    <field name="employee_id"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="brut" sum="Total"/>
+                                    <field name="cotisation_salariale" sum="Total"/>
+                                    <field name="iuts" sum="Total"/>
+                                    <field name="total_retenues" sum="Total"/>
+                                    <field name="net_a_payer" sum="Total"/>
+                                    <field name="erreur_calcul" optional="show"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rh_paie_list" model="ir.ui.view">
+        <field name="name">rh.paie.list</field>
+        <field name="model">rh.paie</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="name"/>
+                <field name="libelle"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="bulletin_count"/>
+                <field name="total_brut"/>
+                <field name="total_net"/>
+                <field name="state" widget="badge" decoration-success="state == 'cloture'" decoration-warning="state == 'en_cours'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_paie_kanban" model="ir.ui.view">
+        <field name="name">rh.paie.kanban</field>
+        <field name="model">rh.paie</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <templates>
+                    <t t-name="card">
+                        <field name="libelle" class="fw-bold fs-5"/>
+                        <field name="name" class="text-muted"/>
+                        <div>Net : <field name="total_net"/></div>
+                        <field name="state" widget="badge"/>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_rh_paie_search" model="ir.ui.view">
+        <field name="name">rh.paie.search</field>
+        <field name="model">rh.paie</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="libelle"/>
+                <filter name="ouvertes" string="Ouvertes" domain="[('state', '!=', 'cloture')]"/>
+                <filter name="cloturees" string="Clôturées" domain="[('state', '=', 'cloture')]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_annee" string="Année" context="{'group_by': 'date_debut:year'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rh_paie" model="ir.actions.act_window">
+        <field name="name">Périodes de paie</field>
+        <field name="res_model">rh.paie</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Ouvrir une période de paie</p>
+            <p>Une période par mois : elle génère les bulletins en masse, signale les anomalies puis se clôture.</p>
+        </field>
+    </record>
+
+    <!-- ═══════════════ Bulletins ═══════════════ -->
+    <record id="view_rh_bulletin_paie_form" model="ir.ui.view">
+        <field name="name">rh.bulletin.paie.form</field>
+        <field name="model">rh.bulletin.paie</field>
+        <field name="arch" type="xml">
+            <form string="Bulletin de paie">
+                <header>
+                    <button name="action_calculer" type="object" string="Calculer" class="btn-primary"
+                            invisible="state not in ('brouillon', 'calcule')" groups="rh_burkina.group_rh_paie,rh_burkina.group_rh_responsable"/>
+                    <button name="action_valider" type="object" string="Valider" class="btn-primary"
+                            invisible="state != 'calcule'" groups="rh_burkina.group_rh_paie,rh_burkina.group_rh_responsable"
+                            confirm="Le bulletin validé sera verrouillé. Valider ?"/>
+                    <button name="action_payer" type="object" string="Marquer payé"
+                            invisible="state != 'valide'" groups="rh_burkina.group_rh_paie,rh_burkina.group_rh_responsable"/>
+                    <button name="action_remettre_brouillon" type="object" string="Remettre en brouillon"
+                            invisible="state != 'calcule'" groups="rh_burkina.group_rh_paie,rh_burkina.group_rh_responsable"/>
+                    <button name="action_annuler" type="object" string="Annuler le bulletin"
+                            invisible="state == 'annule'" groups="rh_burkina.group_rh_paie,rh_burkina.group_rh_responsable"
+                            confirm="Annuler ce bulletin ? Un nouveau bulletin pourra être établi pour corriger."/>
+                    <field name="state" widget="statusbar" statusbar_visible="brouillon,calcule,valide,paye"/>
+                </header>
+                <sheet>
+                    <field name="currency_id" invisible="1"/>
+                    <div class="alert alert-danger" role="alert" invisible="not erreur_calcul">
+                        <field name="erreur_calcul" nolabel="1"/>
+                    </div>
+                    <div class="alert alert-secondary" role="status" invisible="state != 'annule'">
+                        Bulletin annulé : <field name="motif_annulation" nolabel="1"/>
+                    </div>
+                    <div class="oe_title">
+                        <div class="text-muted"><field name="name"/></div>
+                        <h1><field name="employee_id" readonly="state != 'brouillon'"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="paie_id" readonly="state != 'brouillon'"/>
+                            <field name="contrat_id"/>
+                            <field name="poste_id"/>
+                            <field name="categorie_id"/>
+                            <field name="jours_payes"/>
+                        </group>
+                        <group>
+                            <field name="regime_social"/>
+                            <field name="nb_charges"/>
+                            <field name="mode_paiement"/>
+                            <field name="banque_id" invisible="mode_paiement != 'virement'"/>
+                            <field name="numero_compte" invisible="mode_paiement != 'virement'"/>
+                            <field name="numero_mobile_money" invisible="mode_paiement not in ('orange_money', 'moov_money')"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Détail" name="lignes">
+                            <field name="ligne_ids">
+                                <list decoration-bf="categorie in ('info', 'net')" decoration-info="categorie == 'patronal'"
+                                      decoration-danger="categorie in ('cotisation', 'impot', 'retenue')">
+                                    <field name="code" optional="hide"/>
+                                    <field name="name"/>
+                                    <field name="categorie"/>
+                                    <field name="quantite" optional="show"/>
+                                    <field name="base" optional="show"/>
+                                    <field name="taux" optional="show"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="montant"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Synthèse" name="synthese">
+                            <group>
+                                <group string="Salaire et cotisations">
+                                    <field name="salaire_base"/>
+                                    <field name="brut"/>
+                                    <field name="brut_soumis"/>
+                                    <field name="base_cotisation"/>
+                                    <field name="cotisation_salariale"/>
+                                    <field name="charges_patronales"/>
+                                    <field name="cout_employeur"/>
+                                </group>
+                                <group string="IUTS et net">
+                                    <field name="brut_imposable"/>
+                                    <field name="exonerations"/>
+                                    <field name="abattement"/>
+                                    <field name="base_iuts"/>
+                                    <field name="iuts_brut"/>
+                                    <field name="reduction_iuts"/>
+                                    <field name="iuts"/>
+                                    <field name="total_retenues"/>
+                                    <field name="net_a_payer" class="fw-bold"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rh_bulletin_paie_list" model="ir.ui.view">
+        <field name="name">rh.bulletin.paie.list</field>
+        <field name="model">rh.bulletin.paie</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="erreur_calcul" decoration-muted="state == 'annule'" decoration-info="state == 'brouillon'">
+                <field name="name"/>
+                <field name="paie_id"/>
+                <field name="employee_id"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="brut" sum="Total"/>
+                <field name="cotisation_salariale" sum="Total" optional="show"/>
+                <field name="charges_patronales" sum="Total" optional="hide"/>
+                <field name="iuts" sum="Total" optional="show"/>
+                <field name="total_retenues" sum="Total" optional="hide"/>
+                <field name="net_a_payer" sum="Total"/>
+                <field name="mode_paiement" optional="hide"/>
+                <field name="erreur_calcul" column_invisible="True"/>
+                <field name="state" widget="badge" decoration-success="state in ('valide', 'paye')" decoration-info="state == 'calcule'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_bulletin_paie_kanban" model="ir.ui.view">
+        <field name="name">rh.bulletin.paie.kanban</field>
+        <field name="model">rh.bulletin.paie</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <templates>
+                    <t t-name="card">
+                        <field name="employee_id" class="fw-bold"/>
+                        <field name="paie_id" class="text-muted"/>
+                        <div>Net : <field name="net_a_payer"/></div>
+                        <field name="state" widget="badge"/>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_rh_bulletin_paie_pivot" model="ir.ui.view">
+        <field name="name">rh.bulletin.paie.pivot</field>
+        <field name="model">rh.bulletin.paie</field>
+        <field name="arch" type="xml">
+            <pivot string="Masse salariale">
+                <field name="date_debut" interval="month" type="col"/>
+                <field name="brut" type="measure"/>
+                <field name="net_a_payer" type="measure"/>
+                <field name="cout_employeur" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_rh_bulletin_paie_graph" model="ir.ui.view">
+        <field name="name">rh.bulletin.paie.graph</field>
+        <field name="model">rh.bulletin.paie</field>
+        <field name="arch" type="xml">
+            <graph string="Masse salariale mensuelle" type="bar">
+                <field name="date_debut" interval="month"/>
+                <field name="brut" type="measure"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="view_rh_bulletin_paie_search" model="ir.ui.view">
+        <field name="name">rh.bulletin.paie.search</field>
+        <field name="model">rh.bulletin.paie</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="paie_id"/>
+                <filter name="non_annules" string="Non annulés" domain="[('state', '!=', 'annule')]"/>
+                <filter name="a_valider" string="À valider" domain="[('state', '=', 'calcule')]"/>
+                <filter name="valides" string="Validés / payés" domain="[('state', 'in', ('valide', 'paye'))]"/>
+                <filter name="erreurs" string="En erreur" domain="[('erreur_calcul', '!=', False)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_paie" string="Période" context="{'group_by': 'paie_id'}"/>
+                    <filter name="group_employe" string="Employé" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_state" string="État" context="{'group_by': 'state'}"/>
+                    <filter name="group_mode" string="Mode de paiement" context="{'group_by': 'mode_paiement'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rh_bulletin_paie" model="ir.actions.act_window">
+        <field name="name">Bulletins de paie</field>
+        <field name="res_model">rh.bulletin.paie</field>
+        <field name="view_mode">list,kanban,form,pivot,graph</field>
+        <field name="context">{'search_default_non_annules': 1}</field>
+    </record>
+
+    <record id="action_rh_mes_bulletins" model="ir.actions.act_window">
+        <field name="name">Mes bulletins</field>
+        <field name="res_model">rh.bulletin.paie</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('employee_id.user_id', '=', uid)]</field>
+        <field name="context">{'create': False}</field>
+    </record>
+
+    <!-- ═══════════════ Types de primes et primes ═══════════════ -->
+    <record id="view_rh_type_prime_list" model="ir.ui.view">
+        <field name="name">rh.type.prime.list</field>
+        <field name="model">rh.type.prime</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="imposable"/>
+                <field name="exoneration_iuts"/>
+                <field name="soumis_cotisation"/>
+                <field name="mode_calcul"/>
+                <field name="recurrence"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_type_prime_form" model="ir.ui.view">
+        <field name="name">rh.type.prime.form</field>
+        <field name="model">rh.type.prime</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archivé" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group string="Traitement">
+                            <field name="code"/>
+                            <field name="imposable"/>
+                            <field name="exoneration_iuts" invisible="not imposable"/>
+                            <field name="soumis_cotisation"/>
+                        </group>
+                        <group string="Calcul">
+                            <field name="mode_calcul"/>
+                            <field name="montant" invisible="mode_calcul != 'fixe'"/>
+                            <field name="taux" invisible="mode_calcul != 'pourcentage'"/>
+                            <field name="recurrence"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="description" placeholder="Référence légale, conditions d'attribution…"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_rh_type_prime" model="ir.actions.act_window">
+        <field name="name">Types de primes</field>
+        <field name="res_model">rh.type.prime</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_rh_prime_list" model="ir.ui.view">
+        <field name="name">rh.prime.list</field>
+        <field name="model">rh.prime</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="employee_id"/>
+                <field name="type_prime_id"/>
+                <field name="recurrence"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="montant"/>
+                <field name="taux" optional="show"/>
+                <field name="date_debut"/>
+                <field name="date_fin"/>
+                <field name="bulletin_id" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_prime_form" model="ir.ui.view">
+        <field name="name">rh.prime.form</field>
+        <field name="model">rh.prime</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archivé" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="mode_calcul" invisible="1"/>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="type_prime_id"/>
+                            <field name="recurrence"/>
+                            <field name="montant" invisible="mode_calcul == 'pourcentage'"/>
+                            <field name="taux" invisible="mode_calcul != 'pourcentage'"/>
+                        </group>
+                        <group>
+                            <field name="date_debut"/>
+                            <field name="date_fin" invisible="recurrence == 'ponctuel'"/>
+                            <field name="bulletin_id" invisible="not bulletin_id"/>
+                            <field name="note"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rh_prime_search" model="ir.ui.view">
+        <field name="name">rh.prime.search</field>
+        <field name="model">rh.prime</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="employee_id"/>
+                <field name="type_prime_id"/>
+                <filter name="recurrentes" string="Récurrentes" domain="[('recurrence', '=', 'recurrent')]"/>
+                <filter name="ponctuelles" string="Ponctuelles" domain="[('recurrence', '=', 'ponctuel')]"/>
+                <filter name="archived" string="Archivées" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_type" string="Type" context="{'group_by': 'type_prime_id'}"/>
+                    <filter name="group_employe" string="Employé" context="{'group_by': 'employee_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rh_prime" model="ir.actions.act_window">
+        <field name="name">Primes et indemnités</field>
+        <field name="res_model">rh.prime</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ═══════════════ Types de retenues et retenues ═══════════════ -->
+    <record id="view_rh_type_retenue_list" model="ir.ui.view">
+        <field name="name">rh.type.retenue.list</field>
+        <field name="model">rh.type.retenue</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="base_calcul"/>
+                <field name="recurrence"/>
+                <field name="inclus_quotite"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_type_retenue_form" model="ir.ui.view">
+        <field name="name">rh.type.retenue.form</field>
+        <field name="model">rh.type.retenue</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archivé" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="base_calcul"/>
+                            <field name="montant" invisible="base_calcul != 'fixe'"/>
+                            <field name="taux" invisible="base_calcul == 'fixe'"/>
+                        </group>
+                        <group>
+                            <field name="recurrence"/>
+                            <field name="inclus_quotite"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="description"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_rh_type_retenue" model="ir.actions.act_window">
+        <field name="name">Types de retenues</field>
+        <field name="res_model">rh.type.retenue</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="view_rh_retenue_list" model="ir.ui.view">
+        <field name="name">rh.retenue.list</field>
+        <field name="model">rh.retenue</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="employee_id"/>
+                <field name="type_retenue_id"/>
+                <field name="recurrence"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="montant"/>
+                <field name="taux" optional="show"/>
+                <field name="date_debut"/>
+                <field name="date_fin"/>
+                <field name="bulletin_id" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_retenue_form" model="ir.ui.view">
+        <field name="name">rh.retenue.form</field>
+        <field name="model">rh.retenue</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archivé" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="base_calcul" invisible="1"/>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="type_retenue_id"/>
+                            <field name="recurrence"/>
+                            <field name="montant" invisible="base_calcul != 'fixe'"/>
+                            <field name="taux" invisible="base_calcul == 'fixe'"/>
+                        </group>
+                        <group>
+                            <field name="date_debut"/>
+                            <field name="date_fin" invisible="recurrence == 'ponctuel'"/>
+                            <field name="bulletin_id" invisible="not bulletin_id"/>
+                            <field name="note"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rh_retenue_search" model="ir.ui.view">
+        <field name="name">rh.retenue.search</field>
+        <field name="model">rh.retenue</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="employee_id"/>
+                <field name="type_retenue_id"/>
+                <filter name="archived" string="Archivées" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_type" string="Type" context="{'group_by': 'type_retenue_id'}"/>
+                    <filter name="group_employe" string="Employé" context="{'group_by': 'employee_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rh_retenue" model="ir.actions.act_window">
+        <field name="name">Retenues</field>
+        <field name="res_model">rh.retenue</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ═══════════════ Prêts et avances ═══════════════ -->
+    <record id="view_rh_pret_form" model="ir.ui.view">
+        <field name="name">rh.pret.form</field>
+        <field name="model">rh.pret</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirmer" type="object" string="Confirmer et générer l'échéancier" class="btn-primary"
+                            invisible="state != 'brouillon'" groups="rh_burkina.group_rh_paie,rh_burkina.group_rh_responsable"/>
+                    <button name="action_annuler" type="object" string="Annuler"
+                            invisible="state not in ('brouillon', 'en_cours')" groups="rh_burkina.group_rh_paie,rh_burkina.group_rh_responsable"
+                            confirm="Annuler ce prêt ?"/>
+                    <field name="state" widget="statusbar" statusbar_visible="brouillon,en_cours,solde"/>
+                </header>
+                <sheet>
+                    <field name="currency_id" invisible="1"/>
+                    <div class="oe_title">
+                        <div class="text-muted"><field name="type_pret" readonly="state != 'brouillon'"/></div>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id" readonly="state != 'brouillon'"/>
+                            <field name="montant" readonly="state != 'brouillon'"/>
+                            <field name="date_octroi" readonly="state != 'brouillon'"/>
+                        </group>
+                        <group>
+                            <field name="nb_echeances" readonly="state != 'brouillon'"/>
+                            <field name="date_premiere_echeance" readonly="state != 'brouillon'"/>
+                            <field name="montant_rembourse"/>
+                            <field name="solde_restant"/>
+                        </group>
+                    </group>
+                    <field name="motif" placeholder="Objet du prêt…" readonly="state != 'brouillon'"/>
+                    <field name="echeance_ids">
+                        <list decoration-success="state == 'paye'">
+                            <field name="numero"/>
+                            <field name="date"/>
+                            <field name="currency_id" column_invisible="True"/>
+                            <field name="montant" sum="Total"/>
+                            <field name="state"/>
+                            <field name="bulletin_id"/>
+                        </list>
+                    </field>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rh_pret_list" model="ir.ui.view">
+        <field name="name">rh.pret.list</field>
+        <field name="model">rh.pret</field>
+        <field name="arch" type="xml">
+            <list decoration-muted="state in ('solde', 'annule')">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="type_pret"/>
+                <field name="date_octroi"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="montant" sum="Total"/>
+                <field name="solde_restant" sum="Total"/>
+                <field name="nb_echeances"/>
+                <field name="state" widget="badge" decoration-warning="state == 'en_cours'" decoration-success="state == 'solde'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_pret_search" model="ir.ui.view">
+        <field name="name">rh.pret.search</field>
+        <field name="model">rh.pret</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="employee_id"/>
+                <filter name="en_cours" string="En cours" domain="[('state', '=', 'en_cours')]"/>
+                <filter name="soldes" string="Soldés" domain="[('state', '=', 'solde')]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_type" string="Type" context="{'group_by': 'type_pret'}"/>
+                    <filter name="group_state" string="État" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rh_pret" model="ir.actions.act_window">
+        <field name="name">Prêts et avances</field>
+        <field name="res_model">rh.pret</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_en_cours': 1}</field>
+    </record>
+
+    <!-- ═══════════════ Assistants d'export ═══════════════ -->
+    <record id="view_rh_wizard_export_paiement_form" model="ir.ui.view">
+        <field name="name">rh.wizard.export.paiement.form</field>
+        <field name="model">rh.wizard.export.paiement</field>
+        <field name="arch" type="xml">
+            <form string="Export des paiements">
+                <group>
+                    <field name="paie_id"/>
+                    <field name="mode" widget="radio"/>
+                    <field name="banque_id" invisible="mode != 'virement'"/>
+                </group>
+                <group invisible="not fichier">
+                    <field name="fichier" filename="nom_fichier"/>
+                    <field name="nom_fichier" invisible="1"/>
+                </group>
+                <footer>
+                    <button name="action_generer" type="object" string="Générer le fichier" class="btn-primary"/>
+                    <button special="cancel" string="Fermer" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_rh_wizard_export_paiement" model="ir.actions.act_window">
+        <field name="name">Export des paiements</field>
+        <field name="res_model">rh.wizard.export.paiement</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record id="view_rh_wizard_declaration_form" model="ir.ui.view">
+        <field name="name">rh.wizard.declaration.form</field>
+        <field name="model">rh.wizard.declaration</field>
+        <field name="arch" type="xml">
+            <form string="Déclarations">
+                <div class="alert alert-warning" role="alert">
+                    ⚠️ États internes : le format exact des déclarations officielles est à vérifier auprès de la CNSS et de la DGI.
+                </div>
+                <group>
+                    <field name="type_etat" widget="radio"/>
+                    <field name="paie_id" invisible="type_etat == 'annuel'" required="type_etat != 'annuel'"/>
+                    <field name="annee" invisible="type_etat != 'annuel'"/>
+                    <field name="company_id" groups="base.group_multi_company"/>
+                </group>
+                <group invisible="not fichier">
+                    <field name="fichier" filename="nom_fichier"/>
+                    <field name="nom_fichier" invisible="1"/>
+                </group>
+                <footer>
+                    <button name="action_generer" type="object" string="Générer l'état Excel" class="btn-primary"/>
+                    <button special="cancel" string="Fermer" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_rh_wizard_declaration" model="ir.actions.act_window">
+        <field name="name">Déclarations (CNSS, IUTS, récapitulatif annuel)</field>
+        <field name="res_model">rh.wizard.declaration</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

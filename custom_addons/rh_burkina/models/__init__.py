@@ -9,3 +9,9 @@ from . import rh_configuration
 from . import rh_cnss
 from . import rh_iuts
 from . import rh_bareme_licenciement
+from . import rh_historique_poste
+from . import rh_document
+from . import rh_diplome
+from . import rh_contact_urgence
+from . import hr_employee
+from . import rh_contrat

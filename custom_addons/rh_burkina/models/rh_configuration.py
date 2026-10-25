@@ -66,6 +66,17 @@ class RhConfiguration(models.Model):
         default='ouvrable', tracking=True)
 
     # Protection des données
+    # Application du SMIG selon le contrat (à vérifier)
+    smig_stage = fields.Boolean(
+        string='SMIG applicable aux stages', tracking=True,
+        help="Décoché : la gratification de stage n'est pas comparée au "
+             "SMIG (à vérifier).")
+    smig_prorata_temps_partiel = fields.Boolean(
+        string='SMIG proratisé pour le temps partiel', default=True,
+        tracking=True,
+        help="Le minimum exigé est le SMIG × heures du contrat / durée "
+             "légale (à vérifier).")
+
     duree_conservation_annees = fields.Integer(
         string='Conservation des dossiers après sortie (années)',
         tracking=True)

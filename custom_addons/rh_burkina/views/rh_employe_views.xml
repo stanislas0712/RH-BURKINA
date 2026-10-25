@@ -1,0 +1,506 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ═══════════════ Fiche RH (gestion du personnel) ═══════════════ -->
+    <record id="view_rh_employe_form" model="ir.ui.view">
+        <field name="name">hr.employee.form.rh_burkina</field>
+        <field name="model">hr.employee</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <form string="Dossier du personnel">
+                <header>
+                    <field name="statut_rh" widget="statusbar" statusbar_visible="actif,suspendu,inactif"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_rh_contrats" type="object" class="oe_stat_button" icon="fa-file-signature"
+                                groups="rh_burkina.group_rh_gestionnaire,rh_burkina.group_rh_paie,rh_burkina.group_rh_dg,rh_burkina.group_rh_auditeur,rh_burkina.group_rh_chef_departement">
+                            <field name="contrat_count" widget="statinfo" string="Contrats"/>
+                        </button>
+                        <button name="action_rh_documents" type="object" class="oe_stat_button" icon="fa-file-text-o">
+                            <field name="document_count" widget="statinfo" string="Documents"/>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archivé" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <field name="company_id" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="peut_gerer_dossier" invisible="1"/>
+                    <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_128'}"/>
+                    <div class="oe_title">
+                        <div class="text-muted"><field name="matricule" placeholder="Matricule attribué à l'enregistrement"/></div>
+                        <h1><field name="name" placeholder="Nom complet"/></h1>
+                        <h4><field name="job_title" placeholder="Intitulé du poste"/></h4>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="nom"/>
+                            <field name="prenom"/>
+                        </group>
+                        <group>
+                            <field name="statut_rh" invisible="1"/>
+                            <field name="user_id" string="Utilisateur Odoo" groups="rh_burkina.group_rh_gestionnaire,rh_burkina.group_rh_auditeur"/>
+                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Identité" name="identite">
+                            <group>
+                                <group string="État civil">
+                                    <field name="gender"/>
+                                    <field name="birthday"/>
+                                    <field name="age" invisible="not birthday"/>
+                                    <field name="place_of_birth"/>
+                                    <field name="country_id" string="Nationalité" options="{'no_create': True}"/>
+                                </group>
+                                <group string="Situation familiale">
+                                    <field name="marital"/>
+                                    <field name="spouse_complete_name" invisible="marital not in ('married', 'cohabitant')"/>
+                                    <field name="conjoint_a_charge" invisible="marital not in ('married', 'cohabitant')"/>
+                                    <field name="nombre_enfants"/>
+                                    <field name="children"/>
+                                    <field name="nb_autres_charges"/>
+                                    <field name="nb_charges_iuts"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Coordonnées" name="coordonnees">
+                            <group>
+                                <group string="Téléphones et emails">
+                                    <field name="mobile_phone" widget="phone"/>
+                                    <field name="work_phone" widget="phone"/>
+                                    <field name="private_phone" widget="phone"/>
+                                    <field name="work_email" widget="email"/>
+                                    <field name="private_email" widget="email"/>
+                                </group>
+                                <group string="Adresse personnelle">
+                                    <field name="private_street" placeholder="Secteur, rue, porte…"/>
+                                    <field name="private_street2"/>
+                                    <field name="private_city"/>
+                                    <field name="private_zip"/>
+                                    <field name="private_country_id" options="{'no_create': True}"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Pièces" name="pieces">
+                            <group>
+                                <group string="Identité">
+                                    <field name="identification_id"/>
+                                    <field name="cnib_date_expiration"/>
+                                    <field name="passport_id"/>
+                                </group>
+                                <group string="Sécurité sociale et impôts">
+                                    <field name="regime_social"/>
+                                    <field name="ssnid"/>
+                                    <field name="numero_ifu"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Situation professionnelle" name="professionnel">
+                            <group>
+                                <group string="Affectation">
+                                    <field name="poste_id"/>
+                                    <field name="department_id"/>
+                                    <field name="service_id"/>
+                                    <field name="site_id"/>
+                                    <field name="parent_id" string="Supérieur hiérarchique"/>
+                                </group>
+                                <group string="Classification et carrière">
+                                    <field name="categorie_id"/>
+                                    <field name="est_cadre"/>
+                                    <field name="date_embauche"/>
+                                    <field name="anciennete_texte"/>
+                                    <field name="date_retraite"/>
+                                    <field name="departure_date" invisible="not departure_date"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Rémunération" name="remuneration" groups="rh_burkina.group_rh_salaire">
+                            <group>
+                                <group string="Salaire">
+                                    <field name="salaire_base"/>
+                                </group>
+                                <group string="Paiement">
+                                    <field name="mode_paiement"/>
+                                    <field name="banque_id" invisible="mode_paiement != 'virement'" required="mode_paiement == 'virement'"/>
+                                    <field name="numero_compte" invisible="mode_paiement != 'virement'" required="mode_paiement == 'virement'"/>
+                                    <field name="numero_mobile_money" invisible="mode_paiement not in ('orange_money', 'moov_money')" required="mode_paiement in ('orange_money', 'moov_money')"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Contrats" name="contrats"
+                              groups="rh_burkina.group_rh_gestionnaire,rh_burkina.group_rh_paie,rh_burkina.group_rh_dg,rh_burkina.group_rh_auditeur,rh_burkina.group_rh_chef_departement">
+                            <field name="contrat_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="type_contrat"/>
+                                    <field name="poste_id"/>
+                                    <field name="date_debut"/>
+                                    <field name="date_fin"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Diplômes" name="diplomes">
+                            <field name="diplome_ids" context="{'default_employee_id': id}">
+                                <list editable="bottom" delete="0">
+                                    <field name="name"/>
+                                    <field name="niveau"/>
+                                    <field name="domaine"/>
+                                    <field name="etablissement"/>
+                                    <field name="date_obtention"/>
+                                    <field name="mention"/>
+                                    <field name="fichier" filename="nom_fichier" widget="binary"/>
+                                    <field name="nom_fichier" column_invisible="True"/>
+                                    <field name="active" widget="boolean_toggle" string="Actif"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Documents" name="documents">
+                            <field name="document_ids" context="{'default_employee_id': id}">
+                                <list editable="bottom" delete="0" decoration-danger="etat == 'expire'" decoration-warning="etat == 'bientot'">
+                                    <field name="type_document_id"/>
+                                    <field name="name"/>
+                                    <field name="reference"/>
+                                    <field name="date_emission"/>
+                                    <field name="date_expiration"/>
+                                    <field name="etat" widget="badge" decoration-danger="etat == 'expire'" decoration-warning="etat == 'bientot'" decoration-success="etat == 'valide'"/>
+                                    <field name="fichier" filename="nom_fichier" widget="binary"/>
+                                    <field name="nom_fichier" column_invisible="True"/>
+                                    <field name="active" widget="boolean_toggle" string="Actif"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Contacts d'urgence" name="contacts">
+                            <field name="contact_urgence_ids" context="{'default_employee_id': id}">
+                                <list editable="bottom" delete="0">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="name"/>
+                                    <field name="lien_parente"/>
+                                    <field name="telephone" widget="phone"/>
+                                    <field name="telephone2" widget="phone"/>
+                                    <field name="adresse"/>
+                                    <field name="active" widget="boolean_toggle" string="Actif"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Historique des postes" name="historique">
+                            <field name="historique_ids" readonly="1">
+                                <list create="0" delete="0">
+                                    <field name="date"/>
+                                    <field name="type_changement"/>
+                                    <field name="description"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="ancien_salaire" groups="rh_burkina.group_rh_salaire"/>
+                                    <field name="nouveau_salaire" groups="rh_burkina.group_rh_salaire"/>
+                                    <field name="motif"/>
+                                    <field name="auteur_id"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <!-- ═══════════════ Mon dossier (self-service) ═══════════════ -->
+    <record id="view_rh_employe_form_self" model="ir.ui.view">
+        <field name="name">hr.employee.form.rh_burkina.self</field>
+        <field name="model">hr.employee</field>
+        <field name="priority">95</field>
+        <field name="arch" type="xml">
+            <form string="Mon dossier" create="0" delete="0" edit="0">
+                <header>
+                    <button name="action_rh_modifier_coordonnees" type="object" string="Modifier mes coordonnées" class="btn-primary"/>
+                </header>
+                <sheet>
+                    <field name="currency_id" invisible="1"/>
+                    <field name="image_1920" widget="image" class="oe_avatar" options="{'preview_image': 'image_128'}" readonly="1"/>
+                    <div class="oe_title">
+                        <div class="text-muted"><field name="matricule"/></div>
+                        <h1><field name="name"/></h1>
+                        <h4><field name="job_title"/></h4>
+                    </div>
+                    <notebook>
+                        <page string="Mes informations" name="infos">
+                            <group>
+                                <group string="Identité">
+                                    <field name="gender"/>
+                                    <field name="birthday"/>
+                                    <field name="place_of_birth"/>
+                                    <field name="country_id" string="Nationalité"/>
+                                    <field name="marital"/>
+                                    <field name="children"/>
+                                    <field name="nb_charges_iuts"/>
+                                </group>
+                                <group string="Pièces">
+                                    <field name="identification_id"/>
+                                    <field name="cnib_date_expiration"/>
+                                    <field name="regime_social"/>
+                                    <field name="ssnid"/>
+                                    <field name="numero_ifu"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Mes coordonnées" name="coordonnees">
+                            <group>
+                                <group>
+                                    <field name="mobile_phone" widget="phone"/>
+                                    <field name="private_phone" widget="phone"/>
+                                    <field name="work_email" widget="email"/>
+                                    <field name="private_email" widget="email"/>
+                                </group>
+                                <group>
+                                    <field name="private_street"/>
+                                    <field name="private_street2"/>
+                                    <field name="private_city"/>
+                                    <field name="private_country_id"/>
+                                </group>
+                            </group>
+                            <separator string="Contacts d'urgence"/>
+                            <field name="contact_urgence_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="lien_parente"/>
+                                    <field name="telephone"/>
+                                    <field name="telephone2"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Mon poste" name="poste">
+                            <group>
+                                <group>
+                                    <field name="poste_id"/>
+                                    <field name="department_id"/>
+                                    <field name="service_id"/>
+                                    <field name="site_id"/>
+                                    <field name="parent_id" string="Supérieur hiérarchique"/>
+                                </group>
+                                <group>
+                                    <field name="categorie_id"/>
+                                    <field name="date_embauche"/>
+                                    <field name="anciennete_texte"/>
+                                    <field name="statut_rh"/>
+                                </group>
+                            </group>
+                            <group string="Ma rémunération">
+                                <field name="ma_remuneration"/>
+                                <field name="mon_paiement"/>
+                            </group>
+                        </page>
+                        <page string="Mes contrats" name="contrats">
+                            <field name="contrat_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="type_contrat"/>
+                                    <field name="poste_id"/>
+                                    <field name="date_debut"/>
+                                    <field name="date_fin"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="mon_salaire" string="Salaire"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Mes diplômes" name="diplomes">
+                            <field name="diplome_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="niveau"/>
+                                    <field name="etablissement"/>
+                                    <field name="date_obtention"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Mes documents" name="documents">
+                            <field name="document_ids">
+                                <list>
+                                    <field name="type_document_id"/>
+                                    <field name="name"/>
+                                    <field name="date_expiration"/>
+                                    <field name="etat"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Mon historique" name="historique">
+                            <field name="historique_ids">
+                                <list>
+                                    <field name="date"/>
+                                    <field name="type_changement"/>
+                                    <field name="description"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- ═══════════════ Liste, kanban, recherche ═══════════════ -->
+    <record id="view_rh_employe_list" model="ir.ui.view">
+        <field name="name">hr.employee.list.rh_burkina</field>
+        <field name="model">hr.employee</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <list string="Personnel">
+                <field name="matricule"/>
+                <field name="name"/>
+                <field name="poste_id"/>
+                <field name="department_id"/>
+                <field name="service_id" optional="hide"/>
+                <field name="categorie_id" optional="show"/>
+                <field name="site_id" optional="hide"/>
+                <field name="gender" optional="hide"/>
+                <field name="date_embauche" optional="show"/>
+                <field name="mobile_phone" optional="show"/>
+                <field name="regime_social" optional="hide"/>
+                <field name="statut_rh" widget="badge" decoration-success="statut_rh == 'actif'" decoration-warning="statut_rh == 'suspendu'" decoration-danger="statut_rh in ('licencie', 'demissionnaire')"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_employe_kanban" model="ir.ui.view">
+        <field name="name">hr.employee.kanban.rh_burkina</field>
+        <field name="model">hr.employee</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="id"/>
+                <templates>
+                    <t t-name="card" class="flex-row">
+                        <aside class="o_kanban_aside_full">
+                            <field name="avatar_128" widget="image" options="{'img_class': 'object-fit-cover'}" class="o_kanban_image_fill w-100"/>
+                        </aside>
+                        <main class="ms-2">
+                            <field name="name" class="fw-bold fs-5"/>
+                            <field name="matricule" class="text-muted"/>
+                            <field name="poste_id"/>
+                            <field name="department_id" class="text-muted"/>
+                            <field name="statut_rh" widget="badge"/>
+                        </main>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_rh_employe_search" model="ir.ui.view">
+        <field name="name">hr.employee.search.rh_burkina</field>
+        <field name="model">hr.employee</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <search string="Personnel">
+                <field name="name" filter_domain="['|', '|', ('name', 'ilike', self), ('matricule', 'ilike', self), ('work_email', 'ilike', self)]"/>
+                <field name="matricule"/>
+                <field name="poste_id"/>
+                <field name="department_id" operator="child_of"/>
+                <field name="service_id"/>
+                <field name="categorie_id"/>
+                <field name="ssnid"/>
+                <filter name="actifs" string="Actifs" domain="[('statut_rh', '=', 'actif')]"/>
+                <filter name="suspendus" string="Suspendus" domain="[('statut_rh', '=', 'suspendu')]"/>
+                <filter name="sortis" string="Sortis" domain="[('statut_rh', 'in', ('demissionnaire', 'licencie', 'retraite', 'inactif'))]"/>
+                <separator/>
+                <filter name="cadres" string="Cadres" domain="[('categorie_id.est_cadre', '=', True)]"/>
+                <filter name="femmes" string="Femmes" domain="[('gender', '=', 'female')]"/>
+                <filter name="hommes" string="Hommes" domain="[('gender', '=', 'male')]"/>
+                <separator/>
+                <filter name="carfo" string="Régime CARFO" domain="[('regime_social', '=', 'carfo')]"/>
+                <filter name="sans_cnss" string="Sans n° CNSS / CARFO" domain="[('ssnid', '=', False)]"/>
+                <filter name="cnib_expiree" string="CNIB expirée" domain="[('cnib_date_expiration', '&lt;', context_today().strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter name="archived" string="Archivés" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_department" string="Département" context="{'group_by': 'department_id'}"/>
+                    <filter name="group_service" string="Service" context="{'group_by': 'service_id'}"/>
+                    <filter name="group_poste" string="Poste" context="{'group_by': 'poste_id'}"/>
+                    <filter name="group_categorie" string="Catégorie" context="{'group_by': 'categorie_id'}"/>
+                    <filter name="group_site" string="Site" context="{'group_by': 'site_id'}"/>
+                    <filter name="group_genre" string="Genre" context="{'group_by': 'gender'}"/>
+                    <filter name="group_statut" string="Statut" context="{'group_by': 'statut_rh'}"/>
+                    <filter name="group_embauche" string="Année d'embauche" context="{'group_by': 'date_embauche:year'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rh_employe" model="ir.actions.act_window">
+        <field name="name">Employés</field>
+        <field name="res_model">hr.employee</field>
+        <field name="view_mode">kanban,list,form</field>
+        <field name="search_view_id" ref="view_rh_employe_search"/>
+        <field name="context">{'search_default_actifs': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Créer le premier dossier du personnel</p>
+            <p>Le matricule (EMP-XXXX) est attribué automatiquement.</p>
+        </field>
+    </record>
+    <record id="action_rh_employe_view_kanban" model="ir.actions.act_window.view">
+        <field name="sequence">1</field>
+        <field name="view_mode">kanban</field>
+        <field name="view_id" ref="view_rh_employe_kanban"/>
+        <field name="act_window_id" ref="action_rh_employe"/>
+    </record>
+    <record id="action_rh_employe_view_list" model="ir.actions.act_window.view">
+        <field name="sequence">2</field>
+        <field name="view_mode">list</field>
+        <field name="view_id" ref="view_rh_employe_list"/>
+        <field name="act_window_id" ref="action_rh_employe"/>
+    </record>
+    <record id="action_rh_employe_view_form" model="ir.actions.act_window.view">
+        <field name="sequence">3</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_rh_employe_form"/>
+        <field name="act_window_id" ref="action_rh_employe"/>
+    </record>
+
+    <record id="action_rh_mon_dossier" model="ir.actions.server">
+        <field name="name">Mon dossier</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="state">code</field>
+        <field name="code">action = model.action_rh_mon_dossier()</field>
+    </record>
+
+    <!-- ═══════════════ Assistant coordonnées ═══════════════ -->
+    <record id="view_rh_wizard_coordonnees_form" model="ir.ui.view">
+        <field name="name">rh.wizard.coordonnees.form</field>
+        <field name="model">rh.wizard.coordonnees</field>
+        <field name="arch" type="xml">
+            <form string="Modifier mes coordonnées">
+                <field name="employee_id" invisible="1"/>
+                <group>
+                    <group string="Téléphones et emails">
+                        <field name="mobile_phone" widget="phone"/>
+                        <field name="private_phone" widget="phone"/>
+                        <field name="private_email" widget="email"/>
+                    </group>
+                    <group string="Adresse">
+                        <field name="private_street"/>
+                        <field name="private_street2"/>
+                        <field name="private_city"/>
+                        <field name="private_zip"/>
+                        <field name="private_country_id" options="{'no_create': True}"/>
+                    </group>
+                </group>
+                <separator string="Contacts d'urgence"/>
+                <field name="contact_ids">
+                    <list editable="bottom">
+                        <field name="contact_id" column_invisible="True"/>
+                        <field name="name"/>
+                        <field name="lien_parente"/>
+                        <field name="telephone" widget="phone"/>
+                        <field name="telephone2" widget="phone"/>
+                        <field name="adresse"/>
+                    </list>
+                </field>
+                <footer>
+                    <button name="action_valider" type="object" string="Enregistrer" class="btn-primary"/>
+                    <button special="cancel" string="Annuler" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

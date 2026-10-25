@@ -23,6 +23,12 @@
         <field name="comment">Groupe technique : visibilité des données salariales confidentielles.</field>
     </record>
 
+    <record id="group_rh_lecture_personnel" model="res.groups">
+        <field name="name">RH Burkina : lecture de tous les dossiers</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+        <field name="comment">Groupe technique : consultation de l'ensemble des dossiers du personnel (sans les salaires).</field>
+    </record>
+
     <record id="group_rh_employe" model="res.groups">
         <field name="name">Employé</field>
         <field name="category_id" ref="module_category_rh_burkina"/>
@@ -30,10 +36,15 @@
         <field name="comment">Self-service : consulte son dossier, ses contrats, bulletins validés et évaluations ; gère ses demandes de congé ; modifie ses coordonnées et contacts d'urgence.</field>
     </record>
 
+    <!-- Lire tous les dossiers suppose d'être au moins Employé -->
+    <record id="group_rh_lecture_personnel" model="res.groups">
+        <field name="implied_ids" eval="[Command.link(ref('group_rh_employe'))]"/>
+    </record>
+
     <record id="group_rh_gestionnaire" model="res.groups">
         <field name="name">Gestionnaire RH</field>
         <field name="category_id" ref="module_category_rh_burkina"/>
-        <field name="implied_ids" eval="[Command.link(ref('group_rh_employe'))]"/>
+        <field name="implied_ids" eval="[Command.link(ref('group_rh_employe')), Command.link(ref('group_rh_lecture_personnel')), Command.link(ref('hr.group_hr_user'))]"/>
         <field name="comment">Gestion quotidienne du personnel, des contrats (sans montants), congés, recrutement, formations et discipline. Aucun accès aux salaires ni à la paie.</field>
     </record>
 
@@ -47,7 +58,7 @@
     <record id="group_rh_admin" model="res.groups">
         <field name="name">Administrateur RH</field>
         <field name="category_id" ref="module_category_rh_burkina"/>
-        <field name="implied_ids" eval="[Command.link(ref('group_rh_responsable'))]"/>
+        <field name="implied_ids" eval="[Command.link(ref('group_rh_responsable')), Command.link(ref('hr.group_hr_manager'))]"/>
         <field name="users" eval="[Command.link(ref('base.user_root')), Command.link(ref('base.user_admin'))]"/>
         <field name="comment">Accès complet, y compris la configuration et les paramètres légaux.</field>
     </record>
@@ -62,35 +73,35 @@
     <record id="group_rh_recruteur" model="res.groups">
         <field name="name">Recruteur</field>
         <field name="category_id" ref="module_category_rh_burkina"/>
-        <field name="implied_ids" eval="[Command.link(ref('group_rh_employe'))]"/>
+        <field name="implied_ids" eval="[Command.link(ref('group_rh_employe')), Command.link(ref('group_rh_lecture_personnel'))]"/>
         <field name="comment">Gère les offres, candidats et entretiens.</field>
     </record>
 
     <record id="group_rh_paie" model="res.groups">
         <field name="name">Responsable Paie</field>
         <field name="category_id" ref="module_category_rh_burkina"/>
-        <field name="implied_ids" eval="[Command.link(ref('group_rh_employe')), Command.link(ref('group_rh_salaire'))]"/>
+        <field name="implied_ids" eval="[Command.link(ref('group_rh_employe')), Command.link(ref('group_rh_salaire')), Command.link(ref('group_rh_lecture_personnel'))]"/>
         <field name="comment">Gère la paie ; consulte employés, contrats et congés.</field>
     </record>
 
     <record id="group_rh_formation" model="res.groups">
         <field name="name">Responsable Formation</field>
         <field name="category_id" ref="module_category_rh_burkina"/>
-        <field name="implied_ids" eval="[Command.link(ref('group_rh_employe'))]"/>
+        <field name="implied_ids" eval="[Command.link(ref('group_rh_employe')), Command.link(ref('group_rh_lecture_personnel'))]"/>
         <field name="comment">Gère les formations et les inscriptions.</field>
     </record>
 
     <record id="group_rh_dg" model="res.groups">
         <field name="name">Directeur Général</field>
         <field name="category_id" ref="module_category_rh_burkina"/>
-        <field name="implied_ids" eval="[Command.link(ref('group_rh_employe')), Command.link(ref('group_rh_salaire'))]"/>
+        <field name="implied_ids" eval="[Command.link(ref('group_rh_employe')), Command.link(ref('group_rh_salaire')), Command.link(ref('group_rh_lecture_personnel'))]"/>
         <field name="comment">Consultation de l'ensemble des données RH et de paie.</field>
     </record>
 
     <record id="group_rh_auditeur" model="res.groups">
         <field name="name">Auditeur</field>
         <field name="category_id" ref="module_category_rh_burkina"/>
-        <field name="implied_ids" eval="[Command.link(ref('group_rh_employe')), Command.link(ref('group_rh_salaire'))]"/>
+        <field name="implied_ids" eval="[Command.link(ref('group_rh_employe')), Command.link(ref('group_rh_salaire')), Command.link(ref('group_rh_lecture_personnel'))]"/>
         <field name="comment">Lecture seule de l'ensemble des données, historique compris.</field>
     </record>
 </odoo>

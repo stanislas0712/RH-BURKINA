@@ -7,8 +7,38 @@
               groups="group_rh_employe"
               sequence="40"/>
 
-    <!-- Les menus Personnel, Temps & Absences, Paie, etc. sont ajoutés
-         dans les phases suivantes. -->
+    <!-- ═══════════════ Personnel ═══════════════ -->
+    <menuitem id="menu_rh_personnel"
+              name="Personnel"
+              parent="menu_rh_root"
+              sequence="10"/>
+    <menuitem id="menu_rh_mon_dossier"
+              name="Mon dossier"
+              parent="menu_rh_personnel"
+              action="action_rh_mon_dossier"
+              groups="group_rh_employe"
+              sequence="1"/>
+    <menuitem id="menu_rh_employes"
+              name="Employés"
+              parent="menu_rh_personnel"
+              action="action_rh_employe"
+              groups="group_rh_lecture_personnel,group_rh_chef_departement"
+              sequence="10"/>
+    <menuitem id="menu_rh_contrats"
+              name="Contrats"
+              parent="menu_rh_personnel"
+              action="action_rh_contrat"
+              groups="group_rh_gestionnaire,group_rh_paie,group_rh_dg,group_rh_auditeur,group_rh_chef_departement"
+              sequence="20"/>
+    <menuitem id="menu_rh_documents"
+              name="Documents"
+              parent="menu_rh_personnel"
+              action="action_rh_document"
+              groups="group_rh_lecture_personnel"
+              sequence="40"/>
+
+    <!-- Les menus Temps & Absences, Paie, etc. sont ajoutés dans les
+         phases suivantes. -->
 
     <!-- ═══════════════ Configuration ═══════════════ -->
     <menuitem id="menu_rh_configuration"
@@ -53,6 +83,16 @@
               parent="menu_rh_config_structure"
               action="action_rh_categorie"
               sequence="50"/>
+
+    <menuitem id="menu_rh_config_types"
+              name="Types"
+              parent="menu_rh_configuration"
+              sequence="30"/>
+    <menuitem id="menu_rh_config_type_document"
+              name="Types de documents"
+              parent="menu_rh_config_types"
+              action="action_rh_type_document"
+              sequence="40"/>
 
     <menuitem id="menu_rh_config_legal"
               name="Paramètres légaux"

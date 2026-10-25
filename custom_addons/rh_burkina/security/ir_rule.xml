@@ -45,4 +45,158 @@
         <field name="model_id" ref="model_rh_bareme_licenciement"/>
         <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
     </record>
+
+    <!-- ═══════════════ Dossier du personnel (hr.employee) ═══════════════
+         Les règles de groupe s'additionnent (OU) : chaque rôle voit au moins
+         sa propre fiche, le chef son équipe, les rôles RH toutes les fiches.
+         La règle multi-société standard du module hr reste appliquée. -->
+    <record id="rule_hr_employee_rh_soi" model="ir.rule">
+        <field name="name">RH Burkina – Employé : sa propre fiche</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_employe'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    <record id="rule_hr_employee_rh_chef" model="ir.rule">
+        <field name="name">RH Burkina – Chef de département : son équipe</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="domain_force">['|', ('department_id.manager_id.user_id', '=', user.id), ('parent_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_chef_departement'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    <record id="rule_hr_employee_rh_tous" model="ir.rule">
+        <field name="name">RH Burkina – Rôles RH : tous les dossiers</field>
+        <field name="model_id" ref="hr.model_hr_employee"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_lecture_personnel'))]"/>
+    </record>
+
+    <!-- ═══════════════ Données annexes du dossier ═══════════════ -->
+    <!-- Multi-société -->
+    <record id="rule_rh_document_company" model="ir.rule">
+        <field name="name">RH Burkina – Documents : multi-société</field>
+        <field name="model_id" ref="model_rh_document"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_diplome_company" model="ir.rule">
+        <field name="name">RH Burkina – Diplômes : multi-société</field>
+        <field name="model_id" ref="model_rh_diplome"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_contact_urgence_company" model="ir.rule">
+        <field name="name">RH Burkina – Contacts d'urgence : multi-société</field>
+        <field name="model_id" ref="model_rh_contact_urgence"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_historique_company" model="ir.rule">
+        <field name="name">RH Burkina – Historique : multi-société</field>
+        <field name="model_id" ref="model_rh_historique_poste"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_type_document_company" model="ir.rule">
+        <field name="name">RH Burkina – Types de documents : multi-société</field>
+        <field name="model_id" ref="model_rh_type_document"/>
+        <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+    </record>
+
+    <!-- Self-service : ses propres données -->
+    <record id="rule_rh_document_soi" model="ir.rule">
+        <field name="name">RH Burkina – Documents : les siens</field>
+        <field name="model_id" ref="model_rh_document"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_employe'))]"/>
+    </record>
+    <record id="rule_rh_diplome_soi" model="ir.rule">
+        <field name="name">RH Burkina – Diplômes : les siens</field>
+        <field name="model_id" ref="model_rh_diplome"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_employe'))]"/>
+    </record>
+    <record id="rule_rh_contact_urgence_soi" model="ir.rule">
+        <field name="name">RH Burkina – Contacts d'urgence : les siens</field>
+        <field name="model_id" ref="model_rh_contact_urgence"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_employe'))]"/>
+    </record>
+    <record id="rule_rh_historique_soi" model="ir.rule">
+        <field name="name">RH Burkina – Historique : le sien</field>
+        <field name="model_id" ref="model_rh_historique_poste"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_employe'))]"/>
+    </record>
+
+    <!-- Chef de département : diplômes et historique (hors salaire) de son équipe -->
+    <record id="rule_rh_diplome_chef" model="ir.rule">
+        <field name="name">RH Burkina – Diplômes : équipe du chef</field>
+        <field name="model_id" ref="model_rh_diplome"/>
+        <field name="domain_force">['|', ('employee_id.department_id.manager_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_chef_departement'))]"/>
+    </record>
+    <record id="rule_rh_historique_chef" model="ir.rule">
+        <field name="name">RH Burkina – Historique : équipe du chef (hors salaire)</field>
+        <field name="model_id" ref="model_rh_historique_poste"/>
+        <field name="domain_force">[('type_changement', '!=', 'salaire'), '|', ('employee_id.department_id.manager_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_chef_departement'))]"/>
+    </record>
+
+    <!-- Rôles RH : tout, sauf les lignes salariales de l'historique -->
+    <record id="rule_rh_document_tous" model="ir.rule">
+        <field name="name">RH Burkina – Documents : tous</field>
+        <field name="model_id" ref="model_rh_document"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_lecture_personnel'))]"/>
+    </record>
+    <record id="rule_rh_diplome_tous" model="ir.rule">
+        <field name="name">RH Burkina – Diplômes : tous</field>
+        <field name="model_id" ref="model_rh_diplome"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_lecture_personnel'))]"/>
+    </record>
+    <record id="rule_rh_contact_urgence_tous" model="ir.rule">
+        <field name="name">RH Burkina – Contacts d'urgence : tous</field>
+        <field name="model_id" ref="model_rh_contact_urgence"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_lecture_personnel'))]"/>
+    </record>
+    <record id="rule_rh_historique_tous" model="ir.rule">
+        <field name="name">RH Burkina – Historique : tous (hors salaire)</field>
+        <field name="model_id" ref="model_rh_historique_poste"/>
+        <field name="domain_force">[('type_changement', '!=', 'salaire')]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_lecture_personnel'))]"/>
+    </record>
+    <!-- ═══════════════ Contrats ═══════════════ -->
+    <record id="rule_rh_contrat_company" model="ir.rule">
+        <field name="name">RH Burkina – Contrats : multi-société</field>
+        <field name="model_id" ref="model_rh_contrat"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_contrat_soi" model="ir.rule">
+        <field name="name">RH Burkina – Contrats : les siens</field>
+        <field name="model_id" ref="model_rh_contrat"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_employe'))]"/>
+    </record>
+    <record id="rule_rh_contrat_chef" model="ir.rule">
+        <field name="name">RH Burkina – Contrats : équipe du chef</field>
+        <field name="model_id" ref="model_rh_contrat"/>
+        <field name="domain_force">['|', ('employee_id.department_id.manager_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_chef_departement'))]"/>
+    </record>
+    <record id="rule_rh_contrat_tous" model="ir.rule">
+        <field name="name">RH Burkina – Contrats : tous (RH, Paie, DG, Auditeur)</field>
+        <field name="model_id" ref="model_rh_contrat"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_gestionnaire')), Command.link(ref('group_rh_paie')), Command.link(ref('group_rh_dg')), Command.link(ref('group_rh_auditeur'))]"/>
+    </record>
+
+    <record id="rule_rh_historique_salaire" model="ir.rule">
+        <field name="name">RH Burkina – Historique : tout (accès salaires)</field>
+        <field name="model_id" ref="model_rh_historique_poste"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_salaire'))]"/>
+    </record>
 </odoo>

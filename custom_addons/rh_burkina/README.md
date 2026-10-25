@@ -36,6 +36,7 @@ avant toute mise en production.
 | Indemnités exonérées | logement 20 % du brut ≤ 75 000 ; fonction 5 % ≤ 50 000 ; transport 5 % ≤ 30 000 | à vérifier |
 | Licenciement | 25 % (0–5 ans), 30 % (5–10 ans), 40 % (au-delà) ; 12 mois minimum | à vérifier |
 | Conservation des dossiers | 5 ans après la sortie | à vérifier |
+| SMIG et contrats | stage non soumis au SMIG ; temps partiel : SMIG × heures / durée légale ; SMIG horaire à défaut = SMIG mensuel / 173,33 ; consultant non soumis | à vérifier |
 
 **Laissés vides, à renseigner :** barème de la prime d'ancienneté, congés
 supplémentaires pour ancienneté, quotité saisissable, barème CARFO. Tant que
@@ -65,8 +66,8 @@ Le groupe technique « accès aux salaires » protège les champs confidentiels
 | Phase | Contenu | État |
 |---|---|---|
 | 1 | Squelette, rôles, ACL, règles, structure, paramètres légaux, séquences | ✅ |
-| 2 | Dossier du personnel (extension `hr.employee`) | à venir |
-| 3 | Contrats | à venir |
+| 2 | Dossier du personnel (extension `hr.employee`), historique, documents, diplômes, contacts | ✅ |
+| 3 | Contrats : période d'essai, CDD, préavis, SMIG | ✅ |
 | 4 | Temps de travail et congés | à venir |
 | 5 | Paie | à venir |
 | 6 | Recrutement | à venir |

@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_rh_contrat_form" model="ir.ui.view">
+        <field name="name">rh.contrat.form</field>
+        <field name="model">rh.contrat</field>
+        <field name="arch" type="xml">
+            <form string="Contrat de travail">
+                <header>
+                    <button name="action_demarrer" type="object" string="Démarrer le contrat" class="btn-primary"
+                            invisible="state != 'brouillon'" groups="rh_burkina.group_rh_gestionnaire"/>
+                    <button name="action_confirmer_embauche" type="object" string="Confirmer l'embauche" class="btn-primary"
+                            invisible="state != 'essai'" groups="rh_burkina.group_rh_gestionnaire"/>
+                    <button name="action_renouveler_essai" type="object" string="Renouveler l'essai"
+                            invisible="state != 'essai' or not essai_renouvelable or essai_renouvele" groups="rh_burkina.group_rh_gestionnaire"
+                            confirm="Renouveler la période d'essai pour une durée identique ?"/>
+                    <button name="action_ouvrir_fin" type="object" string="Rompre l'essai"
+                            invisible="state != 'essai'" groups="rh_burkina.group_rh_gestionnaire"/>
+                    <button name="action_suspendre" type="object" string="Suspendre"
+                            invisible="state != 'actif'" groups="rh_burkina.group_rh_gestionnaire"/>
+                    <button name="action_reprendre" type="object" string="Reprendre"
+                            invisible="state != 'suspendu'" groups="rh_burkina.group_rh_gestionnaire"/>
+                    <button name="action_renouveler" type="object" string="Renouveler le CDD"
+                            invisible="type_contrat != 'cdd' or state not in ('essai', 'actif', 'suspendu')" groups="rh_burkina.group_rh_gestionnaire"/>
+                    <button name="action_ouvrir_fin" type="object" string="Résilier"
+                            invisible="state not in ('actif', 'suspendu')" groups="rh_burkina.group_rh_gestionnaire"/>
+                    <field name="state" widget="statusbar" statusbar_visible="brouillon,essai,actif,resilie"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archivé" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <field name="currency_id" invisible="1"/>
+                    <div class="alert alert-warning" role="alert" invisible="not hors_fourchette" groups="rh_burkina.group_rh_salaire">
+                        Le salaire est en dehors de la fourchette de la catégorie (non bloquant).
+                    </div>
+                    <div class="oe_title">
+                        <div class="text-muted"><field name="type_contrat" readonly="state != 'brouillon'"/></div>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Employé et affectation">
+                            <field name="employee_id" readonly="state != 'brouillon'"/>
+                            <field name="poste_id" readonly="state in ('resilie', 'expire')"/>
+                            <field name="department_id" readonly="state in ('resilie', 'expire')"/>
+                            <field name="categorie_id" readonly="state in ('resilie', 'expire')"/>
+                            <field name="site_id" readonly="state in ('resilie', 'expire')"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="state != 'brouillon'"/>
+                        </group>
+                        <group string="Dates">
+                            <field name="date_signature"/>
+                            <field name="date_debut" readonly="state != 'brouillon'"/>
+                            <field name="date_fin" required="type_contrat == 'cdd'" readonly="state in ('resilie', 'expire')"/>
+                            <field name="contrat_precedent_id" invisible="type_contrat != 'cdd'" readonly="state != 'brouillon'"/>
+                            <field name="numero_renouvellement" invisible="type_contrat != 'cdd' or not contrat_precedent_id"/>
+                            <field name="duree_cumulee_mois" invisible="type_contrat != 'cdd'"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Rémunération et temps de travail" name="remuneration">
+                            <group>
+                                <group string="Temps de travail">
+                                    <field name="temps_travail" readonly="state in ('resilie', 'expire')"/>
+                                    <field name="heures_hebdo" readonly="state in ('resilie', 'expire')"/>
+                                </group>
+                                <group string="Rémunération">
+                                    <field name="remuneration_type" readonly="state != 'brouillon'"/>
+                                    <field name="salaire_base" groups="rh_burkina.group_rh_salaire"
+                                           invisible="remuneration_type == 'horaire'"
+                                           readonly="state in ('resilie', 'expire')"/>
+                                    <field name="taux_horaire" groups="rh_burkina.group_rh_salaire"
+                                           invisible="remuneration_type != 'horaire'"
+                                           readonly="state in ('resilie', 'expire')"/>
+                                    <field name="hors_fourchette" invisible="1" groups="rh_burkina.group_rh_salaire"/>
+                                    <field name="mon_salaire" string="Salaire" invisible="not mon_salaire"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Période d'essai et préavis" name="essai">
+                            <group>
+                                <group string="Période d'essai">
+                                    <field name="avec_essai" readonly="state != 'brouillon'"/>
+                                    <label for="essai_duree" invisible="not avec_essai"/>
+                                    <div class="o_row" invisible="not avec_essai">
+                                        <field name="essai_duree" readonly="state != 'brouillon'"/>
+                                        <field name="essai_unite" readonly="state != 'brouillon'"/>
+                                    </div>
+                                    <field name="essai_renouvelable" invisible="not avec_essai" readonly="state != 'brouillon'"/>
+                                    <field name="essai_renouvele" invisible="not essai_renouvele"/>
+                                    <field name="date_fin_essai" invisible="not avec_essai"/>
+                                </group>
+                                <group string="Préavis">
+                                    <field name="preavis_texte"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Clauses" name="clauses">
+                            <field name="clauses" placeholder="Clauses particulières : confidentialité, non-concurrence, mobilité…"/>
+                        </page>
+                        <page string="Suspension et fin" name="fin" invisible="state == 'brouillon'">
+                            <group>
+                                <group string="Suspension">
+                                    <field name="motif_suspension" readonly="state in ('resilie', 'expire')"/>
+                                </group>
+                                <group string="Fin de contrat">
+                                    <field name="date_resiliation" readonly="1"/>
+                                    <field name="motif_fin" readonly="1"/>
+                                    <field name="note_fin" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Renouvellements" name="renouvellements" invisible="not renouvellement_ids">
+                            <field name="renouvellement_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date_debut"/>
+                                    <field name="date_fin"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes" groups="rh_burkina.group_rh_gestionnaire">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rh_contrat_list" model="ir.ui.view">
+        <field name="name">rh.contrat.list</field>
+        <field name="model">rh.contrat</field>
+        <field name="arch" type="xml">
+            <list decoration-info="state == 'brouillon'" decoration-warning="state in ('essai', 'suspendu')" decoration-muted="state in ('resilie', 'expire')">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="type_contrat"/>
+                <field name="poste_id" optional="show"/>
+                <field name="department_id" optional="hide"/>
+                <field name="categorie_id" optional="hide"/>
+                <field name="date_debut"/>
+                <field name="date_fin"/>
+                <field name="date_fin_essai" optional="hide"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="salaire_base" groups="rh_burkina.group_rh_salaire" optional="show" sum="Total"/>
+                <field name="state" widget="badge" decoration-success="state == 'actif'" decoration-warning="state in ('essai', 'suspendu')" decoration-info="state == 'brouillon'"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_contrat_kanban" model="ir.ui.view">
+        <field name="name">rh.contrat.kanban</field>
+        <field name="model">rh.contrat</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" quick_create="false">
+                <templates>
+                    <t t-name="card">
+                        <field name="name" class="fw-bold"/>
+                        <field name="employee_id"/>
+                        <div class="text-muted">
+                            <field name="type_contrat"/> – <field name="poste_id"/>
+                        </div>
+                        <div>Du <field name="date_debut"/> <span>au</span> <field name="date_fin"/></div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_rh_contrat_search" model="ir.ui.view">
+        <field name="name">rh.contrat.search</field>
+        <field name="model">rh.contrat</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="poste_id"/>
+                <field name="department_id" operator="child_of"/>
+                <filter name="en_cours" string="En cours" domain="[('state', 'in', ('essai', 'actif', 'suspendu'))]"/>
+                <filter name="brouillon" string="Brouillons" domain="[('state', '=', 'brouillon')]"/>
+                <filter name="essai" string="En période d'essai" domain="[('state', '=', 'essai')]"/>
+                <filter name="termines" string="Terminés" domain="[('state', 'in', ('resilie', 'expire'))]"/>
+                <separator/>
+                <filter name="cdi" string="CDI" domain="[('type_contrat', '=', 'cdi')]"/>
+                <filter name="cdd" string="CDD" domain="[('type_contrat', '=', 'cdd')]"/>
+                <separator/>
+                <filter name="fin_30j" string="Fin sous 30 jours"
+                        domain="[('state', 'in', ('essai', 'actif', 'suspendu')), ('date_fin', '!=', False), ('date_fin', '&lt;=', (context_today() + relativedelta(days=30)).strftime('%Y-%m-%d'))]"/>
+                <filter name="essai_15j" string="Fin d'essai sous 15 jours"
+                        domain="[('state', '=', 'essai'), ('date_fin_essai', '&lt;=', (context_today() + relativedelta(days=15)).strftime('%Y-%m-%d'))]"/>
+                <separator/>
+                <filter name="archived" string="Archivés" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_state" string="État" context="{'group_by': 'state'}"/>
+                    <filter name="group_type" string="Type" context="{'group_by': 'type_contrat'}"/>
+                    <filter name="group_department" string="Département" context="{'group_by': 'department_id'}"/>
+                    <filter name="group_debut" string="Début" context="{'group_by': 'date_debut:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rh_contrat" model="ir.actions.act_window">
+        <field name="name">Contrats</field>
+        <field name="res_model">rh.contrat</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="context">{'search_default_en_cours': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Créer le premier contrat</p>
+            <p>Un seul contrat peut être en cours pour un employé à une date donnée.</p>
+        </field>
+    </record>
+
+    <!-- ═══════════════ Assistant de fin de contrat ═══════════════ -->
+    <record id="view_rh_wizard_fin_contrat_form" model="ir.ui.view">
+        <field name="name">rh.wizard.fin.contrat.form</field>
+        <field name="model">rh.wizard.fin.contrat</field>
+        <field name="arch" type="xml">
+            <form string="Mettre fin au contrat">
+                <field name="etat_contrat" invisible="1"/>
+                <group>
+                    <field name="contrat_id"/>
+                    <field name="motif_fin"/>
+                    <field name="date_fin"/>
+                    <field name="note"/>
+                </group>
+                <div class="text-muted">
+                    Le solde de tout compte et le certificat de travail seront établis dans la procédure de sortie.
+                </div>
+                <footer>
+                    <button name="action_valider" type="object" string="Confirmer" class="btn-primary"
+                            confirm="Confirmer la fin de ce contrat ?"/>
+                    <button special="cancel" string="Annuler" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

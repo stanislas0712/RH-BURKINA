@@ -51,6 +51,8 @@
                                 <group>
                                     <field name="smig_mensuel"/>
                                     <field name="smig_horaire"/>
+                                    <field name="smig_prorata_temps_partiel"/>
+                                    <field name="smig_stage"/>
                                     <field name="jours_base_prorata"/>
                                 </group>
                                 <group>

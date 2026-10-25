@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="type_document_cnib" model="rh.type.document">
+        <field name="name">CNIB</field>
+        <field name="code">CNIB</field>
+        <field name="sequence">1</field>
+        <field name="a_expiration" eval="True"/>
+    </record>
+    <record id="type_document_passeport" model="rh.type.document">
+        <field name="name">Passeport</field>
+        <field name="code">PASS</field>
+        <field name="sequence">2</field>
+        <field name="a_expiration" eval="True"/>
+    </record>
+    <record id="type_document_acte_naissance" model="rh.type.document">
+        <field name="name">Extrait d'acte de naissance</field>
+        <field name="code">NAIS</field>
+        <field name="sequence">3</field>
+    </record>
+    <record id="type_document_casier" model="rh.type.document">
+        <field name="name">Casier judiciaire</field>
+        <field name="code">CASIER</field>
+        <field name="sequence">4</field>
+        <field name="a_expiration" eval="True"/>
+        <field name="delai_alerte_jours">15</field>
+    </record>
+    <record id="type_document_certificat_medical" model="rh.type.document">
+        <field name="name">Certificat médical d'aptitude</field>
+        <field name="code">MED</field>
+        <field name="sequence">5</field>
+        <field name="a_expiration" eval="True"/>
+    </record>
+    <record id="type_document_cv" model="rh.type.document">
+        <field name="name">Curriculum vitae</field>
+        <field name="code">CV</field>
+        <field name="sequence">6</field>
+    </record>
+    <record id="type_document_permis" model="rh.type.document">
+        <field name="name">Permis de conduire</field>
+        <field name="code">PERMIS</field>
+        <field name="sequence">7</field>
+        <field name="a_expiration" eval="True"/>
+    </record>
+    <record id="type_document_autre" model="rh.type.document">
+        <field name="name">Autre</field>
+        <field name="code">AUTRE</field>
+        <field name="sequence">99</field>
+    </record>
+</odoo>

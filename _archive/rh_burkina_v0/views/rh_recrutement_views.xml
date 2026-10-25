@@ -1,0 +1,348 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="view_rh_recrutement_tree" model="ir.ui.view">
+        <field name="name">rh.recrutement.tree</field>
+        <field name="model">rh.recrutement</field>
+        <field name="arch" type="xml">
+            <list string="Recrutements">
+                <field name="reference"/>
+                <field name="titre_poste"/>
+                <field name="departement_id"/>
+                <field name="type_contrat"/>
+                <field name="nombre_postes"/>
+                <field name="nombre_candidats"/>
+                <field name="date_cloture"/>
+                <field name="statut" widget="badge"
+                       decoration-success="statut == 'en_cours'"
+                       decoration-info="statut == 'publie'"
+                       decoration-warning="statut == 'brouillon'"
+                       decoration-danger="statut in ('cloture','annule')"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_rh_recrutement_form" model="ir.ui.view">
+        <field name="name">rh.recrutement.form</field>
+        <field name="model">rh.recrutement</field>
+        <field name="arch" type="xml">
+            <form string="Offre d'Emploi">
+                <header>
+                    <button name="action_publier" string="Publier" type="object"
+                            class="btn-primary" invisible="statut != 'brouillon'"/>
+                    <button name="action_cloturer" string="Clôturer" type="object"
+                            class="btn-secondary" invisible="statut in ('cloture','annule','brouillon')"/>
+                    <field name="statut" widget="statusbar"
+                           statusbar_visible="brouillon,publie,en_cours,cloture"/>
+                </header>
+                <sheet>
+                    <div class="rh_form_header">
+                        <div class="rh_form_header_body">
+                            <div class="rh_form_title">
+                                <field name="reference" readonly="1" class="rh_badge_matricule"/>
+                                <field name="titre_poste" placeholder="Titre du Poste" class="rh_field_nom"/>
+                            </div>
+                        </div>
+                    </div>
+                    <group col="2">
+                        <group string="Poste">
+                            <field name="poste_id"/>
+                            <field name="nombre_postes"/>
+                            <field name="niveau_etude"/>
+                            <field name="experience_min"/>
+                            <field name="lieu"/>
+                        </group>
+                        <group string="Calendrier &amp; Rémunération">
+                            <field name="date_publication" readonly="1"/>
+                            <field name="date_cloture"/>
+                            <field name="salaire_min"/>
+                            <field name="salaire_max"/>
+                            <field name="responsable_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description du Poste">
+                            <field name="description_poste" nolabel="1"
+                                   widget="text" rows="12"
+                                   placeholder="Décrivez les missions, responsabilités et tâches du poste..."/>
+                        </page>
+                        <page string="Profil Recherché">
+                            <field name="profil_recherche" nolabel="1"
+                                   widget="text" rows="12"
+                                   placeholder="Décrivez les compétences, qualifications et expériences recherchées..."/>
+                        </page>
+                        <page string="Candidatures">
+                            <field name="candidat_ids">
+                                <list>
+                                    <field name="nom_complet"/>
+                                    <field name="email"/>
+                                    <field name="telephone"/>
+                                    <field name="statut" widget="badge"
+                                           decoration-success="statut == 'selectionne'"
+                                           decoration-danger="statut == 'rejete'"
+                                           decoration-info="statut == 'recu'"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="view_rh_recrutement_kanban" model="ir.ui.view">
+        <field name="name">rh.recrutement.kanban</field>
+        <field name="model">rh.recrutement</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="statut">
+                <field name="reference"/>
+                <field name="titre_poste"/>
+                <field name="departement_id"/>
+                <field name="type_contrat"/>
+                <field name="statut"/>
+                <field name="date_cloture"/>
+                <field name="nombre_candidats"/>
+                <templates>
+                    <t t-name="card">
+                        <strong><field name="titre_poste"/></strong>
+                        <div class="text-muted small"><field name="reference"/></div>
+                        <div class="mt-1"><i class="fa fa-building me-1 text-muted" title="Département"/>
+                            <field name="departement_id"/></div>
+                        <div><i class="fa fa-calendar me-1 text-muted" title="Date"/>
+                            Clôture : <field name="date_cloture"/></div>
+                        <div class="mt-2 d-flex justify-content-between align-items-center">
+                            <field name="statut" widget="badge"
+                                   decoration-success="statut == 'en_cours'"
+                                   decoration-info="statut == 'publie'"
+                                   decoration-warning="statut == 'brouillon'"
+                                   decoration-danger="statut in ('cloture','annule')"/>
+                            <span class="text-muted">
+                                <i class="fa fa-users me-1" title="Employés"/>
+                                <field name="nombre_candidats"/> candidat(s)
+                            </span>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <record id="view_rh_candidat_tree" model="ir.ui.view">
+        <field name="name">rh.candidat.tree</field>
+        <field name="model">rh.candidat</field>
+        <field name="arch" type="xml">
+            <list string="Candidatures">
+                <field name="reference"/>
+                <field name="nom_complet"/>
+                <field name="offre_id"/>
+                <field name="telephone"/>
+                <field name="date_candidature"/>
+                <field name="note_cv"/>
+                <field name="statut" widget="badge"
+                       decoration-success="statut == 'selectionne'"
+                       decoration-info="statut == 'entretien'"
+                       decoration-warning="statut in ('recu','en_cours')"
+                       decoration-danger="statut == 'rejete'"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_rh_candidat_form" model="ir.ui.view">
+        <field name="name">rh.candidat.form</field>
+        <field name="model">rh.candidat</field>
+        <field name="arch" type="xml">
+            <form string="Candidature">
+                <sheet>
+                    <div class="rh_form_header">
+                        <div class="rh_form_header_body">
+                            <div class="rh_form_title">
+                                <field name="nom" placeholder="Nom" class="rh_field_nom"/>
+                                <field name="prenom" placeholder="Prénom" class="rh_field_prenom"/>
+                            </div>
+                            <div class="rh_form_subtitle">
+                                <field name="reference" readonly="1" class="rh_badge_matricule"/>
+                            </div>
+                        </div>
+                        <div class="rh_form_header_right">
+                            <field name="statut" widget="badge"
+                                   decoration-success="statut == 'selectionne'"
+                                   decoration-info="statut == 'entretien'"
+                                   decoration-warning="statut in ('recu','en_cours')"
+                                   decoration-danger="statut == 'rejete'"/>
+                        </div>
+                    </div>
+                    <group col="2">
+                        <group string="Candidature">
+                            <field name="offre_id"/>
+                            <field name="date_candidature"/>
+                            <field name="source"/>
+                        </group>
+                        <group string="Profil">
+                            <field name="genre"/>
+                            <field name="date_naissance"/>
+                            <field name="niveau_etude"/>
+                            <field name="annees_experience"/>
+                            <field name="domaine_expertise"/>
+                        </group>
+                    </group>
+                    <group col="2">
+                        <group string="Contact">
+                            <field name="telephone"/>
+                            <field name="email"/>
+                            <field name="ville"/>
+                        </group>
+                        <group string="Notation">
+                            <field name="note_cv"/>
+                            <field name="employe_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Documents">
+                            <group col="2">
+                                <group>
+                                    <field name="cv" filename="nom_cv"/>
+                                    <field name="nom_cv" invisible="1"/>
+                                </group>
+                                <group>
+                                    <field name="lettre_motivation"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Entretiens">
+                            <field name="entretien_ids">
+                                <list>
+                                    <field name="date_heure"/>
+                                    <field name="type_entretien"/>
+                                    <field name="note_globale"/>
+                                    <field name="recommandation"/>
+                                    <field name="statut" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Commentaire RH">
+                            <field name="commentaire_rh" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_rh_candidat" model="ir.actions.act_window">
+        <field name="name">Candidatures</field>
+        <field name="res_model">rh.candidat</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+
+    <record id="view_rh_entretien_tree" model="ir.ui.view">
+        <field name="name">rh.entretien.tree</field>
+        <field name="model">rh.entretien</field>
+        <field name="arch" type="xml">
+            <list string="Entretiens">
+                <field name="candidat_id"/>
+                <field name="offre_id"/>
+                <field name="date_heure"/>
+                <field name="type_entretien"/>
+                <field name="note_globale"/>
+                <field name="recommandation"/>
+                <field name="statut" widget="badge"
+                       decoration-success="statut == 'realise'"
+                       decoration-info="statut == 'confirme'"
+                       decoration-warning="statut == 'planifie'"
+                       decoration-danger="statut in ('annule','reporte')"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_rh_entretien_form" model="ir.ui.view">
+        <field name="name">rh.entretien.form</field>
+        <field name="model">rh.entretien</field>
+        <field name="arch" type="xml">
+            <form string="Entretien">
+                <header>
+                    <button name="action_confirmer" string="Confirmer" type="object"
+                            class="btn-primary" invisible="statut != 'planifie'"/>
+                    <button name="action_realiser" string="Marquer Réalisé" type="object"
+                            class="btn-success" invisible="statut != 'confirme'"/>
+                    <field name="statut" widget="statusbar"
+                           statusbar_visible="planifie,confirme,realise"/>
+                </header>
+                <sheet>
+                    <group col="2">
+                        <group string="Planification">
+                            <field name="candidat_id"/>
+                            <field name="offre_id" readonly="1"/>
+                            <field name="type_entretien"/>
+                            <field name="date_heure"/>
+                            <field name="duree_minutes"/>
+                            <field name="lieu"/>
+                        </group>
+                        <group string="Intervieweurs">
+                            <field name="intervieweur_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Évaluation">
+                            <group col="2">
+                                <group>
+                                    <field name="note_globale"/>
+                                    <field name="note_competences"/>
+                                </group>
+                                <group>
+                                    <field name="note_communication"/>
+                                    <field name="note_motivation"/>
+                                </group>
+                            </group>
+                            <group>
+                                <field name="recommandation"/>
+                            </group>
+                        </page>
+                        <page string="Compte-Rendu">
+                            <field name="compte_rendu" nolabel="1"/>
+                        </page>
+                        <page string="Détails">
+                            <group col="2">
+                                <group string="Points Forts">
+                                    <field name="points_forts" nolabel="1"/>
+                                </group>
+                                <group string="Points à Améliorer">
+                                    <field name="points_faibles" nolabel="1"/>
+                                </group>
+                            </group>
+                            <group string="Questions Posées">
+                                <field name="questions_posees" nolabel="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_rh_entretien" model="ir.actions.act_window">
+        <field name="name">Entretiens</field>
+        <field name="res_model">rh.entretien</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+
+    <record id="action_rh_recrutement" model="ir.actions.act_window">
+        <field name="name">Recrutements</field>
+        <field name="res_model">rh.recrutement</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+
+</odoo>

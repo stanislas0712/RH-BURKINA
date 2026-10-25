@@ -1,0 +1,532 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ═══════════════ Paramètres généraux ═══════════════ -->
+    <record id="view_rh_configuration_list" model="ir.ui.view">
+        <field name="name">rh.configuration.list</field>
+        <field name="model">rh.configuration</field>
+        <field name="arch" type="xml">
+            <list decoration-warning="a_verifier">
+                <field name="name"/>
+                <field name="date_debut"/>
+                <field name="date_fin"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="smig_mensuel"/>
+                <field name="heures_legales_hebdo"/>
+                <field name="age_retraite"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="a_verifier"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_configuration_form" model="ir.ui.view">
+        <field name="name">rh.configuration.form</field>
+        <field name="model">rh.configuration</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="alert alert-warning" role="alert" invisible="not a_verifier">
+                        ⚠️ Valeurs à vérifier auprès de l'Inspection du travail et de la convention collective avant toute mise en production.
+                    </div>
+                    <widget name="web_ribbon" title="Archivé" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Validité">
+                            <field name="date_debut"/>
+                            <field name="date_fin"/>
+                            <field name="company_id" groups="base.group_multi_company" placeholder="Toutes les sociétés"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="a_verifier"/>
+                        </group>
+                        <group string="Référence">
+                            <field name="reference_legale"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Salaire et durée du travail" name="travail">
+                            <group>
+                                <group>
+                                    <field name="smig_mensuel"/>
+                                    <field name="smig_horaire"/>
+                                    <field name="jours_base_prorata"/>
+                                </group>
+                                <group>
+                                    <field name="heures_legales_hebdo"/>
+                                    <field name="heures_legales_mensuelles"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Embauche et contrats" name="contrats">
+                            <group>
+                                <group string="Âges">
+                                    <field name="age_minimum_embauche"/>
+                                    <field name="age_retraite"/>
+                                </group>
+                                <group string="CDD et discipline">
+                                    <field name="cdd_renouvellements_max"/>
+                                    <field name="cdd_duree_max_mois"/>
+                                    <field name="mise_a_pied_max_jours"/>
+                                </group>
+                            </group>
+                            <separator string="Périodes d'essai"/>
+                            <field name="essai_ids">
+                                <list editable="bottom">
+                                    <field name="groupe_professionnel"/>
+                                    <field name="categorie_id"/>
+                                    <field name="duree"/>
+                                    <field name="unite"/>
+                                    <field name="renouvelable"/>
+                                </list>
+                            </field>
+                            <separator string="Préavis"/>
+                            <field name="preavis_ids">
+                                <list editable="bottom">
+                                    <field name="groupe_professionnel"/>
+                                    <field name="categorie_id"/>
+                                    <field name="anciennete_min_mois"/>
+                                    <field name="duree"/>
+                                    <field name="unite"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Heures supplémentaires" name="hs">
+                            <group>
+                                <group>
+                                    <field name="hs_plafond_hebdo"/>
+                                    <field name="hs_plafond_annuel"/>
+                                </group>
+                            </group>
+                            <field name="majoration_hs_ids">
+                                <list editable="bottom">
+                                    <field name="type_heure"/>
+                                    <field name="heure_debut"/>
+                                    <field name="heure_fin"/>
+                                    <field name="taux"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Congés" name="conges">
+                            <group>
+                                <group>
+                                    <field name="conge_jours_par_mois"/>
+                                    <field name="conge_type_jours"/>
+                                </group>
+                            </group>
+                            <separator string="Congés supplémentaires pour ancienneté"/>
+                            <field name="conge_anciennete_ids">
+                                <list editable="bottom">
+                                    <field name="annees_min"/>
+                                    <field name="jours_supplementaires"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Paie" name="paie">
+                            <separator string="Prime d'ancienneté"/>
+                            <field name="anciennete_ids">
+                                <list editable="bottom">
+                                    <field name="annees_min"/>
+                                    <field name="taux"/>
+                                </list>
+                            </field>
+                            <separator string="Quotité saisissable (barème progressif)"/>
+                            <field name="quotite_ids">
+                                <list editable="bottom">
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="borne_inf"/>
+                                    <field name="borne_sup"/>
+                                    <field name="taux"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Données personnelles" name="donnees">
+                            <group>
+                                <field name="duree_conservation_annees"/>
+                            </group>
+                        </page>
+                        <page string="Observations" name="note">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rh_configuration_kanban" model="ir.ui.view">
+        <field name="name">rh.configuration.kanban</field>
+        <field name="model">rh.configuration</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <templates>
+                    <t t-name="card">
+                        <field name="name" class="fw-bold"/>
+                        <div>Depuis le <field name="date_debut"/></div>
+                        <div>SMIG : <field name="smig_mensuel"/></div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_rh_configuration_search" model="ir.ui.view">
+        <field name="name">rh.configuration.search</field>
+        <field name="model">rh.configuration</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter name="a_verifier" string="À vérifier" domain="[('a_verifier', '=', True)]"/>
+                <separator/>
+                <filter name="archived" string="Archivés" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_company" string="Société" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rh_configuration" model="ir.actions.act_window">
+        <field name="name">Paramètres généraux</field>
+        <field name="res_model">rh.configuration</field>
+        <field name="view_mode">list,form,kanban</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Créer un jeu de paramètres daté</p>
+            <p>Pour un changement légal, créez un nouveau jeu à sa date d'entrée en vigueur : l'ancien reste appliqué aux périodes passées.</p>
+        </field>
+    </record>
+
+    <!-- ═══════════════ Cotisations sociales ═══════════════ -->
+    <record id="view_rh_cnss_list" model="ir.ui.view">
+        <field name="name">rh.cnss.list</field>
+        <field name="model">rh.cnss</field>
+        <field name="arch" type="xml">
+            <list decoration-warning="a_verifier">
+                <field name="name"/>
+                <field name="regime"/>
+                <field name="date_debut"/>
+                <field name="date_fin"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="plafond_mensuel"/>
+                <field name="taux_salarial_total"/>
+                <field name="taux_patronal_total"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="a_verifier"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_cnss_form" model="ir.ui.view">
+        <field name="name">rh.cnss.form</field>
+        <field name="model">rh.cnss</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="alert alert-warning" role="alert" invisible="not a_verifier">
+                        ⚠️ Taux et plafond à vérifier auprès de la caisse (CNSS / CARFO) avant toute mise en production.
+                    </div>
+                    <widget name="web_ribbon" title="Archivé" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="regime"/>
+                            <field name="date_debut"/>
+                            <field name="date_fin"/>
+                            <field name="company_id" groups="base.group_multi_company" placeholder="Toutes les sociétés"/>
+                        </group>
+                        <group>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="plafond_mensuel"/>
+                            <field name="taux_salarial_total"/>
+                            <field name="taux_patronal_total"/>
+                            <field name="a_verifier"/>
+                        </group>
+                    </group>
+                    <field name="branche_ids">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="code"/>
+                            <field name="name"/>
+                            <field name="taux_salarial"/>
+                            <field name="taux_patronal"/>
+                            <field name="plafonnee"/>
+                        </list>
+                    </field>
+                    <group>
+                        <field name="reference_legale"/>
+                        <field name="note"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rh_cnss_kanban" model="ir.ui.view">
+        <field name="name">rh.cnss.kanban</field>
+        <field name="model">rh.cnss</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <templates>
+                    <t t-name="card">
+                        <field name="name" class="fw-bold"/>
+                        <field name="regime" class="text-muted"/>
+                        <div>Depuis le <field name="date_debut"/></div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_rh_cnss_search" model="ir.ui.view">
+        <field name="name">rh.cnss.search</field>
+        <field name="model">rh.cnss</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter name="cnss" string="CNSS" domain="[('regime', '=', 'cnss')]"/>
+                <filter name="carfo" string="CARFO" domain="[('regime', '=', 'carfo')]"/>
+                <separator/>
+                <filter name="a_verifier" string="À vérifier" domain="[('a_verifier', '=', True)]"/>
+                <filter name="archived" string="Archivés" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_regime" string="Régime" context="{'group_by': 'regime'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rh_cnss" model="ir.actions.act_window">
+        <field name="name">Cotisations sociales</field>
+        <field name="res_model">rh.cnss</field>
+        <field name="view_mode">list,form,kanban</field>
+    </record>
+
+    <!-- ═══════════════ IUTS ═══════════════ -->
+    <record id="view_rh_iuts_list" model="ir.ui.view">
+        <field name="name">rh.iuts.list</field>
+        <field name="model">rh.iuts</field>
+        <field name="arch" type="xml">
+            <list decoration-warning="a_verifier">
+                <field name="name"/>
+                <field name="date_debut"/>
+                <field name="date_fin"/>
+                <field name="abattement_cadre"/>
+                <field name="abattement_non_cadre"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="a_verifier"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_iuts_form" model="ir.ui.view">
+        <field name="name">rh.iuts.form</field>
+        <field name="model">rh.iuts</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="alert alert-warning" role="alert" invisible="not a_verifier">
+                        ⚠️ Barème à vérifier auprès de la DGI avant toute mise en production.
+                    </div>
+                    <widget name="web_ribbon" title="Archivé" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Validité">
+                            <field name="date_debut"/>
+                            <field name="date_fin"/>
+                            <field name="company_id" groups="base.group_multi_company" placeholder="Toutes les sociétés"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="a_verifier"/>
+                        </group>
+                        <group string="Abattement et arrondi">
+                            <field name="abattement_cadre"/>
+                            <field name="abattement_non_cadre"/>
+                            <field name="abattement_assiette"/>
+                            <field name="arrondi_base"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Tranches" name="tranches">
+                            <field name="tranche_ids">
+                                <list editable="bottom">
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="borne_inf"/>
+                                    <field name="borne_sup"/>
+                                    <field name="taux"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Charges de famille" name="famille">
+                            <field name="charge_famille_ids">
+                                <list editable="bottom">
+                                    <field name="nb_charges"/>
+                                    <field name="taux_reduction"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Indemnités exonérées" name="exonerations">
+                            <field name="exoneration_ids">
+                                <list editable="bottom">
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="type_indemnite"/>
+                                    <field name="taux_max"/>
+                                    <field name="assiette"/>
+                                    <field name="plafond_montant"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Référence" name="reference">
+                            <group>
+                                <field name="reference_legale"/>
+                                <field name="note"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rh_iuts_kanban" model="ir.ui.view">
+        <field name="name">rh.iuts.kanban</field>
+        <field name="model">rh.iuts</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <templates>
+                    <t t-name="card">
+                        <field name="name" class="fw-bold"/>
+                        <div>Depuis le <field name="date_debut"/></div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_rh_iuts_search" model="ir.ui.view">
+        <field name="name">rh.iuts.search</field>
+        <field name="model">rh.iuts</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter name="a_verifier" string="À vérifier" domain="[('a_verifier', '=', True)]"/>
+                <filter name="archived" string="Archivés" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rh_iuts" model="ir.actions.act_window">
+        <field name="name">Barèmes IUTS</field>
+        <field name="res_model">rh.iuts</field>
+        <field name="view_mode">list,form,kanban</field>
+    </record>
+
+    <!-- ═══════════════ Indemnité de licenciement ═══════════════ -->
+    <record id="view_rh_bareme_licenciement_list" model="ir.ui.view">
+        <field name="name">rh.bareme.licenciement.list</field>
+        <field name="model">rh.bareme.licenciement</field>
+        <field name="arch" type="xml">
+            <list decoration-warning="a_verifier">
+                <field name="name"/>
+                <field name="date_debut"/>
+                <field name="date_fin"/>
+                <field name="anciennete_minimum_mois"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="a_verifier"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_bareme_licenciement_form" model="ir.ui.view">
+        <field name="name">rh.bareme.licenciement.form</field>
+        <field name="model">rh.bareme.licenciement</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="alert alert-warning" role="alert" invisible="not a_verifier">
+                        ⚠️ Barème à vérifier (Code du travail, convention collective) avant toute mise en production.
+                    </div>
+                    <widget name="web_ribbon" title="Archivé" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date_debut"/>
+                            <field name="date_fin"/>
+                            <field name="company_id" groups="base.group_multi_company" placeholder="Toutes les sociétés"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="anciennete_minimum_mois"/>
+                            <field name="proratiser"/>
+                            <field name="a_verifier"/>
+                        </group>
+                    </group>
+                    <field name="ligne_ids">
+                        <list editable="bottom">
+                            <field name="annees_debut"/>
+                            <field name="annees_fin"/>
+                            <field name="taux"/>
+                        </list>
+                    </field>
+                    <group>
+                        <field name="reference_legale"/>
+                        <field name="note"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rh_bareme_licenciement_kanban" model="ir.ui.view">
+        <field name="name">rh.bareme.licenciement.kanban</field>
+        <field name="model">rh.bareme.licenciement</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <templates>
+                    <t t-name="card">
+                        <field name="name" class="fw-bold"/>
+                        <div>Depuis le <field name="date_debut"/></div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_rh_bareme_licenciement_search" model="ir.ui.view">
+        <field name="name">rh.bareme.licenciement.search</field>
+        <field name="model">rh.bareme.licenciement</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <filter name="a_verifier" string="À vérifier" domain="[('a_verifier', '=', True)]"/>
+                <filter name="archived" string="Archivés" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rh_bareme_licenciement" model="ir.actions.act_window">
+        <field name="name">Indemnité de licenciement</field>
+        <field name="res_model">rh.bareme.licenciement</field>
+        <field name="view_mode">list,form,kanban</field>
+    </record>
+
+    <!-- ═══════════════ Utilisateurs et rôles ═══════════════ -->
+    <record id="action_rh_users" model="ir.actions.act_window">
+        <field name="name">Utilisateurs et rôles</field>
+        <field name="res_model">res.users</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('share', '=', False)]</field>
+    </record>
+</odoo>

@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!--
+        ⚠️ VALEURS LÉGALES INITIALES – À VÉRIFIER
+        Ces valeurs sont fournies comme point de départ. Elles DOIVENT être
+        confirmées (CNSS, DGI, Inspection du travail, convention collective)
+        avant toute mise en production. Toutes sont modifiables dans
+        RH Burkina Faso > Configuration > Paramètres légaux.
+        Pour un changement légal : créer un NOUVEAU jeu daté (ne pas modifier
+        l'ancien, qui reste appliqué aux périodes passées).
+    -->
+
+    <!-- ════════════ Paramètres généraux ════════════ -->
+    <record id="configuration_2024" model="rh.configuration">
+        <field name="name">Paramètres généraux 2024 (à vérifier)</field>
+        <field name="date_debut">2024-01-01</field>
+        <field name="reference_legale">Code du travail – loi n°028-2008/AN ; décrets d'application ; convention collective interprofessionnelle</field>
+        <field name="note">À VÉRIFIER : SMIG, durée légale, âge minimum et âge de retraite, règles CDD, mise à pied, plafonds d'heures supplémentaires, acquisition des congés, conservation des données. Les barèmes « Prime d'ancienneté », « Congés supplémentaires pour ancienneté » et « Quotité saisissable » sont laissés VIDES : ils doivent être renseignés à partir des textes en vigueur.</field>
+        <field name="smig_mensuel">45000</field>
+        <field name="heures_legales_hebdo">40</field>
+        <field name="heures_legales_mensuelles">173.33</field>
+        <field name="jours_base_prorata">30</field>
+        <field name="age_minimum_embauche">16</field>
+        <field name="age_retraite">60</field>
+        <field name="cdd_renouvellements_max">1</field>
+        <field name="cdd_duree_max_mois">24</field>
+        <field name="mise_a_pied_max_jours">8</field>
+        <field name="hs_plafond_hebdo">20</field>
+        <field name="hs_plafond_annuel">0</field>
+        <field name="conge_jours_par_mois">2.5</field>
+        <field name="conge_type_jours">ouvrable</field>
+        <field name="duree_conservation_annees">5</field>
+        <field name="essai_ids" eval="[
+            Command.create({'groupe_professionnel': 'ouvrier', 'duree': 1, 'unite': 'mois'}),
+            Command.create({'groupe_professionnel': 'maitrise', 'duree': 2, 'unite': 'mois'}),
+            Command.create({'groupe_professionnel': 'cadre', 'duree': 3, 'unite': 'mois'}),
+        ]"/>
+        <field name="preavis_ids" eval="[
+            Command.create({'groupe_professionnel': 'ouvrier', 'anciennete_min_mois': 0, 'duree': 1, 'unite': 'mois'}),
+            Command.create({'groupe_professionnel': 'maitrise', 'anciennete_min_mois': 0, 'duree': 2, 'unite': 'mois'}),
+            Command.create({'groupe_professionnel': 'cadre', 'anciennete_min_mois': 0, 'duree': 3, 'unite': 'mois'}),
+        ]"/>
+        <field name="majoration_hs_ids" eval="[
+            Command.create({'type_heure': 'jour', 'heure_debut': 0, 'heure_fin': 8, 'taux': 15}),
+            Command.create({'type_heure': 'jour', 'heure_debut': 8, 'heure_fin': 0, 'taux': 35}),
+            Command.create({'type_heure': 'nuit', 'heure_debut': 0, 'heure_fin': 0, 'taux': 50}),
+            Command.create({'type_heure': 'dimanche', 'heure_debut': 0, 'heure_fin': 0, 'taux': 60}),
+            Command.create({'type_heure': 'ferie', 'heure_debut': 0, 'heure_fin': 0, 'taux': 60}),
+        ]"/>
+    </record>
+
+    <!-- ════════════ Cotisations sociales CNSS ════════════ -->
+    <record id="cnss_2024" model="rh.cnss">
+        <field name="name">CNSS – régime général 2024 (à vérifier)</field>
+        <field name="regime">cnss</field>
+        <field name="date_debut">2024-01-01</field>
+        <field name="plafond_mensuel">1500000</field>
+        <field name="reference_legale">Code de la sécurité sociale ; décrets fixant les taux et le plafond</field>
+        <field name="note">À VÉRIFIER auprès de la CNSS : plafond mensuel (1 500 000 FCFA repris du README initial), répartition des taux par branche (5,5 % salarié ; 16 % employeur), taux risques professionnels propre à l'activité de l'entreprise. Aucun barème CARFO n'est fourni : à créer si des agents relèvent de ce régime.</field>
+        <field name="branche_ids" eval="[
+            Command.create({'sequence': 1, 'code': 'pf', 'name': 'Prestations familiales', 'taux_salarial': 0.0, 'taux_patronal': 7.0}),
+            Command.create({'sequence': 2, 'code': 'rp', 'name': 'Risques professionnels', 'taux_salarial': 0.0, 'taux_patronal': 3.5}),
+            Command.create({'sequence': 3, 'code': 'pension', 'name': 'Pension', 'taux_salarial': 5.5, 'taux_patronal': 5.5}),
+        ]"/>
+    </record>
+
+    <!-- ════════════ IUTS ════════════ -->
+    <record id="iuts_2024" model="rh.iuts">
+        <field name="name">Barème IUTS 2024 (à vérifier)</field>
+        <field name="date_debut">2024-01-01</field>
+        <field name="reference_legale">Code général des impôts – Impôt unique sur les traitements et salaires</field>
+        <field name="note">À VÉRIFIER auprès de la DGI : tranches et taux, abattement forfaitaire (taux cadre / non-cadre et assiette), arrondi de la base, réductions pour charges de famille, plafonds d'exonération des indemnités de logement, transport et fonction.</field>
+        <field name="abattement_cadre">20</field>
+        <field name="abattement_non_cadre">25</field>
+        <field name="abattement_assiette">base</field>
+        <field name="arrondi_base">100</field>
+        <field name="tranche_ids" eval="[
+            Command.create({'borne_inf': 0, 'borne_sup': 30000, 'taux': 0.0}),
+            Command.create({'borne_inf': 30000, 'borne_sup': 50000, 'taux': 12.1}),
+            Command.create({'borne_inf': 50000, 'borne_sup': 80000, 'taux': 13.9}),
+            Command.create({'borne_inf': 80000, 'borne_sup': 120000, 'taux': 15.7}),
+            Command.create({'borne_inf': 120000, 'borne_sup': 170000, 'taux': 18.4}),
+            Command.create({'borne_inf': 170000, 'borne_sup': 250000, 'taux': 21.7}),
+            Command.create({'borne_inf': 250000, 'borne_sup': 0, 'taux': 25.0}),
+        ]"/>
+        <field name="charge_famille_ids" eval="[
+            Command.create({'nb_charges': 1, 'taux_reduction': 8.0}),
+            Command.create({'nb_charges': 2, 'taux_reduction': 10.0}),
+            Command.create({'nb_charges': 3, 'taux_reduction': 12.0}),
+            Command.create({'nb_charges': 4, 'taux_reduction': 14.0}),
+        ]"/>
+        <field name="exoneration_ids" eval="[
+            Command.create({'type_indemnite': 'logement', 'taux_max': 20.0, 'assiette': 'brut', 'plafond_montant': 75000}),
+            Command.create({'type_indemnite': 'fonction', 'taux_max': 5.0, 'assiette': 'brut', 'plafond_montant': 50000}),
+            Command.create({'type_indemnite': 'transport', 'taux_max': 5.0, 'assiette': 'brut', 'plafond_montant': 30000}),
+        ]"/>
+    </record>
+
+    <!-- ════════════ Indemnité de licenciement ════════════ -->
+    <record id="bareme_licenciement_2024" model="rh.bareme.licenciement">
+        <field name="name">Indemnité de licenciement 2024 (à vérifier)</field>
+        <field name="date_debut">2024-01-01</field>
+        <field name="reference_legale">Code du travail – loi n°028-2008/AN ; convention collective</field>
+        <field name="note">À VÉRIFIER : taux par tranche d'ancienneté, ancienneté minimum ouvrant droit, définition du salaire de référence, proratisation des années incomplètes.</field>
+        <field name="anciennete_minimum_mois">12</field>
+        <field name="proratiser" eval="True"/>
+        <field name="ligne_ids" eval="[
+            Command.create({'annees_debut': 0, 'annees_fin': 5, 'taux': 25.0}),
+            Command.create({'annees_debut': 5, 'annees_fin': 10, 'taux': 30.0}),
+            Command.create({'annees_debut': 10, 'annees_fin': 0, 'taux': 40.0}),
+        ]"/>
+    </record>
+</odoo>

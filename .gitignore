@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# Configuration locale (contient des mots de passe) : voir conf/odoo.conf.example
+conf/odoo.conf
+
+# Fichiers locaux / secrets
+cookiejar.txt
+*.log
+launcher_status.txt
+check_env.bat
+check_log.bat
+run_install.bat
+.qodo/

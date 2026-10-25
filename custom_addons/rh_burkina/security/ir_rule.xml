@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Règles multi-société (globales : s'appliquent à tous les utilisateurs) -->
+
+    <!-- Structure organisationnelle : propre à chaque société -->
+    <record id="rule_rh_site_company" model="ir.rule">
+        <field name="name">RH Burkina – Site : multi-société</field>
+        <field name="model_id" ref="model_rh_site"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_service_company" model="ir.rule">
+        <field name="name">RH Burkina – Service : multi-société</field>
+        <field name="model_id" ref="model_rh_service"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_poste_company" model="ir.rule">
+        <field name="name">RH Burkina – Poste : multi-société</field>
+        <field name="model_id" ref="model_rh_poste"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_categorie_company" model="ir.rule">
+        <field name="name">RH Burkina – Catégorie : multi-société</field>
+        <field name="model_id" ref="model_rh_categorie"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <!-- Paramètres légaux : jeu commun (sans société) ou propre à la société -->
+    <record id="rule_rh_configuration_company" model="ir.rule">
+        <field name="name">RH Burkina – Paramètres généraux : multi-société</field>
+        <field name="model_id" ref="model_rh_configuration"/>
+        <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+    </record>
+    <record id="rule_rh_cnss_company" model="ir.rule">
+        <field name="name">RH Burkina – Cotisations sociales : multi-société</field>
+        <field name="model_id" ref="model_rh_cnss"/>
+        <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+    </record>
+    <record id="rule_rh_iuts_company" model="ir.rule">
+        <field name="name">RH Burkina – IUTS : multi-société</field>
+        <field name="model_id" ref="model_rh_iuts"/>
+        <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+    </record>
+    <record id="rule_rh_bareme_licenciement_company" model="ir.rule">
+        <field name="name">RH Burkina – Barème de licenciement : multi-société</field>
+        <field name="model_id" ref="model_rh_bareme_licenciement"/>
+        <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+    </record>
+</odoo>

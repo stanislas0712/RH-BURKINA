@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="view_rh_conge_tree" model="ir.ui.view">
+        <field name="name">rh.conge.tree</field>
+        <field name="model">rh.conge</field>
+        <field name="arch" type="xml">
+            <list string="Congés" decoration-success="statut == 'accepte'"
+                  decoration-danger="statut == 'refuse'"
+                  decoration-muted="statut == 'brouillon'">
+                <field name="reference"/>
+                <field name="employe_id"/>
+                <field name="type_conge_id"/>
+                <field name="date_debut"/>
+                <field name="date_fin"/>
+                <field name="duree_jours"/>
+                <field name="statut" widget="badge"
+                       decoration-success="statut == 'accepte'"
+                       decoration-warning="statut == 'en_cours'"
+                       decoration-danger="statut == 'refuse'"
+                       decoration-info="statut == 'brouillon'"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_rh_conge_form" model="ir.ui.view">
+        <field name="name">rh.conge.form</field>
+        <field name="model">rh.conge</field>
+        <field name="arch" type="xml">
+            <form string="Demande de Congé">
+                <header>
+                    <button name="action_accepter" string="Approuver" type="object"
+                            class="btn-primary" invisible="statut in ('accepte','refuse')"/>
+                    <button name="action_refuser" string="Refuser" type="object"
+                            class="btn-danger" invisible="statut in ('accepte','refuse')"/>
+                    <field name="statut" widget="statusbar"
+                           statusbar_visible="brouillon,en_cours,accepte,refuse"/>
+                </header>
+                <sheet>
+                    <div class="rh_form_header">
+                        <div class="rh_form_header_body">
+                            <div class="rh_form_title">
+                                <field name="reference" readonly="1" class="rh_badge_matricule"/>
+                                <field name="employe_id" placeholder="Employé" class="rh_field_nom"/>
+                            </div>
+                        </div>
+                    </div>
+                    <group col="2">
+                        <group string="Période">
+                            <field name="type_conge_id"/>
+                            <field name="date_demande" readonly="1"/>
+                            <field name="date_debut"/>
+                            <field name="date_fin"/>
+                            <field name="duree_jours" readonly="1"/>
+                        </group>
+                        <group string="Détails">
+                            <field name="motif"/>
+                            <field name="commentaire"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="view_rh_conge_kanban" model="ir.ui.view">
+        <field name="name">rh.conge.kanban</field>
+        <field name="model">rh.conge</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="statut">
+                <field name="reference"/>
+                <field name="employe_id"/>
+                <field name="type_conge_id"/>
+                <field name="statut"/>
+                <field name="date_debut"/>
+                <field name="date_fin"/>
+                <field name="duree_jours"/>
+                <templates>
+                    <t t-name="card">
+                        <strong><field name="employe_id"/></strong>
+                        <div class="text-muted small"><field name="reference"/></div>
+                        <div class="mt-1"><i class="fa fa-tag me-1 text-muted" title="Type de congé"/>
+                            <field name="type_conge_id"/></div>
+                        <div><i class="fa fa-calendar me-1 text-muted" title="Date"/>
+                            <field name="date_debut"/> → <field name="date_fin"/></div>
+                        <div class="text-muted small">
+                            <field name="duree_jours"/> jour(s)
+                        </div>
+                        <div class="mt-2">
+                            <field name="statut" widget="badge"
+                                   decoration-success="statut == 'accepte'"
+                                   decoration-warning="statut in ('brouillon','en_cours')"
+                                   decoration-danger="statut == 'refuse'"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <record id="view_rh_solde_conge_tree" model="ir.ui.view">
+        <field name="name">rh.solde.conge.tree</field>
+        <field name="model">rh.solde.conge</field>
+        <field name="arch" type="xml">
+            <list string="Soldes de Congés" editable="bottom"
+                  decoration-danger="jours_restants &lt; 0"
+                  decoration-warning="jours_restants == 0">
+                <field name="type_conge_id"/>
+                <field name="annee"/>
+                <field name="jours_acquis"/>
+                <field name="jours_pris" readonly="1"/>
+                <field name="jours_restants" readonly="1"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_rh_solde_conge_form" model="ir.ui.view">
+        <field name="name">rh.solde.conge.form</field>
+        <field name="model">rh.solde.conge</field>
+        <field name="arch" type="xml">
+            <form string="Solde de Congés">
+                <sheet>
+                    <group col="2">
+                        <group string="Informations">
+                            <field name="employe_id"/>
+                            <field name="type_conge_id"/>
+                            <field name="annee"/>
+                        </group>
+                        <group string="Compteurs">
+                            <field name="jours_acquis"/>
+                            <field name="jours_pris" readonly="1"/>
+                            <field name="jours_restants" readonly="1"
+                                   decoration-danger="jours_restants &lt; 0"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_rh_solde_conge" model="ir.actions.act_window">
+        <field name="name">Soldes de Congés</field>
+        <field name="res_model">rh.solde.conge</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+
+    <record id="view_rh_type_conge_tree" model="ir.ui.view">
+        <field name="name">rh.type.conge.tree</field>
+        <field name="model">rh.type.conge</field>
+        <field name="arch" type="xml">
+            <list string="Types de Congé" editable="bottom">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="duree_max_jours"/>
+                <field name="est_payee" widget="boolean"/>
+                <field name="active" widget="boolean"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_rh_type_conge_form" model="ir.ui.view">
+        <field name="name">rh.type.conge.form</field>
+        <field name="model">rh.type.conge</field>
+        <field name="arch" type="xml">
+            <form string="Type de Congé">
+                <sheet>
+                    <div class="rh_form_header">
+                        <div class="rh_form_header_body">
+                            <div class="rh_form_title">
+                                <field name="name" placeholder="Nom du type de congé" class="rh_field_nom"/>
+                            </div>
+                            <div class="rh_form_subtitle">
+                                <field name="code" placeholder="Code (ex: CA, CM, CP)"/>
+                            </div>
+                        </div>
+                        <div class="rh_form_header_right">
+                            <field name="active" widget="boolean_toggle"/>
+                        </div>
+                    </div>
+                    <group col="2">
+                        <group string="Paramètres">
+                            <field name="code"/>
+                            <field name="duree_max_jours"/>
+                            <field name="est_payee" widget="boolean_toggle"/>
+                        </group>
+                        <group string="Description">
+                            <field name="description" nolabel="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_rh_type_conge" model="ir.actions.act_window">
+        <field name="name">Types de Congé</field>
+        <field name="res_model">rh.type.conge</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+
+    <record id="action_rh_conge" model="ir.actions.act_window">
+        <field name="name">Congés</field>
+        <field name="res_model">rh.conge</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+
+</odoo>

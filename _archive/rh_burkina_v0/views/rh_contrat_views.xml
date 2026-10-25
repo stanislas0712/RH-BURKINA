@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="view_rh_contrat_tree" model="ir.ui.view">
+        <field name="name">rh.contrat.tree</field>
+        <field name="model">rh.contrat</field>
+        <field name="arch" type="xml">
+            <list string="Contrats" decoration-muted="statut in ('expire','resilie')">
+                <field name="reference"/>
+                <field name="employe_id"/>
+                <field name="type_contrat"/>
+                <field name="date_debut"/>
+                <field name="date_fin"/>
+                <field name="salaire_base"/>
+                <field name="statut" widget="badge"
+                       decoration-success="statut == 'actif'"
+                       decoration-info="statut == 'renouvele'"
+                       decoration-warning="statut == 'brouillon'"
+                       decoration-danger="statut in ('expire','resilie')"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_rh_contrat_form" model="ir.ui.view">
+        <field name="name">rh.contrat.form</field>
+        <field name="model">rh.contrat</field>
+        <field name="arch" type="xml">
+            <form string="Contrat de Travail">
+                <header>
+                    <button name="action_activer" string="Activer" type="object"
+                            class="btn-primary" invisible="statut == 'actif'"/>
+                    <button name="action_resilier" string="Résilier" type="object"
+                            class="btn-danger" invisible="statut in ('resilie','expire')"/>
+                    <field name="statut" widget="statusbar"
+                           statusbar_visible="brouillon,actif,expire,resilie"/>
+                </header>
+                <sheet>
+                    <div class="rh_form_header">
+                        <div class="rh_form_header_body">
+                            <div class="rh_form_title">
+                                <field name="reference" readonly="1" class="rh_badge_matricule"/>
+                                <field name="employe_id" placeholder="Employé" class="rh_field_nom"/>
+                            </div>
+                        </div>
+                    </div>
+                    <group col="2">
+                        <group string="Période">
+                            <field name="date_debut"/>
+                            <field name="date_fin"/>
+                            <field name="duree_mois" readonly="1"/>
+                            <field name="periode_essai_fin"/>
+                        </group>
+                        <group string="Rémunération">
+                            <field name="poste_id"/>
+                            <field name="salaire_base"/>
+                            <field name="mode_paiement"/>
+                        </group>
+                    </group>
+                    <group string="Clauses">
+                        <group>
+                            <field name="clause_confidentialite"/>
+                            <field name="clause_non_concurrence"/>
+                            <field name="duree_preavis"/>
+                        </group>
+                        <group>
+                            <field name="contrat_precedent_id"/>
+                            <field name="document" filename="nom_fichier"/>
+                            <field name="nom_fichier" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Clauses particulières">
+                        <field name="notes" nolabel="1"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="view_rh_contrat_kanban" model="ir.ui.view">
+        <field name="name">rh.contrat.kanban</field>
+        <field name="model">rh.contrat</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="statut">
+                <field name="reference"/>
+                <field name="employe_id"/>
+                <field name="type_contrat"/>
+                <field name="statut"/>
+                <field name="date_debut"/>
+                <field name="date_fin"/>
+                <field name="salaire_base"/>
+                <templates>
+                    <t t-name="card">
+                        <strong><field name="reference"/></strong>
+                        <div class="mt-1"><i class="fa fa-user me-1 text-muted" title="Responsable"/>
+                            <field name="employe_id"/></div>
+                        <div><i class="fa fa-calendar me-1 text-muted" title="Date"/>
+                            <field name="date_debut"/> → <field name="date_fin"/></div>
+                        <div><i class="fa fa-money me-1 text-muted" title="Montant"/>
+                            <field name="salaire_base" widget="float" digits="[16,0]"/> FCFA</div>
+                        <div class="mt-2 d-flex justify-content-between">
+                            <field name="statut" widget="badge"
+                                   decoration-success="statut == 'actif'"
+                                   decoration-warning="statut in ('brouillon','renouvele')"
+                                   decoration-danger="statut in ('expire','resilie')"/>
+                            <span class="badge bg-secondary"><field name="type_contrat"/></span>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <record id="action_rh_contrat" model="ir.actions.act_window">
+        <field name="name">Contrats</field>
+        <field name="res_model">rh.contrat</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+
+</odoo>

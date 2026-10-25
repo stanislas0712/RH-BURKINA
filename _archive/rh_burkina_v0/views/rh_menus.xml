@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <!-- ══ MENUS ══════════════════════════════════════════════════════ -->
+    <!-- Racine — visible dès group_rh_employe (via les enfants) -->
+    <menuitem id="menu_rh_root" name="RH Burkina Faso" sequence="10"/>
+
+
+    <!-- Tableau de bord — tous les utilisateurs RH -->
+    <menuitem id="menu_rh_tableau_bord" name="Tableau de Bord"
+              parent="menu_rh_root" action="action_rh_tableau_bord" sequence="1"
+              groups="rh_burkina.group_rh_employe"/>
+
+
+    <!-- Gestion RH — Gestionnaire RH minimum -->
+    <!-- Employés : Gestionnaire+, Chef de dept, Directeur, Auditeur -->
+    <menuitem id="menu_rh_employes" name="Employés"
+              parent="menu_rh_root" action="action_rh_employe" sequence="10"
+              groups="rh_burkina.group_rh_user,rh_burkina.group_rh_chef_dept,rh_burkina.group_rh_directeur,rh_burkina.group_rh_auditeur,base.group_system"/>
+
+    <!-- Contrats : Gestionnaire+, Directeur, Auditeur -->
+    <menuitem id="menu_rh_contrats" name="Contrats"
+              parent="menu_rh_root" action="action_rh_contrat" sequence="20"
+              groups="rh_burkina.group_rh_user,rh_burkina.group_rh_directeur,rh_burkina.group_rh_auditeur,base.group_system"/>
+
+    <!-- Recrutements : Gestionnaire+, Recruteur, Directeur, Auditeur -->
+    <menuitem id="menu_rh_recrutements" name="Recrutements"
+              parent="menu_rh_root" sequence="30"
+              groups="rh_burkina.group_rh_user,rh_burkina.group_rh_recruteur,rh_burkina.group_rh_directeur,rh_burkina.group_rh_auditeur,base.group_system"/>
+
+    <menuitem id="menu_rh_offres_emploi" name="Offres d'Emploi"
+              parent="menu_rh_recrutements" action="action_rh_recrutement" sequence="10"
+              groups="rh_burkina.group_rh_user,rh_burkina.group_rh_recruteur,rh_burkina.group_rh_directeur,rh_burkina.group_rh_auditeur,base.group_system"/>
+
+
+    <!-- Présences — self-service + chef de département -->
+    <menuitem id="menu_rh_presences" name="Présences"
+              parent="menu_rh_root" action="action_rh_presence" sequence="40"
+              groups="rh_burkina.group_rh_employe,base.group_system"/>
+
+
+    <!-- Congés — self-service + chef de département -->
+    <menuitem id="menu_rh_conges_root" name="Congés"
+              parent="menu_rh_root" sequence="50"
+              groups="rh_burkina.group_rh_employe,base.group_system"/>
+
+    <menuitem id="menu_rh_conges" name="Demandes de Congé"
+              parent="menu_rh_conges_root" action="action_rh_conge" sequence="10"
+              groups="rh_burkina.group_rh_employe,base.group_system"/>
+
+    <menuitem id="menu_rh_soldes_conge" name="Soldes de Congés"
+              parent="menu_rh_conges_root" action="action_rh_solde_conge" sequence="20"
+              groups="rh_burkina.group_rh_employe,base.group_system"/>
+
+
+    <!-- Paie : Responsable Paie, Responsable RH+, Directeur -->
+    <menuitem id="menu_rh_paie_root" name="Paie"
+              parent="menu_rh_root" sequence="65"
+              groups="rh_burkina.group_rh_paie,rh_burkina.group_rh_manager,rh_burkina.group_rh_directeur,base.group_system"/>
+
+    <menuitem id="menu_rh_bulletins" name="Bulletins de Paie"
+              parent="menu_rh_paie_root" action="action_rh_bulletin_paie" sequence="10"
+              groups="rh_burkina.group_rh_paie,rh_burkina.group_rh_manager,rh_burkina.group_rh_directeur,base.group_system"/>
+
+    <menuitem id="menu_rh_periodes_paie" name="Périodes de Paie"
+              parent="menu_rh_paie_root" action="action_rh_paie" sequence="20"
+              groups="rh_burkina.group_rh_paie,rh_burkina.group_rh_manager,rh_burkina.group_rh_directeur,base.group_system"/>
+
+
+    <!-- Sanctions : Gestionnaire+, Directeur, Auditeur -->
+    <menuitem id="menu_rh_sanctions" name="Sanctions Disciplinaires"
+              parent="menu_rh_root" action="action_rh_sanction" sequence="70"
+              groups="rh_burkina.group_rh_user,rh_burkina.group_rh_directeur,rh_burkina.group_rh_auditeur,base.group_system"/>
+
+
+    <!-- Formations et Évaluations : Gestionnaire+, Resp. Formation, Chef dept, Directeur, Auditeur -->
+    <menuitem id="menu_rh_formations_root" name="Formations"
+              parent="menu_rh_root" sequence="60"
+              groups="rh_burkina.group_rh_user,rh_burkina.group_rh_chef_dept,rh_burkina.group_rh_formation,rh_burkina.group_rh_directeur,rh_burkina.group_rh_auditeur,base.group_system"/>
+
+    <menuitem id="menu_rh_formations" name="Catalogue Formations"
+              parent="menu_rh_formations_root" action="action_rh_formation" sequence="10"
+              groups="rh_burkina.group_rh_user,rh_burkina.group_rh_formation,rh_burkina.group_rh_directeur,rh_burkina.group_rh_auditeur,base.group_system"/>
+
+    <menuitem id="menu_rh_inscriptions" name="Inscriptions"
+              parent="menu_rh_formations_root" action="action_rh_inscription_formation" sequence="20"
+              groups="rh_burkina.group_rh_user,rh_burkina.group_rh_chef_dept,rh_burkina.group_rh_formation,rh_burkina.group_rh_directeur,rh_burkina.group_rh_auditeur,base.group_system"/>
+
+    <menuitem id="menu_rh_evaluations" name="Évaluations"
+              parent="menu_rh_formations_root" action="action_rh_evaluation" sequence="30"
+              groups="rh_burkina.group_rh_user,rh_burkina.group_rh_chef_dept,rh_burkina.group_rh_directeur,rh_burkina.group_rh_auditeur,base.group_system"/>
+
+
+    <!-- Recrutements sous-menus: candidatures et entretiens -->
+    <menuitem id="menu_rh_candidats" name="Candidatures"
+              parent="menu_rh_recrutements" action="action_rh_candidat" sequence="20"
+              groups="rh_burkina.group_rh_user,rh_burkina.group_rh_recruteur,rh_burkina.group_rh_directeur,rh_burkina.group_rh_auditeur,base.group_system"/>
+
+    <menuitem id="menu_rh_entretiens" name="Entretiens"
+              parent="menu_rh_recrutements" action="action_rh_entretien" sequence="30"
+              groups="rh_burkina.group_rh_user,rh_burkina.group_rh_recruteur,rh_burkina.group_rh_directeur,rh_burkina.group_rh_auditeur,base.group_system"/>
+
+
+    <!-- Configuration — Administrateur RH uniquement -->
+    <menuitem id="menu_rh_configuration" name="Configuration"
+              parent="menu_rh_root" sequence="90"
+              groups="rh_burkina.group_rh_manager,rh_burkina.group_rh_admin,base.group_system"/>
+
+
+    <!-- Sous-menu : Structure Organisationnelle -->
+    <menuitem id="menu_rh_structure" name="Structure Organisationnelle"
+              parent="menu_rh_configuration" sequence="10"
+              groups="rh_burkina.group_rh_manager,rh_burkina.group_rh_admin,base.group_system"/>
+
+    <menuitem id="menu_rh_config_departements" name="Départements / Directions"
+              parent="menu_rh_structure" action="action_rh_departement" sequence="10"
+              groups="rh_burkina.group_rh_manager,rh_burkina.group_rh_admin,base.group_system"/>
+
+    <menuitem id="menu_rh_config_services" name="Services"
+              parent="menu_rh_structure" action="action_rh_service" sequence="20"
+              groups="rh_burkina.group_rh_manager,rh_burkina.group_rh_admin,base.group_system"/>
+
+    <menuitem id="menu_rh_config_postes" name="Postes / Emplois"
+              parent="menu_rh_structure" action="action_rh_poste" sequence="30"
+              groups="rh_burkina.group_rh_manager,rh_burkina.group_rh_admin,base.group_system"/>
+
+
+    <!-- Rôles et Utilisateurs — enfants directs de Configuration -->
+    <menuitem id="menu_rh_roles_list" name="Rôles"
+              parent="menu_rh_configuration" sequence="5"
+              groups="rh_burkina.group_rh_admin,base.group_system"
+              action="action_rh_roles"/>
+
+    <menuitem id="menu_rh_users_list" name="Utilisateurs"
+              parent="menu_rh_configuration" sequence="6"
+              groups="rh_burkina.group_rh_admin,base.group_system"
+              action="action_rh_utilisateurs_roles"/>
+
+
+    <!-- Sous-menu : Paramètres RH -->
+    <menuitem id="menu_rh_parametres" name="Paramètres RH"
+              parent="menu_rh_configuration" sequence="20"
+              groups="rh_burkina.group_rh_manager,rh_burkina.group_rh_admin,base.group_system"/>
+
+    <menuitem id="menu_rh_config_sites" name="Sites / Agences"
+              parent="menu_rh_parametres" action="action_rh_site" sequence="10"
+              groups="rh_burkina.group_rh_manager,rh_burkina.group_rh_admin,base.group_system"/>
+
+    <menuitem id="menu_rh_config_categories" name="Catégories / Échelons"
+              parent="menu_rh_parametres" action="action_rh_categorie" sequence="20"
+              groups="rh_burkina.group_rh_manager,rh_burkina.group_rh_admin,base.group_system"/>
+
+    <menuitem id="menu_rh_config_primes" name="Types de Prime"
+              parent="menu_rh_parametres" action="action_rh_type_prime" sequence="30"
+              groups="rh_burkina.group_rh_manager,rh_burkina.group_rh_admin,base.group_system"/>
+
+    <menuitem id="menu_rh_config_retenues" name="Types de Retenue"
+              parent="menu_rh_parametres" action="action_rh_type_retenue" sequence="40"
+              groups="rh_burkina.group_rh_manager,rh_burkina.group_rh_admin,base.group_system"/>
+
+    <menuitem id="menu_rh_config_type_conge" name="Types de Congé"
+              parent="menu_rh_parametres" action="action_rh_type_conge" sequence="50"
+              groups="rh_burkina.group_rh_manager,rh_burkina.group_rh_admin,base.group_system"/>
+
+
+    <!-- Sous-menu : Paramètres Légaux (CNSS, IUTS) -->
+    <menuitem id="menu_rh_legal" name="Paramètres Légaux"
+              parent="menu_rh_configuration" sequence="30"
+              groups="rh_burkina.group_rh_manager,rh_burkina.group_rh_admin,base.group_system"/>
+
+    <menuitem id="menu_rh_config_cnss" name="Configuration CNSS"
+              parent="menu_rh_legal" action="action_rh_cnss" sequence="10"
+              groups="rh_burkina.group_rh_manager,rh_burkina.group_rh_admin,base.group_system"/>
+
+    <menuitem id="menu_rh_config_iuts" name="Barème IUTS"
+              parent="menu_rh_legal" action="action_rh_iuts" sequence="20"
+              groups="rh_burkina.group_rh_manager,rh_burkina.group_rh_admin,base.group_system"/>
+
+
+</odoo>

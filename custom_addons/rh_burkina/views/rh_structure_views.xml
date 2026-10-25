@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ═══════════════ Départements (extension hr.department) ═══════════════ -->
+    <record id="view_hr_department_form_rh" model="ir.ui.view">
+        <field name="name">hr.department.form.rh_burkina</field>
+        <field name="model">hr.department</field>
+        <field name="inherit_id" ref="hr.view_department_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='parent_id']" position="after">
+                <field name="code" groups="rh_burkina.group_rh_employe"/>
+                <field name="site_id" groups="rh_burkina.group_rh_employe"/>
+            </xpath>
+            <xpath expr="//sheet" position="inside">
+                <notebook>
+                    <page string="Services" name="rh_services" groups="rh_burkina.group_rh_employe">
+                        <field name="service_ids" context="{'default_company_id': company_id}">
+                            <list editable="bottom">
+                                <field name="code"/>
+                                <field name="name"/>
+                                <field name="responsable_id"/>
+                                <field name="site_id"/>
+                                <field name="company_id" column_invisible="True"/>
+                            </list>
+                        </field>
+                    </page>
+                </notebook>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_rh_department" model="ir.actions.act_window">
+        <field name="name">Départements</field>
+        <field name="res_model">hr.department</field>
+        <field name="view_mode">list,form,kanban</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Créer un département</p>
+            <p>Les départements regroupent les services et le personnel.</p>
+        </field>
+    </record>
+
+    <!-- ═══════════════ Sites ═══════════════ -->
+    <record id="view_rh_site_list" model="ir.ui.view">
+        <field name="name">rh.site.list</field>
+        <field name="model">rh.site</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="ville"/>
+                <field name="telephone"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_site_form" model="ir.ui.view">
+        <field name="name">rh.site.form</field>
+        <field name="model">rh.site</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archivé" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="ex. Siège Ouagadougou"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="ville"/>
+                            <field name="telephone"/>
+                        </group>
+                        <group>
+                            <field name="adresse"/>
+                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <field name="note" placeholder="Notes…"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rh_site_kanban" model="ir.ui.view">
+        <field name="name">rh.site.kanban</field>
+        <field name="model">rh.site</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <templates>
+                    <t t-name="card">
+                        <field name="name" class="fw-bold fs-5"/>
+                        <div class="text-muted"><field name="code"/> <field name="ville"/></div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_rh_site_search" model="ir.ui.view">
+        <field name="name">rh.site.search</field>
+        <field name="model">rh.site</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" filter_domain="['|', ('name', 'ilike', self), ('code', 'ilike', self)]"/>
+                <field name="ville"/>
+                <filter name="archived" string="Archivés" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_ville" string="Ville" context="{'group_by': 'ville'}"/>
+                    <filter name="group_company" string="Société" context="{'group_by': 'company_id'}" groups="base.group_multi_company"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rh_site" model="ir.actions.act_window">
+        <field name="name">Sites</field>
+        <field name="res_model">rh.site</field>
+        <field name="view_mode">list,form,kanban</field>
+    </record>
+
+    <!-- ═══════════════ Services ═══════════════ -->
+    <record id="view_rh_service_list" model="ir.ui.view">
+        <field name="name">rh.service.list</field>
+        <field name="model">rh.service</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="department_id"/>
+                <field name="responsable_id" widget="many2one_avatar_employee"/>
+                <field name="site_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_service_form" model="ir.ui.view">
+        <field name="name">rh.service.form</field>
+        <field name="model">rh.service</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archivé" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="ex. Comptabilité"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="department_id"/>
+                        </group>
+                        <group>
+                            <field name="responsable_id" widget="many2one_avatar_employee"/>
+                            <field name="site_id"/>
+                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                        </group>
+                    </group>
+                    <field name="description" placeholder="Description…"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rh_service_kanban" model="ir.ui.view">
+        <field name="name">rh.service.kanban</field>
+        <field name="model">rh.service</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="department_id">
+                <templates>
+                    <t t-name="card">
+                        <field name="name" class="fw-bold fs-5"/>
+                        <field name="department_id" class="text-muted"/>
+                        <field name="responsable_id" widget="many2one_avatar_employee"/>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_rh_service_search" model="ir.ui.view">
+        <field name="name">rh.service.search</field>
+        <field name="model">rh.service</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" filter_domain="['|', ('name', 'ilike', self), ('code', 'ilike', self)]"/>
+                <field name="department_id"/>
+                <field name="responsable_id"/>
+                <filter name="archived" string="Archivés" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_department" string="Département" context="{'group_by': 'department_id'}"/>
+                    <filter name="group_site" string="Site" context="{'group_by': 'site_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rh_service" model="ir.actions.act_window">
+        <field name="name">Services</field>
+        <field name="res_model">rh.service</field>
+        <field name="view_mode">list,form,kanban</field>
+    </record>
+
+    <!-- ═══════════════ Postes ═══════════════ -->
+    <record id="view_rh_poste_list" model="ir.ui.view">
+        <field name="name">rh.poste.list</field>
+        <field name="model">rh.poste</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="department_id"/>
+                <field name="service_id" optional="show"/>
+                <field name="categorie_id"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="salaire_min" groups="rh_burkina.group_rh_salaire" optional="show"/>
+                <field name="salaire_max" groups="rh_burkina.group_rh_salaire" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_poste_form" model="ir.ui.view">
+        <field name="name">rh.poste.form</field>
+        <field name="model">rh.poste</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archivé" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="ex. Comptable"/></h1>
+                    </div>
+                    <group>
+                        <group string="Rattachement">
+                            <field name="code"/>
+                            <field name="department_id"/>
+                            <field name="service_id"/>
+                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                        </group>
+                        <group string="Grille salariale">
+                            <field name="categorie_id"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="salaire_min" groups="rh_burkina.group_rh_salaire"/>
+                            <field name="salaire_max" groups="rh_burkina.group_rh_salaire"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Description" name="description">
+                            <field name="description"/>
+                        </page>
+                        <page string="Missions" name="missions">
+                            <field name="missions"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rh_poste_kanban" model="ir.ui.view">
+        <field name="name">rh.poste.kanban</field>
+        <field name="model">rh.poste</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <templates>
+                    <t t-name="card">
+                        <field name="name" class="fw-bold fs-5"/>
+                        <field name="department_id" class="text-muted"/>
+                        <field name="categorie_id"/>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_rh_poste_search" model="ir.ui.view">
+        <field name="name">rh.poste.search</field>
+        <field name="model">rh.poste</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name" filter_domain="['|', ('name', 'ilike', self), ('code', 'ilike', self)]"/>
+                <field name="department_id"/>
+                <field name="service_id"/>
+                <field name="categorie_id"/>
+                <filter name="archived" string="Archivés" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_department" string="Département" context="{'group_by': 'department_id'}"/>
+                    <filter name="group_categorie" string="Catégorie" context="{'group_by': 'categorie_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rh_poste" model="ir.actions.act_window">
+        <field name="name">Postes</field>
+        <field name="res_model">rh.poste</field>
+        <field name="view_mode">list,form,kanban</field>
+    </record>
+
+    <!-- ═══════════════ Catégories / échelons ═══════════════ -->
+    <record id="view_rh_categorie_list" model="ir.ui.view">
+        <field name="name">rh.categorie.list</field>
+        <field name="model">rh.categorie</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="categorie"/>
+                <field name="echelon"/>
+                <field name="groupe_professionnel"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="salaire_min" groups="rh_burkina.group_rh_salaire"/>
+                <field name="salaire_max" groups="rh_burkina.group_rh_salaire"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_categorie_form" model="ir.ui.view">
+        <field name="name">rh.categorie.form</field>
+        <field name="model">rh.categorie</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archivé" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Classification">
+                            <field name="categorie" placeholder="ex. Catégorie 5"/>
+                            <field name="echelon" placeholder="ex. A"/>
+                            <field name="groupe_professionnel"/>
+                            <field name="est_cadre"/>
+                            <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>
+                        </group>
+                        <group string="Fourchette salariale">
+                            <field name="currency_id" invisible="1"/>
+                            <field name="salaire_min" groups="rh_burkina.group_rh_salaire"/>
+                            <field name="salaire_max" groups="rh_burkina.group_rh_salaire"/>
+                        </group>
+                    </group>
+                    <field name="description" placeholder="Description…"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rh_categorie_kanban" model="ir.ui.view">
+        <field name="name">rh.categorie.kanban</field>
+        <field name="model">rh.categorie</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="groupe_professionnel">
+                <templates>
+                    <t t-name="card">
+                        <field name="name" class="fw-bold fs-5"/>
+                        <field name="groupe_professionnel" class="text-muted"/>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_rh_categorie_search" model="ir.ui.view">
+        <field name="name">rh.categorie.search</field>
+        <field name="model">rh.categorie</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="categorie"/>
+                <filter name="cadre" string="Cadres" domain="[('est_cadre', '=', True)]"/>
+                <filter name="non_cadre" string="Non-cadres" domain="[('est_cadre', '=', False)]"/>
+                <separator/>
+                <filter name="archived" string="Archivés" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_groupe" string="Groupe professionnel" context="{'group_by': 'groupe_professionnel'}"/>
+                    <filter name="group_categorie" string="Catégorie" context="{'group_by': 'categorie'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rh_categorie" model="ir.actions.act_window">
+        <field name="name">Catégories et échelons</field>
+        <field name="res_model">rh.categorie</field>
+        <field name="view_mode">list,form,kanban</field>
+    </record>
+</odoo>

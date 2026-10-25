@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Le franc CFA (XOF) est inactif par défaut dans Odoo : on l'active. -->
+    <record id="base.XOF" model="res.currency">
+        <field name="active" eval="True"/>
+    </record>
+</odoo>

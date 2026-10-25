@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="view_rh_tableau_bord_form" model="ir.ui.view">
+        <field name="name">rh.tableau.bord.form</field>
+        <field name="model">rh.tableau.bord</field>
+        <field name="arch" type="xml">
+            <form string="Tableau de Bord RH" class="rh_dashboard_form" create="false" delete="false">
+                <sheet>
+                    <div class="rh_db_banner">
+                        <div class="rh_db_banner_logo">
+                            <img src="/rh_burkina/static/src/img/logo_rh_burkina.png"
+                                 alt="RH Burkina" class="rh_db_logo_img"/>
+                        </div>
+                        <div class="rh_db_banner_center">
+                            <div class="rh_db_main_title">RH BURKINA</div>
+                            <div class="rh_db_tagline">Notre capital, l'humain</div>
+                            <div class="rh_db_subtitle">Plateforme de Gestion des Ressources Humaines</div>
+                        </div>
+                        <div class="rh_db_banner_right">
+                            <div class="rh_db_date_box">
+                                <span class="rh_db_date_label">Mis à jour le</span>
+                                <field name="date_reference" readonly="1" class="rh_db_date_val"/>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rh_db_section">
+                        <div class="rh_db_section_title rh_db_section_green">
+                            <span></span><span>Effectifs</span>
+                        </div>
+                        <div class="rh_db_cards">
+                            <div class="rh_db_card rh_db_card_green">
+                                <div class="rh_db_card_icon"></div>
+                                <div class="rh_db_card_number"><field name="total_employes" readonly="1"/></div>
+                                <div class="rh_db_card_label">Total Employés</div>
+                            </div>
+                            <div class="rh_db_card rh_db_card_green">
+                                <div class="rh_db_card_icon"></div>
+                                <div class="rh_db_card_number"><field name="employes_actifs" readonly="1"/></div>
+                                <div class="rh_db_card_label">Actifs</div>
+                            </div>
+                            <div class="rh_db_card rh_db_card_green">
+                                <div class="rh_db_card_icon"></div>
+                                <div class="rh_db_card_number"><field name="employes_hommes" readonly="1"/></div>
+                                <div class="rh_db_card_label">Hommes</div>
+                            </div>
+                            <div class="rh_db_card rh_db_card_green">
+                                <div class="rh_db_card_icon"></div>
+                                <div class="rh_db_card_number"><field name="employes_femmes" readonly="1"/></div>
+                                <div class="rh_db_card_label">Femmes</div>
+                            </div>
+                            <div class="rh_db_card rh_db_card_grey">
+                                <div class="rh_db_card_icon"></div>
+                                <div class="rh_db_card_number"><field name="employes_inactifs" readonly="1"/></div>
+                                <div class="rh_db_card_label">Inactifs</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rh_db_section">
+                        <div class="rh_db_section_title rh_db_section_blue">
+                            <span></span><span>Contrats &amp; Paie</span>
+                        </div>
+                        <div class="rh_db_cards">
+                            <div class="rh_db_card rh_db_card_blue">
+                                <div class="rh_db_card_icon"></div>
+                                <div class="rh_db_card_number"><field name="contrats_actifs" readonly="1"/></div>
+                                <div class="rh_db_card_label">Contrats Actifs</div>
+                            </div>
+                            <div class="rh_db_card rh_db_card_blue">
+                                <div class="rh_db_card_icon"></div>
+                                <div class="rh_db_card_number"><field name="contrats_cdi" readonly="1"/></div>
+                                <div class="rh_db_card_label">CDI</div>
+                            </div>
+                            <div class="rh_db_card rh_db_card_blue">
+                                <div class="rh_db_card_icon"></div>
+                                <div class="rh_db_card_number"><field name="contrats_cdd" readonly="1"/></div>
+                                <div class="rh_db_card_label">CDD</div>
+                            </div>
+                            <div class="rh_db_card rh_db_card_gold rh_db_card_wide">
+                                <div class="rh_db_card_icon"></div>
+                                <div class="rh_db_card_number rh_db_salary">
+                                    <field name="masse_salariale" readonly="1" widget="float" digits="[16,0]"/>
+                                </div>
+                                <div class="rh_db_card_label">Masse Salariale (FCFA)</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rh_db_section">
+                        <div class="rh_db_section_title rh_db_section_orange">
+                            <span>🌴</span><span>Congés</span>
+                        </div>
+                        <div class="rh_db_cards">
+                            <div class="rh_db_card rh_db_card_orange">
+                                <div class="rh_db_card_icon"></div>
+                                <div class="rh_db_card_number"><field name="conges_en_cours" readonly="1"/></div>
+                                <div class="rh_db_card_label">En Cours</div>
+                            </div>
+                            <div class="rh_db_card rh_db_card_orange">
+                                <div class="rh_db_card_icon"></div>
+                                <div class="rh_db_card_number"><field name="conges_en_attente" readonly="1"/></div>
+                                <div class="rh_db_card_label">En Attente d'Approbation</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rh_db_section">
+                        <div class="rh_db_section_title rh_db_section_red">
+                            <span>🎯</span><span>Recrutement</span>
+                        </div>
+                        <div class="rh_db_cards">
+                            <div class="rh_db_card rh_db_card_red">
+                                <div class="rh_db_card_icon"></div>
+                                <div class="rh_db_card_number"><field name="recrutements_actifs" readonly="1"/></div>
+                                <div class="rh_db_card_label">Postes Ouverts</div>
+                            </div>
+                            <div class="rh_db_card rh_db_card_red">
+                                <div class="rh_db_card_icon"></div>
+                                <div class="rh_db_card_number"><field name="candidatures" readonly="1"/></div>
+                                <div class="rh_db_card_label">Candidatures reçues</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rh_db_section">
+                        <div class="rh_db_section_title rh_db_section_purple">
+                            <span>🎓</span><span>Formation</span>
+                        </div>
+                        <div class="rh_db_cards">
+                            <div class="rh_db_card rh_db_card_purple">
+                                <div class="rh_db_card_icon"></div>
+                                <div class="rh_db_card_number"><field name="formations_total" readonly="1"/></div>
+                                <div class="rh_db_card_label">Formations actives</div>
+                            </div>
+                            <div class="rh_db_card rh_db_card_purple">
+                                <div class="rh_db_card_icon"></div>
+                                <div class="rh_db_card_number"><field name="inscriptions_formation" readonly="1"/></div>
+                                <div class="rh_db_card_label">Inscriptions</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rh_db_notes_section">
+                        <group>
+                            <field name="notes" placeholder="Notes et observations..." nolabel="1"/>
+                        </group>
+                    </div>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_rh_tableau_bord" model="ir.actions.server">
+        <field name="name">Tableau de Bord RH</field>
+        <field name="model_id" ref="model_rh_tableau_bord"/>
+        <field name="state">code</field>
+        <field name="code">
+rec = env['rh.tableau.bord'].sudo().search([], limit=1)
+if not rec:
+    rec = env['rh.tableau.bord'].sudo().create({'name': 'Tableau de bord RH'})
+action = {
+    'type': 'ir.actions.act_window',
+    'res_model': 'rh.tableau.bord',
+    'res_id': rec.id,
+    'view_mode': 'form',
+    'views': [(False, 'form')],
+    'target': 'current',
+}
+        </field>
+    </record>
+
+
+</odoo>

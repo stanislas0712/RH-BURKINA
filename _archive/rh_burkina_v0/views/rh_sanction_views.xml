@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="view_rh_sanction_tree" model="ir.ui.view">
+        <field name="name">rh.sanction.tree</field>
+        <field name="model">rh.sanction</field>
+        <field name="arch" type="xml">
+            <list string="Sanctions Disciplinaires"
+                  decoration-danger="type_sanction == 'licenciement'"
+                  decoration-warning="type_sanction in ('suspension','mise_en_demeure')"
+                  decoration-muted="statut == 'annule'">
+                <field name="reference"/>
+                <field name="employe_id"/>
+                <field name="type_sanction" widget="badge"
+                       decoration-danger="type_sanction in ('licenciement','suspension')"
+                       decoration-warning="type_sanction == 'mise_en_demeure'"
+                       decoration-info="type_sanction in ('avertissement','blame')"/>
+                <field name="date_sanction"/>
+                <field name="statut" widget="badge"
+                       decoration-success="statut == 'confirme'"
+                       decoration-warning="statut in ('brouillon','notifie')"
+                       decoration-danger="statut == 'annule'"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_rh_sanction_kanban" model="ir.ui.view">
+        <field name="name">rh.sanction.kanban</field>
+        <field name="model">rh.sanction</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="type_sanction">
+                <field name="reference"/>
+                <field name="employe_id"/>
+                <field name="type_sanction"/>
+                <field name="date_sanction"/>
+                <field name="statut"/>
+                <templates>
+                    <t t-name="card">
+                        <strong><field name="employe_id"/></strong>
+                        <div class="text-muted small"><field name="reference"/></div>
+                        <div class="mt-1"><i class="fa fa-calendar me-1 text-muted" title="Date"/>
+                            <field name="date_sanction"/></div>
+                        <div class="mt-2">
+                            <field name="statut" widget="badge"
+                                   decoration-success="statut == 'confirme'"
+                                   decoration-warning="statut in ('brouillon','notifie')"
+                                   decoration-danger="statut == 'annule'"/>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <record id="view_rh_sanction_form" model="ir.ui.view">
+        <field name="name">rh.sanction.form</field>
+        <field name="model">rh.sanction</field>
+        <field name="arch" type="xml">
+            <form string="Sanction Disciplinaire">
+                <header>
+                    <button name="action_notifier" string="Notifier l'employé"
+                            type="object" class="btn-warning"
+                            invisible="statut != 'brouillon'"/>
+                    <button name="action_confirmer" string="Confirmer la sanction"
+                            type="object" class="btn-danger"
+                            invisible="statut not in ('brouillon','notifie')"/>
+                    <button name="action_annuler" string="Annuler"
+                            type="object"
+                            invisible="statut in ('confirme','annule')"/>
+                    <field name="statut" widget="statusbar"
+                           statusbar_visible="brouillon,notifie,confirme"/>
+                </header>
+                <sheet>
+                    <div class="rh_form_header">
+                        <div class="rh_form_header_body">
+                            <div class="rh_form_title">
+                                <field name="reference" readonly="1" class="rh_field_nom"/>
+                            </div>
+                        </div>
+                    </div>
+                    <group col="2">
+                        <group string="Identification">
+                            <field name="employe_id"/>
+                            <field name="type_sanction"/>
+                            <field name="date_sanction"/>
+                            <field name="duree_suspension"
+                                   invisible="type_sanction != 'suspension'"/>
+                        </group>
+                        <group string="Décision">
+                            <field name="decision_par"/>
+                            <field name="reference_decision"/>
+                            <field name="piece_jointe" widget="binary"
+                                   filename="nom_fichier"/>
+                            <field name="nom_fichier" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Motif / Faute reprochée">
+                        <field name="motif" nolabel="1"/>
+                    </group>
+                    <group string="Description détaillée">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_rh_sanction" model="ir.actions.act_window">
+        <field name="name">Sanctions Disciplinaires</field>
+        <field name="res_model">rh.sanction</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+
+</odoo>

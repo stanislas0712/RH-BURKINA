@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="view_rh_presence_tree" model="ir.ui.view">
+        <field name="name">rh.presence.tree</field>
+        <field name="model">rh.presence</field>
+        <field name="arch" type="xml">
+            <list string="Présences" editable="bottom">
+                <field name="employe_id"/>
+                <field name="date"/>
+                <field name="heure_arrivee" widget="float_time"/>
+                <field name="heure_depart" widget="float_time"/>
+                <field name="heure_pause" widget="float_time"/>
+                <field name="heures_travaillees" widget="float_time" readonly="1"/>
+                <field name="heures_supplementaires" widget="float_time" readonly="1"/>
+                <field name="statut" widget="badge"
+                       decoration-success="statut == 'present'"
+                       decoration-warning="statut in ('retard','teletravail')"
+                       decoration-danger="statut == 'absent'"
+                       decoration-info="statut in ('conge','mission','ferie')"/>
+                <field name="valide" widget="boolean"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_rh_presence_form" model="ir.ui.view">
+        <field name="name">rh.presence.form</field>
+        <field name="model">rh.presence</field>
+        <field name="arch" type="xml">
+            <form string="Pointage Présence">
+                <sheet>
+                    <group col="2">
+                        <group string="Employé &amp; Date">
+                            <field name="employe_id"/>
+                            <field name="date"/>
+                            <field name="statut"/>
+                            <field name="type_pointage"/>
+                        </group>
+                        <group string="Horaires">
+                            <field name="heure_arrivee" widget="float_time"/>
+                            <field name="heure_depart" widget="float_time"/>
+                            <field name="heure_pause" widget="float_time"/>
+                            <field name="heures_normales" widget="float_time"/>
+                            <field name="heures_travaillees" widget="float_time" readonly="1"/>
+                            <field name="heures_supplementaires" widget="float_time" readonly="1"/>
+                        </group>
+                    </group>
+                    <group string="Validation">
+                        <field name="valide"/>
+                        <field name="valide_par" readonly="1"/>
+                        <field name="notes"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="view_rh_presence_kanban" model="ir.ui.view">
+        <field name="name">rh.presence.kanban</field>
+        <field name="model">rh.presence</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="statut">
+                <field name="employe_id"/>
+                <field name="date"/>
+                <field name="statut"/>
+                <field name="heures_travaillees"/>
+                <field name="heures_supplementaires"/>
+                <field name="valide"/>
+                <templates>
+                    <t t-name="card">
+                        <strong><field name="employe_id"/></strong>
+                        <div class="mt-1"><i class="fa fa-calendar me-1 text-muted" title="Date"/>
+                            <field name="date"/></div>
+                        <div><i class="fa fa-clock-o me-1 text-muted" title="Heures"/>
+                            <field name="heures_travaillees"/> h travaillées</div>
+                        <t t-if="record.heures_supplementaires.raw_value > 0">
+                            <div class="text-warning small">
+                                + <field name="heures_supplementaires"/> h sup.
+                            </div>
+                        </t>
+                        <div class="mt-2 d-flex justify-content-between">
+                            <field name="statut" widget="badge"
+                                   decoration-success="statut == 'present'"
+                                   decoration-warning="statut in ('retard','teletravail')"
+                                   decoration-danger="statut == 'absent'"
+                                   decoration-info="statut in ('conge','mission','ferie')"/>
+                            <t t-if="record.valide.raw_value">
+                                <span class="badge bg-success">Validé</span>
+                            </t>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <record id="action_rh_presence" model="ir.actions.act_window">
+        <field name="name">Présences</field>
+        <field name="res_model">rh.presence</field>
+        <field name="view_mode">list,kanban,form</field>
+    </record>
+
+
+</odoo>

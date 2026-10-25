@@ -1,0 +1,1075 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="view_rh_departement_tree" model="ir.ui.view">
+        <field name="name">rh.departement.tree</field>
+        <field name="model">rh.departement</field>
+        <field name="arch" type="xml">
+            <list string="Départements / Directions" editable="bottom">
+                <field name="code"/>
+                <field name="nom"/>
+                <field name="parent_id"/>
+                <field name="responsable_id"/>
+                <field name="nb_employes" readonly="1"/>
+                <field name="active" widget="boolean"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_rh_departement_form" model="ir.ui.view">
+        <field name="name">rh.departement.form</field>
+        <field name="model">rh.departement</field>
+        <field name="arch" type="xml">
+            <form string="Département / Direction">
+                <sheet>
+                    <div class="rh_form_header">
+                        <div class="rh_form_header_body">
+                            <div class="rh_form_title">
+                                <field name="nom" placeholder="Nom du département" class="rh_field_nom"/>
+                            </div>
+                            <div class="rh_form_subtitle">
+                                <field name="code" placeholder="Code (ex: RH, FIN)"/>
+                            </div>
+                        </div>
+                        <div class="rh_form_header_right">
+                            <field name="active" widget="boolean_toggle"/>
+                        </div>
+                    </div>
+                    <group col="2">
+                        <group string="Informations">
+                            <field name="code"/>
+                            <field name="parent_id"/>
+                            <field name="responsable_id"/>
+                            <field name="nb_employes" readonly="1"/>
+                        </group>
+                        <group string="Description">
+                            <field name="description" nolabel="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Services rattachés">
+                            <field name="service_ids">
+                                <list>
+                                    <field name="code"/>
+                                    <field name="nom"/>
+                                    <field name="responsable_id"/>
+                                    <field name="nb_employes"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Sous-départements">
+                            <field name="child_ids">
+                                <list>
+                                    <field name="code"/>
+                                    <field name="nom"/>
+                                    <field name="responsable_id"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_rh_departement" model="ir.actions.act_window">
+        <field name="name">Départements</field>
+        <field name="res_model">rh.departement</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+
+    <record id="view_rh_service_tree" model="ir.ui.view">
+        <field name="name">rh.service.tree</field>
+        <field name="model">rh.service</field>
+        <field name="arch" type="xml">
+            <list string="Services" editable="bottom">
+                <field name="code"/>
+                <field name="nom"/>
+                <field name="departement_id"/>
+                <field name="responsable_id"/>
+                <field name="nb_employes" readonly="1"/>
+                <field name="active" widget="boolean"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_rh_service_form" model="ir.ui.view">
+        <field name="name">rh.service.form</field>
+        <field name="model">rh.service</field>
+        <field name="arch" type="xml">
+            <form string="Service">
+                <sheet>
+                    <div class="rh_form_header">
+                        <div class="rh_form_header_body">
+                            <div class="rh_form_title">
+                                <field name="nom" placeholder="Nom du service" class="rh_field_nom"/>
+                            </div>
+                            <div class="rh_form_subtitle">
+                                <field name="code" placeholder="Code"/>
+                            </div>
+                        </div>
+                        <div class="rh_form_header_right">
+                            <field name="active" widget="boolean_toggle"/>
+                        </div>
+                    </div>
+                    <group col="2">
+                        <group string="Informations">
+                            <field name="code"/>
+                            <field name="departement_id"/>
+                            <field name="responsable_id"/>
+                            <field name="nb_employes" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Postes rattachés">
+                            <field name="poste_ids">
+                                <list>
+                                    <field name="titre"/>
+                                    <field name="statut" widget="badge"
+                                           decoration-success="statut == 'actif'"
+                                           decoration-warning="statut == 'en_recrutement'"
+                                           decoration-danger="statut == 'obsolete'"/>
+                                    <field name="nb_employes"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_rh_service" model="ir.actions.act_window">
+        <field name="name">Services</field>
+        <field name="res_model">rh.service</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+
+    <record id="view_rh_poste_tree" model="ir.ui.view">
+        <field name="name">rh.poste.tree</field>
+        <field name="model">rh.poste</field>
+        <field name="arch" type="xml">
+            <list string="Postes" decoration-muted="statut == 'obsolete'">
+                <field name="titre"/>
+                <field name="code"/>
+                <field name="service_id"/>
+                <field name="poste_superieur_id"/>
+                <field name="salaire_min"/>
+                <field name="salaire_max"/>
+                <field name="nb_employes" readonly="1"/>
+                <field name="statut" widget="badge"
+                       decoration-success="statut == 'actif'"
+                       decoration-warning="statut == 'en_recrutement'"
+                       decoration-danger="statut == 'obsolete'"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_rh_poste_form" model="ir.ui.view">
+        <field name="name">rh.poste.form</field>
+        <field name="model">rh.poste</field>
+        <field name="arch" type="xml">
+            <form string="Poste / Emploi">
+                <sheet>
+                    <div class="rh_form_header">
+                        <div class="rh_form_header_body">
+                            <div class="rh_form_title">
+                                <field name="titre" placeholder="Titre du poste" class="rh_field_nom"/>
+                            </div>
+                            <div class="rh_form_subtitle">
+                                <field name="code" placeholder="Code poste"/>
+                            </div>
+                        </div>
+                        <div class="rh_form_header_right">
+                            <field name="statut" widget="badge"
+                                   decoration-success="statut == 'actif'"
+                                   decoration-warning="statut == 'en_recrutement'"
+                                   decoration-danger="statut == 'obsolete'"/>
+                        </div>
+                    </div>
+                    <group col="2">
+                        <group string="Rattachement">
+                            <field name="service_id"/>
+                            <field name="poste_superieur_id"/>
+                            <field name="nb_employes" readonly="1"/>
+                        </group>
+                        <group string="Grille salariale">
+                            <field name="salaire_min"/>
+                            <field name="salaire_max"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Fiche de poste">
+                            <group string="Description des missions">
+                                <field name="description_missions" nolabel="1"/>
+                            </group>
+                            <group string="Compétences requises">
+                                <field name="competences_requises" nolabel="1"/>
+                            </group>
+                        </page>
+                        <page string="Postes subordonnés">
+                            <field name="postes_subordonnes_ids">
+                                <list>
+                                    <field name="titre"/>
+                                    <field name="service_id"/>
+                                    <field name="statut" widget="badge"/>
+                                    <field name="nb_employes"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_rh_poste" model="ir.actions.act_window">
+        <field name="name">Postes</field>
+        <field name="res_model">rh.poste</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+
+    <record id="view_rh_site_tree" model="ir.ui.view">
+        <field name="name">rh.site.tree</field>
+        <field name="model">rh.site</field>
+        <field name="arch" type="xml">
+            <list string="Sites / Agences" editable="bottom">
+                <field name="code"/>
+                <field name="nom"/>
+                <field name="ville"/>
+                <field name="telephone"/>
+                <field name="responsable_id"/>
+                <field name="nb_employes" readonly="1"/>
+                <field name="active" widget="boolean"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_rh_site_form" model="ir.ui.view">
+        <field name="name">rh.site.form</field>
+        <field name="model">rh.site</field>
+        <field name="arch" type="xml">
+            <form string="Site / Agence">
+                <sheet>
+                    <div class="rh_form_header">
+                        <div class="rh_form_header_body">
+                            <div class="rh_form_title">
+                                <field name="nom" placeholder="Nom du site / agence" class="rh_field_nom"/>
+                            </div>
+                            <div class="rh_form_subtitle">
+                                <field name="code" placeholder="Code"/>
+                                — <field name="ville" placeholder="Ville"/>
+                            </div>
+                        </div>
+                        <div class="rh_form_header_right">
+                            <field name="active" widget="boolean_toggle"/>
+                        </div>
+                    </div>
+                    <group col="2">
+                        <group string="Informations">
+                            <field name="code"/>
+                            <field name="ville"/>
+                            <field name="telephone"/>
+                            <field name="responsable_id"/>
+                            <field name="nb_employes" readonly="1"/>
+                        </group>
+                        <group string="Adresse">
+                            <field name="adresse" nolabel="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_rh_site" model="ir.actions.act_window">
+        <field name="name">Sites / Agences</field>
+        <field name="res_model">rh.site</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+
+    <record id="view_rh_categorie_tree" model="ir.ui.view">
+        <field name="name">rh.categorie.tree</field>
+        <field name="model">rh.categorie</field>
+        <field name="arch" type="xml">
+            <list string="Catégories / Échelons" editable="bottom">
+                <field name="code"/>
+                <field name="nom"/>
+                <field name="niveau"/>
+                <field name="salaire_min"/>
+                <field name="salaire_max"/>
+                <field name="nb_employes" readonly="1"/>
+                <field name="active" widget="boolean"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_rh_categorie_form" model="ir.ui.view">
+        <field name="name">rh.categorie.form</field>
+        <field name="model">rh.categorie</field>
+        <field name="arch" type="xml">
+            <form string="Catégorie / Échelon">
+                <sheet>
+                    <div class="rh_form_header">
+                        <div class="rh_form_header_body">
+                            <div class="rh_form_title">
+                                <field name="nom" placeholder="Libellé de la catégorie" class="rh_field_nom"/>
+                            </div>
+                            <div class="rh_form_subtitle">
+                                <field name="code" placeholder="Code"/>
+                                — Échelon <field name="niveau"/>
+                            </div>
+                        </div>
+                        <div class="rh_form_header_right">
+                            <field name="active" widget="boolean_toggle"/>
+                        </div>
+                    </div>
+                    <group col="2">
+                        <group string="Informations">
+                            <field name="code"/>
+                            <field name="niveau"/>
+                            <field name="nb_employes" readonly="1"/>
+                        </group>
+                        <group string="Grille Salariale">
+                            <field name="salaire_min"/>
+                            <field name="salaire_max"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_rh_categorie" model="ir.actions.act_window">
+        <field name="name">Catégories / Échelons</field>
+        <field name="res_model">rh.categorie</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+
+    <record id="view_rh_type_prime_tree" model="ir.ui.view">
+        <field name="name">rh.type.prime.tree</field>
+        <field name="model">rh.type.prime</field>
+        <field name="arch" type="xml">
+            <list string="Types de Prime" editable="bottom">
+                <field name="code"/>
+                <field name="nom"/>
+                <field name="est_imposable" widget="boolean"/>
+                <field name="montant_fixe"/>
+                <field name="taux_pourcentage"/>
+                <field name="active" widget="boolean"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_rh_type_prime_form" model="ir.ui.view">
+        <field name="name">rh.type.prime.form</field>
+        <field name="model">rh.type.prime</field>
+        <field name="arch" type="xml">
+            <form string="Type de Prime">
+                <sheet>
+                    <div class="rh_form_header">
+                        <div class="rh_form_header_body">
+                            <div class="rh_form_title">
+                                <field name="nom" placeholder="Libellé de la prime" class="rh_field_nom"/>
+                            </div>
+                            <div class="rh_form_subtitle">
+                                <field name="code" placeholder="Code"/>
+                            </div>
+                        </div>
+                        <div class="rh_form_header_right">
+                            <field name="active" widget="boolean_toggle"/>
+                        </div>
+                    </div>
+                    <group col="2">
+                        <group string="Paramètres">
+                            <field name="code"/>
+                            <field name="est_imposable" widget="boolean_toggle"/>
+                            <field name="montant_fixe"/>
+                            <field name="taux_pourcentage"/>
+                        </group>
+                        <group string="Description">
+                            <field name="description" nolabel="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_rh_type_prime" model="ir.actions.act_window">
+        <field name="name">Types de Prime</field>
+        <field name="res_model">rh.type.prime</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+
+    <record id="view_rh_type_retenue_tree" model="ir.ui.view">
+        <field name="name">rh.type.retenue.tree</field>
+        <field name="model">rh.type.retenue</field>
+        <field name="arch" type="xml">
+            <list string="Types de Retenue" editable="bottom">
+                <field name="code"/>
+                <field name="nom"/>
+                <field name="taux"/>
+                <field name="base_calcul"/>
+                <field name="est_obligatoire" widget="boolean"/>
+                <field name="active" widget="boolean"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_rh_type_retenue_form" model="ir.ui.view">
+        <field name="name">rh.type.retenue.form</field>
+        <field name="model">rh.type.retenue</field>
+        <field name="arch" type="xml">
+            <form string="Type de Retenue">
+                <sheet>
+                    <div class="rh_form_header">
+                        <div class="rh_form_header_body">
+                            <div class="rh_form_title">
+                                <field name="nom" placeholder="Libellé de la retenue" class="rh_field_nom"/>
+                            </div>
+                            <div class="rh_form_subtitle">
+                                <field name="code" placeholder="Code"/>
+                            </div>
+                        </div>
+                        <div class="rh_form_header_right">
+                            <field name="active" widget="boolean_toggle"/>
+                        </div>
+                    </div>
+                    <group col="2">
+                        <group string="Paramètres">
+                            <field name="code"/>
+                            <field name="taux"/>
+                            <field name="base_calcul"/>
+                            <field name="est_obligatoire" widget="boolean_toggle"/>
+                        </group>
+                        <group string="Description">
+                            <field name="description" nolabel="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_rh_type_retenue" model="ir.actions.act_window">
+        <field name="name">Types de Retenue</field>
+        <field name="res_model">rh.type.retenue</field>
+        <field name="view_mode">kanban,list,form</field>
+    </record>
+
+
+    <!-- Liste générale -->
+    <record id="view_rh_configuration_tree" model="ir.ui.view">
+        <field name="name">rh.configuration.tree</field>
+        <field name="model">rh.configuration</field>
+        <field name="arch" type="xml">
+            <list string="Configuration RH" editable="bottom">
+                <field name="type_config"/>
+                <field name="name" string="Libellé"/>
+                <field name="date_application"/>
+                <field name="active" widget="boolean"/>
+            </list>
+        </field>
+    </record>
+
+
+    <!-- Liste simplifiée pour chaque section (sans colonne type) -->
+    <record id="view_rh_configuration_tree_simple" model="ir.ui.view">
+        <field name="name">rh.configuration.tree.simple</field>
+        <field name="model">rh.configuration</field>
+        <field name="arch" type="xml">
+            <list string="Éléments" editable="bottom">
+                <field name="name" string="Libellé"/>
+                <field name="date_application"/>
+                <field name="active" widget="boolean"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_rh_configuration_form" model="ir.ui.view">
+        <field name="name">rh.configuration.form</field>
+        <field name="model">rh.configuration</field>
+        <field name="arch" type="xml">
+            <form string="Configuration RH">
+                <sheet>
+                    <div class="rh_form_header">
+                        <div class="rh_form_header_body">
+                            <div class="rh_form_title">
+                                <field name="name" placeholder="Libellé" class="rh_field_nom"/>
+                            </div>
+                        </div>
+                        <div class="rh_form_header_right">
+                            <field name="active" widget="boolean_toggle"/>
+                        </div>
+                    </div>
+
+                    <group col="2">
+                        <group string="Informations">
+                            <field name="type_config"/>
+                            <field name="date_application"/>
+                        </group>
+                        <!-- Paramètres légaux : visibles seulement pour poste/categorie -->
+                        <group string="Paramètres légaux"
+                               invisible="type_config not in ['poste', 'categorie']">
+                            <field name="smig"/>
+                            <field name="heures_semaine"/>
+                            <field name="heures_mois"/>
+                            <field name="jours_conge_annuel"/>
+                        </group>
+                    </group>
+                    <group string="Taux heures supplémentaires"
+                           invisible="type_config not in ['poste', 'categorie']">
+                        <group>
+                            <field name="taux_hs_25"/>
+                        </group>
+                        <group>
+                            <field name="taux_hs_50"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="view_rh_departement_kanban" model="ir.ui.view">
+        <field name="name">rh.departement.kanban</field>
+        <field name="model">rh.departement</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="nom"/>
+                <field name="code"/>
+                <field name="responsable_id"/>
+                <field name="nb_employes"/>
+                <templates>
+                    <t t-name="card">
+                        <strong class="fs-5">[<field name="code"/>] <field name="nom"/></strong>
+                        <div class="mt-1"><i class="fa fa-user me-1 text-muted" title="Responsable"/>
+                            <field name="responsable_id"/></div>
+                        <div class="mt-2 text-muted">
+                            <i class="fa fa-users me-1" title="Employés"/>
+                            <field name="nb_employes"/> employé(s)
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <record id="view_rh_service_kanban" model="ir.ui.view">
+        <field name="name">rh.service.kanban</field>
+        <field name="model">rh.service</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="departement_id">
+                <field name="nom"/>
+                <field name="code"/>
+                <field name="departement_id"/>
+                <field name="responsable_id"/>
+                <field name="nb_employes"/>
+                <templates>
+                    <t t-name="card">
+                        <strong>[<field name="code"/>] <field name="nom"/></strong>
+                        <div class="mt-1 text-muted small"><field name="departement_id"/></div>
+                        <div><i class="fa fa-user me-1 text-muted" title="Responsable"/>
+                            <field name="responsable_id"/></div>
+                        <div class="mt-2 text-muted">
+                            <i class="fa fa-users me-1" title="Employés"/>
+                            <field name="nb_employes"/> employé(s)
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <record id="view_rh_poste_kanban" model="ir.ui.view">
+        <field name="name">rh.poste.kanban</field>
+        <field name="model">rh.poste</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="statut">
+                <field name="titre"/>
+                <field name="code"/>
+                <field name="service_id"/>
+                <field name="statut"/>
+                <field name="salaire_min"/>
+                <field name="salaire_max"/>
+                <field name="nb_employes"/>
+                <templates>
+                    <t t-name="card">
+                        <strong><field name="titre"/></strong>
+                        <t t-if="record.code.raw_value">
+                            <span class="text-muted small"> (<field name="code"/>)</span>
+                        </t>
+                        <div class="mt-1"><i class="fa fa-sitemap me-1 text-muted" title="Service"/>
+                            <field name="service_id"/></div>
+                        <div class="text-muted small">
+                            <field name="salaire_min"/> – <field name="salaire_max"/> FCFA
+                        </div>
+                        <div class="mt-2 d-flex justify-content-between">
+                            <field name="statut" widget="badge"
+                                   decoration-success="statut == 'actif'"
+                                   decoration-warning="statut == 'en_recrutement'"
+                                   decoration-danger="statut == 'obsolete'"/>
+                            <span class="text-muted small">
+                                <i class="fa fa-users me-1" title="Employés"/>
+                                <field name="nb_employes"/>
+                            </span>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <record id="view_rh_site_kanban" model="ir.ui.view">
+        <field name="name">rh.site.kanban</field>
+        <field name="model">rh.site</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="nom"/>
+                <field name="code"/>
+                <field name="ville"/>
+                <field name="responsable_id"/>
+                <field name="nb_employes"/>
+                <templates>
+                    <t t-name="card">
+                        <strong>[<field name="code"/>] <field name="nom"/></strong>
+                        <div class="mt-1"><i class="fa fa-map-marker me-1 text-muted" title="Ville"/>
+                            <field name="ville"/></div>
+                        <div><i class="fa fa-user me-1 text-muted" title="Responsable"/>
+                            <field name="responsable_id"/></div>
+                        <div class="mt-2 text-muted">
+                            <i class="fa fa-users me-1" title="Employés"/>
+                            <field name="nb_employes"/> employé(s)
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <record id="view_rh_categorie_kanban" model="ir.ui.view">
+        <field name="name">rh.categorie.kanban</field>
+        <field name="model">rh.categorie</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="nom"/>
+                <field name="code"/>
+                <field name="niveau"/>
+                <field name="salaire_min"/>
+                <field name="salaire_max"/>
+                <field name="nb_employes"/>
+                <templates>
+                    <t t-name="card">
+                        <strong>[<field name="code"/>] <field name="nom"/></strong>
+                        <div class="mt-1 text-muted small">Échelon <field name="niveau"/></div>
+                        <div>
+                            <field name="salaire_min"/> – <field name="salaire_max"/> FCFA
+                        </div>
+                        <div class="mt-2 text-muted">
+                            <i class="fa fa-users me-1" title="Employés"/>
+                            <field name="nb_employes"/> employé(s)
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <record id="view_rh_type_prime_kanban" model="ir.ui.view">
+        <field name="name">rh.type.prime.kanban</field>
+        <field name="model">rh.type.prime</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="nom"/>
+                <field name="code"/>
+                <field name="est_imposable"/>
+                <field name="montant_fixe"/>
+                <field name="taux_pourcentage"/>
+                <templates>
+                    <t t-name="card">
+                        <strong>[<field name="code"/>] <field name="nom"/></strong>
+                        <div class="mt-1">
+                            <t t-if="record.montant_fixe.raw_value">
+                                <i class="fa fa-money me-1 text-muted" title="Montant"/>
+                                <field name="montant_fixe"/> FCFA
+                            </t>
+                            <t t-if="record.taux_pourcentage.raw_value">
+                                <i class="fa fa-percent me-1 text-muted" title="Taux"/>
+                                <field name="taux_pourcentage"/> %
+                            </t>
+                        </div>
+                        <div class="mt-2">
+                            <t t-if="record.est_imposable.raw_value">
+                                <span class="badge bg-warning">Imposable ITS</span>
+                            </t>
+                            <t t-else="">
+                                <span class="badge bg-success">Non imposable</span>
+                            </t>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <record id="view_rh_type_retenue_kanban" model="ir.ui.view">
+        <field name="name">rh.type.retenue.kanban</field>
+        <field name="model">rh.type.retenue</field>
+        <field name="arch" type="xml">
+            <kanban>
+                <field name="nom"/>
+                <field name="code"/>
+                <field name="taux"/>
+                <field name="base_calcul"/>
+                <field name="est_obligatoire"/>
+                <templates>
+                    <t t-name="card">
+                        <strong>[<field name="code"/>] <field name="nom"/></strong>
+                        <div class="mt-1">
+                            <i class="fa fa-percent me-1 text-muted" title="Taux"/>
+                            <field name="taux"/> % sur <field name="base_calcul"/>
+                        </div>
+                        <div class="mt-2">
+                            <t t-if="record.est_obligatoire.raw_value">
+                                <span class="badge bg-danger">Obligatoire</span>
+                            </t>
+                            <t t-else="">
+                                <span class="badge bg-secondary">Facultatif</span>
+                            </t>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+
+    <record id="view_rh_cnss_tree" model="ir.ui.view">
+        <field name="name">rh.cnss.tree</field>
+        <field name="model">rh.cnss</field>
+        <field name="arch" type="xml">
+            <list string="Configuration CNSS" editable="bottom"
+                  decoration-success="active == True">
+                <field name="name"/>
+                <field name="date_debut"/>
+                <field name="date_fin"/>
+                <field name="taux_cnss_salarie"/>
+                <field name="taux_cnss_patronal"/>
+                <field name="plafond_mensuel"/>
+                <field name="active" widget="boolean"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_rh_cnss_form" model="ir.ui.view">
+        <field name="name">rh.cnss.form</field>
+        <field name="model">rh.cnss</field>
+        <field name="arch" type="xml">
+            <form string="Configuration CNSS">
+                <sheet>
+                    <div class="rh_form_header">
+                        <div class="rh_form_header_body">
+                            <div class="rh_form_title">
+                                <field name="name" placeholder="Ex : CNSS 2024" class="rh_field_nom"/>
+                            </div>
+                        </div>
+                        <div class="rh_form_header_right">
+                            <field name="active" widget="boolean_toggle"/>
+                        </div>
+                    </div>
+                    <group col="2">
+                        <group string="Période d'application">
+                            <field name="date_debut"/>
+                            <field name="date_fin"/>
+                        </group>
+                        <group string="Plafond">
+                            <field name="plafond_mensuel"/>
+                        </group>
+                    </group>
+                    <group col="2">
+                        <group string="Cotisations Salariales">
+                            <field name="taux_cnss_salarie"/>
+                        </group>
+                        <group string="Cotisations Patronales">
+                            <field name="taux_cnss_patronal"/>
+                        </group>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_rh_cnss" model="ir.actions.act_window">
+        <field name="name">Configuration CNSS</field>
+        <field name="res_model">rh.cnss</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+
+    <record id="view_rh_iuts_tree" model="ir.ui.view">
+        <field name="name">rh.iuts.tree</field>
+        <field name="model">rh.iuts</field>
+        <field name="arch" type="xml">
+            <list string="Barème IUTS" editable="bottom">
+                <field name="name"/>
+                <field name="revenu_min"/>
+                <field name="revenu_max"/>
+                <field name="taux"/>
+                <field name="deduction_fixe"/>
+                <field name="active" widget="boolean"/>
+            </list>
+        </field>
+    </record>
+
+
+    <record id="view_rh_iuts_form" model="ir.ui.view">
+        <field name="name">rh.iuts.form</field>
+        <field name="model">rh.iuts</field>
+        <field name="arch" type="xml">
+            <form string="Tranche IUTS">
+                <sheet>
+                    <div class="rh_form_header">
+                        <div class="rh_form_header_body">
+                            <div class="rh_form_title">
+                                <field name="name" placeholder="Ex : Tranche 1 (0–50 000)" class="rh_field_nom"/>
+                            </div>
+                        </div>
+                        <div class="rh_form_header_right">
+                            <field name="active" widget="boolean_toggle"/>
+                        </div>
+                    </div>
+                    <group col="2">
+                        <group string="Tranche (FCFA)">
+                            <field name="revenu_min"/>
+                            <field name="revenu_max"/>
+                        </group>
+                        <group string="Calcul">
+                            <field name="taux"/>
+                            <field name="deduction_fixe"
+                                   help="Déduction forfaitaire pour convertir le taux marginal en résultat progressif correct. Formule : IUTS = (salaire × taux%) − déduction_fixe"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_rh_iuts" model="ir.actions.act_window">
+        <field name="name">Barème IUTS</field>
+        <field name="res_model">rh.iuts</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+
+    <record id="action_rh_configuration" model="ir.actions.act_window">
+        <field name="name">Configuration RH (tout)</field>
+        <field name="res_model">rh.configuration</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SECTION RÔLES (res.groups)
+         Liste des groupes RH + formulaire avec onglet Utilisateurs
+    ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- Vue liste — Rôles RH -->
+    <record id="view_rh_roles_list" model="ir.ui.view">
+        <field name="name">res.groups.rh.burkina.list</field>
+        <field name="model">res.groups</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <list string="Rôles RH" create="false" delete="false">
+                <field name="name" string="Rôle"/>
+                <field name="category_id" string="Catégorie"/>
+                <field name="comment" string="Description" optional="show"/>
+                <field name="nb_utilisateurs" string="Utilisateurs"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Vue formulaire — Rôle RH avec notebook onglet Utilisateurs -->
+    <record id="view_rh_groups_form" model="ir.ui.view">
+        <field name="name">res.groups.rh.burkina.form</field>
+        <field name="model">res.groups</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <form string="Rôle RH" create="false" delete="false">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" string="Rôle" readonly="1"/></h1>
+                    </div>
+                    <group col="2">
+                        <group string="Informations">
+                            <field name="category_id" string="Catégorie" readonly="1"/>
+                            <field name="nb_utilisateurs" string="Utilisateurs assignés" readonly="1"/>
+                        </group>
+                        <group string="Description">
+                            <field name="comment" nolabel="1" readonly="1"
+                                   placeholder="Description du rôle..."/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <!-- Onglet principal : liste des utilisateurs rattachés à ce rôle -->
+                        <page string="Utilisateurs assignés" name="utilisateurs">
+                            <field name="users" nolabel="1" readonly="1">
+                                <list>
+                                    <field name="name" string="Nom complet"/>
+                                    <field name="login" string="Identifiant"/>
+                                    <field name="email" string="Email" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                        <!-- Onglet secondaire : groupes impliqués par ce rôle -->
+                        <page string="Permissions héritées" name="permissions">
+                            <field name="implied_ids" nolabel="1" readonly="1">
+                                <list>
+                                    <field name="name" string="Groupe"/>
+                                    <field name="category_id" string="Catégorie"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action — Rôles RH (liste + formulaire) -->
+    <record id="action_rh_roles" model="ir.actions.act_window">
+        <field name="name">Rôles</field>
+        <field name="res_model">res.groups</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('category_id.name', 'in', ['RH Burkina', 'RH - Fonctions spéciales'])]</field>
+        <field name="context">{}</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_rh_roles_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_rh_groups_form')})]"/>
+    </record>
+
+    <!-- ═══════════════════════════════════════════════════════════════════
+         SECTION UTILISATEURS (res.users)
+         Liste regroupable par rôle + formulaire simplifié
+    ═══════════════════════════════════════════════════════════════════ -->
+
+    <!-- Vue liste — Utilisateurs RH avec colonne Rôle RH -->
+    <record id="view_rh_users_list" model="ir.ui.view">
+        <field name="name">res.users.rh.burkina.list</field>
+        <field name="model">res.users</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <list string="Utilisateurs RH" create="false">
+                <field name="name" string="Nom complet"/>
+                <field name="login" string="Identifiant"/>
+                <field name="email" string="Email" optional="show"/>
+                <field name="role_rh_id" string="Rôle RH"/>
+                <field name="active" string="Actif" widget="boolean" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Vue recherche — filtre « Regrouper par Rôle RH » activé par défaut -->
+    <record id="view_rh_users_search" model="ir.ui.view">
+        <field name="name">res.users.rh.burkina.search</field>
+        <field name="model">res.users</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <search string="Recherche utilisateurs">
+                <field name="name" string="Nom"/>
+                <field name="login" string="Identifiant"/>
+                <field name="email" string="Email"/>
+                <field name="role_rh_id" string="Rôle RH"/>
+                <!-- Filtres prédéfinis -->
+                <filter name="filter_actifs" string="Actifs"
+                        domain="[('active', '=', True)]"/>
+                <filter name="filter_sans_role" string="Sans rôle RH"
+                        domain="[('role_rh_id', '=', False)]"/>
+                <separator/>
+                <!-- Regroupement par rôle RH — activé par défaut via le contexte de l'action -->
+                <filter name="group_by_role" string="Rôle RH"
+                        context="{'group_by': 'role_rh_id'}"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Vue formulaire — Utilisateur RH (centrée sur l'identité et le rôle) -->
+    <record id="view_rh_users_form" model="ir.ui.view">
+        <field name="name">res.users.rh.burkina.form</field>
+        <field name="model">res.users</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <form string="Utilisateur RH">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" string="Nom complet"/></h1>
+                    </div>
+                    <group col="2">
+                        <group string="Compte">
+                            <field name="login" string="Identifiant"/>
+                            <field name="email" string="Email"/>
+                        </group>
+                        <group string="Accès RH">
+                            <!-- Calculé depuis les groupes — lecture seule -->
+                            <field name="role_rh_id" string="Rôle principal" readonly="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Action — Utilisateurs (groupés par rôle RH dès l'ouverture) -->
+    <record id="action_rh_utilisateurs_roles" model="ir.actions.act_window">
+        <field name="name">Utilisateurs</field>
+        <field name="res_model">res.users</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('share', '=', False)]</field>
+        <!-- search_default_group_by_role active le regroupement par Rôle RH par défaut -->
+        <field name="context">{'search_default_group_by_role': 1}</field>
+        <!-- search_view_id : seule façon valide de lier une vue search à une action dans Odoo 18 -->
+        <field name="search_view_id" ref="view_rh_users_search"/>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_rh_users_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_rh_users_form')})]"/>
+    </record>
+
+
+</odoo>

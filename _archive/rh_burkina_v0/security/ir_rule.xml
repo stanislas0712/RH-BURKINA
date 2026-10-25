@@ -1,0 +1,495 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ═══════════════════════════════════════════════════════════════
+             RÈGLES D'ACCÈS AUX ENREGISTREMENTS (ir.rule)
+
+             Principe :
+             • Les règles d'un même modèle sont combinées en OR.
+             • Les ACL (ir.model.access) contrôlent QUELLES opérations sont
+               autorisées ; les règles filtrent SUR QUELS enregistrements.
+             • perm_* = 1 : la règle s'applique à cette opération.
+             • L'ACL et la règle doivent être alignées : l'ACL la plus
+               restrictive l'emporte toujours en pratique.
+
+             Chaîne pour Chef de Département :
+             employe.departement_id.responsable_id.user_id = current_user
+        ════════════════════════════════════════════════════════════════ -->
+
+        <!-- ══════════════════════════════════════════════════════════════
+             DOSSIER EMPLOYÉ (rh.employe)
+        ══════════════════════════════════════════════════════════════ -->
+
+        <record id="rule_rh_employe_own" model="ir.rule">
+            <field name="name">Employé : sa propre fiche uniquement</field>
+            <field name="model_id" ref="model_rh_employe"/>
+            <field name="domain_force">[('user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_employe'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_employe_chef_dept" model="ir.rule">
+            <field name="name">Chef de Département : employés de son département</field>
+            <field name="model_id" ref="model_rh_employe"/>
+            <field name="domain_force">[('departement_id.responsable_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_chef_dept'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_employe_all" model="ir.rule">
+            <field name="name">Gestionnaire RH : tous les employés</field>
+            <field name="model_id" ref="model_rh_employe"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_user'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+        </record>
+
+        <record id="rule_rh_employe_recruteur" model="ir.rule">
+            <field name="name">Recruteur : lecture de tous les employés</field>
+            <field name="model_id" ref="model_rh_employe"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_recruteur'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_employe_formation" model="ir.rule">
+            <field name="name">Responsable Formation : lecture de tous les employés</field>
+            <field name="model_id" ref="model_rh_employe"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_formation'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_employe_directeur" model="ir.rule">
+            <field name="name">Directeur Général : lecture de tous les employés</field>
+            <field name="model_id" ref="model_rh_employe"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_directeur'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_employe_auditeur" model="ir.rule">
+            <field name="name">Auditeur : lecture de tous les employés</field>
+            <field name="model_id" ref="model_rh_employe"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_auditeur'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════════════════
+             CONGÉS (rh.conge)
+        ══════════════════════════════════════════════════════════════ -->
+
+        <record id="rule_rh_conge_own" model="ir.rule">
+            <field name="name">Employé : ses propres demandes de congé</field>
+            <field name="model_id" ref="model_rh_conge"/>
+            <field name="domain_force">[('employe_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_employe'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_conge_chef_dept" model="ir.rule">
+            <field name="name">Chef de Département : congés de son équipe</field>
+            <field name="model_id" ref="model_rh_conge"/>
+            <field name="domain_force">[('employe_id.departement_id.responsable_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_chef_dept'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_conge_all" model="ir.rule">
+            <field name="name">Gestionnaire RH : tous les congés</field>
+            <field name="model_id" ref="model_rh_conge"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_user'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+        </record>
+
+        <record id="rule_rh_conge_directeur" model="ir.rule">
+            <field name="name">Directeur Général : lecture de tous les congés</field>
+            <field name="model_id" ref="model_rh_conge"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_directeur'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_conge_auditeur" model="ir.rule">
+            <field name="name">Auditeur : lecture de tous les congés</field>
+            <field name="model_id" ref="model_rh_conge"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_auditeur'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════════════════
+             SOLDES DE CONGÉS (rh.solde.conge)
+        ══════════════════════════════════════════════════════════════ -->
+
+        <record id="rule_rh_solde_conge_own" model="ir.rule">
+            <field name="name">Employé : ses propres soldes de congés</field>
+            <field name="model_id" ref="model_rh_solde_conge"/>
+            <field name="domain_force">[('employe_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_employe'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_solde_conge_chef_dept" model="ir.rule">
+            <field name="name">Chef de Département : soldes de son équipe</field>
+            <field name="model_id" ref="model_rh_solde_conge"/>
+            <field name="domain_force">[('employe_id.departement_id.responsable_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_chef_dept'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_solde_conge_all" model="ir.rule">
+            <field name="name">Gestionnaire RH : tous les soldes</field>
+            <field name="model_id" ref="model_rh_solde_conge"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_user'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+        </record>
+
+        <record id="rule_rh_solde_conge_directeur" model="ir.rule">
+            <field name="name">Directeur Général : lecture de tous les soldes</field>
+            <field name="model_id" ref="model_rh_solde_conge"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_directeur'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_solde_conge_auditeur" model="ir.rule">
+            <field name="name">Auditeur : lecture de tous les soldes</field>
+            <field name="model_id" ref="model_rh_solde_conge"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_auditeur'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════════════════
+             BULLETINS DE PAIE (rh.bulletin.paie) — CONFIDENTIELS
+        ══════════════════════════════════════════════════════════════ -->
+
+        <record id="rule_rh_bulletin_own" model="ir.rule">
+            <field name="name">Employé : ses propres bulletins uniquement</field>
+            <field name="model_id" ref="model_rh_bulletin_paie"/>
+            <field name="domain_force">[('employe_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_employe'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_bulletin_paie_all" model="ir.rule">
+            <field name="name">Responsable Paie : tous les bulletins</field>
+            <field name="model_id" ref="model_rh_bulletin_paie"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_paie'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+        </record>
+
+        <record id="rule_rh_bulletin_manager_all" model="ir.rule">
+            <field name="name">Responsable RH : tous les bulletins</field>
+            <field name="model_id" ref="model_rh_bulletin_paie"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_manager'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+        </record>
+
+        <record id="rule_rh_bulletin_directeur" model="ir.rule">
+            <field name="name">Directeur Général : lecture de tous les bulletins</field>
+            <field name="model_id" ref="model_rh_bulletin_paie"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_directeur'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_bulletin_auditeur" model="ir.rule">
+            <field name="name">Auditeur : lecture de tous les bulletins</field>
+            <field name="model_id" ref="model_rh_bulletin_paie"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_auditeur'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════════════════
+             PRÉSENCES (rh.presence)
+             ⚠ Employé : lecture + écriture + création de sa propre
+             présence — corrigé pour permettre la saisie du pointage.
+        ══════════════════════════════════════════════════════════════ -->
+
+        <record id="rule_rh_presence_own" model="ir.rule">
+            <field name="name">Employé : saisie de ses propres présences</field>
+            <field name="model_id" ref="model_rh_presence"/>
+            <field name="domain_force">[('employe_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_employe'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_presence_chef_dept" model="ir.rule">
+            <field name="name">Chef de Département : présences de son équipe</field>
+            <field name="model_id" ref="model_rh_presence"/>
+            <field name="domain_force">[('employe_id.departement_id.responsable_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_chef_dept'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_presence_all" model="ir.rule">
+            <field name="name">Gestionnaire RH : toutes les présences</field>
+            <field name="model_id" ref="model_rh_presence"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_user'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+        </record>
+
+        <record id="rule_rh_presence_directeur" model="ir.rule">
+            <field name="name">Directeur Général : lecture de toutes les présences</field>
+            <field name="model_id" ref="model_rh_presence"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_directeur'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_presence_auditeur" model="ir.rule">
+            <field name="name">Auditeur : lecture de toutes les présences</field>
+            <field name="model_id" ref="model_rh_presence"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_auditeur'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════════════════
+             ÉVALUATIONS (rh.evaluation)
+        ══════════════════════════════════════════════════════════════ -->
+
+        <record id="rule_rh_evaluation_own" model="ir.rule">
+            <field name="name">Employé : ses propres évaluations</field>
+            <field name="model_id" ref="model_rh_evaluation"/>
+            <field name="domain_force">[('employe_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_employe'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_evaluation_chef_dept" model="ir.rule">
+            <field name="name">Chef de Département : évaluations de son équipe</field>
+            <field name="model_id" ref="model_rh_evaluation"/>
+            <field name="domain_force">[('employe_id.departement_id.responsable_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_chef_dept'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_evaluation_all" model="ir.rule">
+            <field name="name">Gestionnaire RH : toutes les évaluations</field>
+            <field name="model_id" ref="model_rh_evaluation"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_user'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+        </record>
+
+        <record id="rule_rh_evaluation_directeur" model="ir.rule">
+            <field name="name">Directeur Général : lecture de toutes les évaluations</field>
+            <field name="model_id" ref="model_rh_evaluation"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_directeur'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_evaluation_auditeur" model="ir.rule">
+            <field name="name">Auditeur : lecture de toutes les évaluations</field>
+            <field name="model_id" ref="model_rh_evaluation"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_auditeur'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════════════════
+             SANCTIONS (rh.sanction) — Pas de self-service employé
+        ══════════════════════════════════════════════════════════════ -->
+
+        <record id="rule_rh_sanction_user" model="ir.rule">
+            <field name="name">Gestionnaire RH : toutes les sanctions</field>
+            <field name="model_id" ref="model_rh_sanction"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_user'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+        </record>
+
+        <record id="rule_rh_sanction_directeur" model="ir.rule">
+            <field name="name">Directeur Général : lecture de toutes les sanctions</field>
+            <field name="model_id" ref="model_rh_sanction"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_directeur'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_sanction_auditeur" model="ir.rule">
+            <field name="name">Auditeur : lecture de toutes les sanctions</field>
+            <field name="model_id" ref="model_rh_sanction"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_auditeur'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <!-- ══════════════════════════════════════════════════════════════
+             CONTRATS (rh.contrat)
+        ══════════════════════════════════════════════════════════════ -->
+
+        <record id="rule_rh_contrat_own" model="ir.rule">
+            <field name="name">Employé : lecture de son propre contrat</field>
+            <field name="model_id" ref="model_rh_contrat"/>
+            <field name="domain_force">[('employe_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_employe'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_contrat_all" model="ir.rule">
+            <field name="name">Gestionnaire RH : tous les contrats</field>
+            <field name="model_id" ref="model_rh_contrat"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_user'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">1</field>
+            <field name="perm_create">1</field>
+            <field name="perm_unlink">1</field>
+        </record>
+
+        <record id="rule_rh_contrat_chef_dept" model="ir.rule">
+            <field name="name">Chef de Département : contrats de son équipe</field>
+            <field name="model_id" ref="model_rh_contrat"/>
+            <field name="domain_force">[('employe_id.departement_id.responsable_id.user_id', '=', user.id)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_chef_dept'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_contrat_directeur" model="ir.rule">
+            <field name="name">Directeur Général : lecture de tous les contrats</field>
+            <field name="model_id" ref="model_rh_contrat"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_directeur'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+        <record id="rule_rh_contrat_auditeur" model="ir.rule">
+            <field name="name">Auditeur : lecture de tous les contrats</field>
+            <field name="model_id" ref="model_rh_contrat"/>
+            <field name="domain_force">[(1, '=', 1)]</field>
+            <field name="groups" eval="[(4, ref('group_rh_auditeur'))]"/>
+            <field name="perm_read">1</field>
+            <field name="perm_write">0</field>
+            <field name="perm_create">0</field>
+            <field name="perm_unlink">0</field>
+        </record>
+
+    </data>
+</odoo>

@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Racine : visible par tous les rôles RH (les sous-menus filtrent ensuite) -->
+    <menuitem id="menu_rh_root"
+              name="RH Burkina Faso"
+              web_icon="rh_burkina,static/description/icon.png"
+              groups="group_rh_employe"
+              sequence="40"/>
+
+    <!-- Les menus Personnel, Temps & Absences, Paie, etc. sont ajoutés
+         dans les phases suivantes. -->
+
+    <!-- ═══════════════ Configuration ═══════════════ -->
+    <menuitem id="menu_rh_configuration"
+              name="Configuration"
+              parent="menu_rh_root"
+              groups="group_rh_responsable,group_rh_paie,group_rh_dg,group_rh_auditeur"
+              sequence="100"/>
+
+    <menuitem id="menu_rh_config_users"
+              name="Utilisateurs et rôles"
+              parent="menu_rh_configuration"
+              action="action_rh_users"
+              groups="group_rh_admin"
+              sequence="10"/>
+
+    <menuitem id="menu_rh_config_structure"
+              name="Structure"
+              parent="menu_rh_configuration"
+              sequence="20"/>
+    <menuitem id="menu_rh_config_department"
+              name="Départements"
+              parent="menu_rh_config_structure"
+              action="action_rh_department"
+              sequence="10"/>
+    <menuitem id="menu_rh_config_service"
+              name="Services"
+              parent="menu_rh_config_structure"
+              action="action_rh_service"
+              sequence="20"/>
+    <menuitem id="menu_rh_config_poste"
+              name="Postes"
+              parent="menu_rh_config_structure"
+              action="action_rh_poste"
+              sequence="30"/>
+    <menuitem id="menu_rh_config_site"
+              name="Sites"
+              parent="menu_rh_config_structure"
+              action="action_rh_site"
+              sequence="40"/>
+    <menuitem id="menu_rh_config_categorie"
+              name="Catégories et échelons"
+              parent="menu_rh_config_structure"
+              action="action_rh_categorie"
+              sequence="50"/>
+
+    <menuitem id="menu_rh_config_legal"
+              name="Paramètres légaux"
+              parent="menu_rh_configuration"
+              sequence="50"/>
+    <menuitem id="menu_rh_config_general"
+              name="Général"
+              parent="menu_rh_config_legal"
+              action="action_rh_configuration"
+              sequence="10"/>
+    <menuitem id="menu_rh_config_cnss"
+              name="Cotisations sociales"
+              parent="menu_rh_config_legal"
+              action="action_rh_cnss"
+              sequence="20"/>
+    <menuitem id="menu_rh_config_iuts"
+              name="IUTS"
+              parent="menu_rh_config_legal"
+              action="action_rh_iuts"
+              sequence="30"/>
+    <menuitem id="menu_rh_config_licenciement"
+              name="Licenciement"
+              parent="menu_rh_config_legal"
+              action="action_rh_bareme_licenciement"
+              sequence="40"/>
+</odoo>

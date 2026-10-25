@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+
+        <!-- ═══════════════════════════════════════════════════════════════
+             GROUPES DE SÉCURITÉ — MODULE RH BURKINA FASO
+             10 rôles couvrant toutes les responsabilités RH
+
+             HIÉRARCHIE PRINCIPALE
+             Employé ⊂ Gestionnaire RH ⊂ Responsable RH ⊂ Administrateur
+
+             RÔLES FONCTIONNELS (transversaux, impliquent Employé)
+             Chef de Département / Recruteur / Responsable Paie /
+             Responsable Formation / Directeur Général / Auditeur
+        ════════════════════════════════════════════════════════════════ -->
+
+        <!-- Catégorie personnalisée pour le module RH Burkina
+             Apparaît comme section "RH Burkina Faso" dans le formulaire utilisateur -->
+        <record id="module_category_rh_burkina" model="ir.module.category">
+            <field name="name">RH Burkina Faso</field>
+            <field name="description">Gestion des Ressources Humaines — Burkina Faso</field>
+            <field name="sequence">5</field>
+            <field name="visible">1</field>
+        </record>
+
+        <!-- ── Niveau 1 : Employé Self-Service ──────────────────────────
+             Accès à ses propres données uniquement.
+             Peut déposer des demandes de congé et consulter ses fiches. -->
+        <record id="group_rh_employe" model="res.groups">
+            <field name="name">Employé</field>
+            <field name="category_id" ref="module_category_rh_burkina"/>
+            <field name="comment">Consulte son profil, fait des demandes de congé, consulte ses fiches de paie et ses évaluations.</field>
+            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        </record>
+
+        <!-- ── Niveau 2 : Gestionnaire RH ───────────────────────────────
+             Gestion quotidienne des dossiers employés et documents RH. -->
+        <record id="group_rh_user" model="res.groups">
+            <field name="name">Gestionnaire RH</field>
+            <field name="category_id" ref="module_category_rh_burkina"/>
+            <field name="comment">Assiste le responsable RH dans la gestion quotidienne : employés, contrats, congés, présences, formations, évaluations et documents.</field>
+            <field name="implied_ids" eval="[(4, ref('group_rh_employe'))]"/>
+        </record>
+
+        <!-- ── Niveau 3 : Responsable RH ────────────────────────────────
+             Gestion complète RH : validation, sanctions, paie. -->
+        <record id="group_rh_manager" model="res.groups">
+            <field name="name">Responsable RH</field>
+            <field name="category_id" ref="module_category_rh_burkina"/>
+            <field name="comment">Gère les employés, recrutements, congés, formations, évaluations et dossiers du personnel. Valide et approuve les demandes.</field>
+            <field name="implied_ids" eval="[(4, ref('group_rh_user'))]"/>
+        </record>
+
+        <!-- ── Niveau 4 : Administrateur RH ─────────────────────────────
+             Configuration complète du système RH. -->
+        <record id="group_rh_admin" model="res.groups">
+            <field name="name">Administrateur RH</field>
+            <field name="category_id" ref="module_category_rh_burkina"/>
+            <field name="comment">Gère toute la plateforme RH, les utilisateurs, les permissions, la structure organisationnelle et les paramètres du système.</field>
+            <field name="implied_ids" eval="[(4, ref('group_rh_manager'))]"/>
+        </record>
+
+        <!-- ── Fonctionnel : Manager / Chef de Département ──────────────
+             Gère son équipe : congés, évaluations, formations de son département. -->
+        <record id="group_rh_chef_dept" model="res.groups">
+            <field name="name">Manager / Chef de Département</field>
+            <field name="category_id" ref="module_category_rh_burkina"/>
+            <field name="comment">Gère les employés de son département, valide les congés de son équipe et réalise les évaluations.</field>
+            <field name="implied_ids" eval="[(4, ref('group_rh_employe'))]"/>
+        </record>
+
+        <!-- ── Fonctionnel : Recruteur ───────────────────────────────────
+             Gère les offres d'emploi, candidatures et entretiens. -->
+        <record id="group_rh_recruteur" model="res.groups">
+            <field name="name">Recruteur</field>
+            <field name="category_id" ref="module_category_rh_burkina"/>
+            <field name="comment">Gère les offres d'emploi, les candidatures et les entretiens de recrutement.</field>
+            <field name="implied_ids" eval="[(4, ref('group_rh_employe'))]"/>
+        </record>
+
+        <!-- ── Fonctionnel : Responsable Paie ───────────────────────────
+             Gère les salaires, primes, retenues et bulletins. -->
+        <record id="group_rh_paie" model="res.groups">
+            <field name="name">Responsable Paie</field>
+            <field name="category_id" ref="module_category_rh_burkina"/>
+            <field name="comment">Gère les salaires, primes, retenues et fiches de paie. Accès aux données salariales confidentielles.</field>
+            <field name="implied_ids" eval="[(4, ref('group_rh_user'))]"/>
+        </record>
+
+        <!-- ── Fonctionnel : Responsable Formation ──────────────────────
+             Organise et suit les formations des employés. -->
+        <record id="group_rh_formation" model="res.groups">
+            <field name="name">Responsable Formation</field>
+            <field name="category_id" ref="module_category_rh_burkina"/>
+            <field name="comment">Organise et suit les formations des employés. Gère le catalogue de formations et les inscriptions.</field>
+            <field name="implied_ids" eval="[(4, ref('group_rh_employe'))]"/>
+        </record>
+
+        <!-- ── Fonctionnel : Directeur Général ──────────────────────────
+             Lecture seule sur tout : statistiques, rapports, indicateurs. -->
+        <record id="group_rh_directeur" model="res.groups">
+            <field name="name">Directeur Général</field>
+            <field name="category_id" ref="module_category_rh_burkina"/>
+            <field name="comment">Consulte les statistiques, rapports RH et indicateurs de performance. Accès en lecture seule à toutes les données.</field>
+            <field name="implied_ids" eval="[(4, ref('group_rh_employe'))]"/>
+        </record>
+
+        <!-- ── Fonctionnel : Auditeur ────────────────────────────────────
+             Lecture seule : données et historiques, sans modification. -->
+        <record id="group_rh_auditeur" model="res.groups">
+            <field name="name">Auditeur</field>
+            <field name="category_id" ref="module_category_rh_burkina"/>
+            <field name="comment">Consulte les données et historiques RH sans pouvoir les modifier. Accès en lecture seule à l\'ensemble du système.</field>
+            <field name="implied_ids" eval="[(4, ref('group_rh_employe'))]"/>
+        </record>
+
+    </data>
+</odoo>

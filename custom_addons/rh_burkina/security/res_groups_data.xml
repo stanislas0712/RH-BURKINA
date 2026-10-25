@@ -1,15 +1,96 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data>
-        <record id="group_rh_user" model="res.groups">
-            <field name="name">Utilisateur RH</field>
-            <field name="category_id" ref="base.module_category_human_resources"/>
-            <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
-        </record>
-        <record id="group_rh_manager" model="res.groups">
-            <field name="name">Responsable RH</field>
-            <field name="category_id" ref="base.module_category_human_resources"/>
-            <field name="implied_ids" eval="[(4, ref('group_rh_user'))]"/>
-        </record>
-    </data>
+    <!--
+        Rôles du module RH Burkina Faso
+
+        Employé ⊂ Gestionnaire RH ⊂ Responsable RH ⊂ Administrateur RH
+        Employé ⊂ Chef de Département | Recruteur | Responsable Paie
+                | Responsable Formation | Directeur Général | Auditeur
+
+        « Accès aux salaires » est un groupe technique (non attribuable
+        directement) porté par les champs confidentiels : salaires,
+        coordonnées bancaires, montants des contrats, prêts.
+    -->
+    <record id="module_category_rh_burkina" model="ir.module.category">
+        <field name="name">RH Burkina Faso</field>
+        <field name="description">Gestion des ressources humaines et de la paie – Burkina Faso</field>
+        <field name="sequence">20</field>
+    </record>
+
+    <record id="group_rh_salaire" model="res.groups">
+        <field name="name">RH Burkina : accès aux salaires</field>
+        <field name="category_id" ref="base.module_category_hidden"/>
+        <field name="comment">Groupe technique : visibilité des données salariales confidentielles.</field>
+    </record>
+
+    <record id="group_rh_employe" model="res.groups">
+        <field name="name">Employé</field>
+        <field name="category_id" ref="module_category_rh_burkina"/>
+        <field name="implied_ids" eval="[Command.link(ref('base.group_user'))]"/>
+        <field name="comment">Self-service : consulte son dossier, ses contrats, bulletins validés et évaluations ; gère ses demandes de congé ; modifie ses coordonnées et contacts d'urgence.</field>
+    </record>
+
+    <record id="group_rh_gestionnaire" model="res.groups">
+        <field name="name">Gestionnaire RH</field>
+        <field name="category_id" ref="module_category_rh_burkina"/>
+        <field name="implied_ids" eval="[Command.link(ref('group_rh_employe'))]"/>
+        <field name="comment">Gestion quotidienne du personnel, des contrats (sans montants), congés, recrutement, formations et discipline. Aucun accès aux salaires ni à la paie.</field>
+    </record>
+
+    <record id="group_rh_responsable" model="res.groups">
+        <field name="name">Responsable RH</field>
+        <field name="category_id" ref="module_category_rh_burkina"/>
+        <field name="implied_ids" eval="[Command.link(ref('group_rh_gestionnaire')), Command.link(ref('group_rh_salaire'))]"/>
+        <field name="comment">Accès complet aux données RH et à la paie ; consultation des paramètres.</field>
+    </record>
+
+    <record id="group_rh_admin" model="res.groups">
+        <field name="name">Administrateur RH</field>
+        <field name="category_id" ref="module_category_rh_burkina"/>
+        <field name="implied_ids" eval="[Command.link(ref('group_rh_responsable'))]"/>
+        <field name="users" eval="[Command.link(ref('base.user_root')), Command.link(ref('base.user_admin'))]"/>
+        <field name="comment">Accès complet, y compris la configuration et les paramètres légaux.</field>
+    </record>
+
+    <record id="group_rh_chef_departement" model="res.groups">
+        <field name="name">Chef de Département</field>
+        <field name="category_id" ref="module_category_rh_burkina"/>
+        <field name="implied_ids" eval="[Command.link(ref('group_rh_employe'))]"/>
+        <field name="comment">Consulte son équipe (sans salaires) et valide les congés au niveau 1. Aucun accès aux sanctions ni aux bulletins.</field>
+    </record>
+
+    <record id="group_rh_recruteur" model="res.groups">
+        <field name="name">Recruteur</field>
+        <field name="category_id" ref="module_category_rh_burkina"/>
+        <field name="implied_ids" eval="[Command.link(ref('group_rh_employe'))]"/>
+        <field name="comment">Gère les offres, candidats et entretiens.</field>
+    </record>
+
+    <record id="group_rh_paie" model="res.groups">
+        <field name="name">Responsable Paie</field>
+        <field name="category_id" ref="module_category_rh_burkina"/>
+        <field name="implied_ids" eval="[Command.link(ref('group_rh_employe')), Command.link(ref('group_rh_salaire'))]"/>
+        <field name="comment">Gère la paie ; consulte employés, contrats et congés.</field>
+    </record>
+
+    <record id="group_rh_formation" model="res.groups">
+        <field name="name">Responsable Formation</field>
+        <field name="category_id" ref="module_category_rh_burkina"/>
+        <field name="implied_ids" eval="[Command.link(ref('group_rh_employe'))]"/>
+        <field name="comment">Gère les formations et les inscriptions.</field>
+    </record>
+
+    <record id="group_rh_dg" model="res.groups">
+        <field name="name">Directeur Général</field>
+        <field name="category_id" ref="module_category_rh_burkina"/>
+        <field name="implied_ids" eval="[Command.link(ref('group_rh_employe')), Command.link(ref('group_rh_salaire'))]"/>
+        <field name="comment">Consultation de l'ensemble des données RH et de paie.</field>
+    </record>
+
+    <record id="group_rh_auditeur" model="res.groups">
+        <field name="name">Auditeur</field>
+        <field name="category_id" ref="module_category_rh_burkina"/>
+        <field name="implied_ids" eval="[Command.link(ref('group_rh_employe')), Command.link(ref('group_rh_salaire'))]"/>
+        <field name="comment">Lecture seule de l'ensemble des données, historique compris.</field>
+    </record>
 </odoo>

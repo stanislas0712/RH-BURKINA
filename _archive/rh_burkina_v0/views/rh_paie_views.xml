@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+
+    <record id="view_rh_bulletin_paie_form" model="ir.ui.view">
+        <field name="name">rh.bulletin.paie.form</field>
+        <field name="model">rh.bulletin.paie</field>
+        <field name="arch" type="xml">
+            <form string="Bulletin de Paie">
+                <header>
+                    <button name="action_calculer" string="Calculer Automatiquement"
+                            type="object" class="btn-primary"
+                            invisible="statut not in ('brouillon','calcule')"/>
+                    <button name="action_valider" string="Valider"
+                            type="object" class="btn-success"
+                            invisible="statut != 'calcule'"/>
+                    <button name="action_payer" string="Marquer Payé"
+                            type="object" class="btn-warning"
+                            invisible="statut != 'valide'"/>
+                    <button name="action_reinitialiser" string="Réinitialiser"
+                            type="object"
+                            invisible="statut not in ('calcule','valide')"/>
+                    <field name="statut" widget="statusbar"
+                           statusbar_visible="brouillon,calcule,valide,paye"/>
+                </header>
+                <sheet>
+                    <div class="rh_form_header">
+                        <div class="rh_form_header_body">
+                            <div class="rh_form_title">
+                                <field name="reference" readonly="1" class="rh_field_nom"/>
+                            </div>
+                            <div class="rh_form_subtitle">
+                                <field name="date_bulletin"/>
+                            </div>
+                        </div>
+                    </div>
+                    <group col="2">
+                        <group string="Employé">
+                            <field name="employe_id"/>
+                            <field name="paie_id"/>
+                            <field name="salaire_base"/>
+                        </group>
+                        <group string="Période">
+                            <field name="periode_debut"/>
+                            <field name="periode_fin"/>
+                            <field name="date_bulletin"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Lignes de Paie">
+                            <field name="ligne_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="code"/>
+                                    <field name="libelle"/>
+                                    <field name="categorie" widget="badge"
+                                           decoration-success="categorie == 'revenu'"
+                                           decoration-danger="categorie == 'retenue_sal'"
+                                           decoration-warning="categorie == 'charge_pat'"/>
+                                    <field name="base"/>
+                                    <field name="taux"/>
+                                    <field name="montant"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Résumé">
+                            <group col="2">
+                                <group string="Revenus">
+                                    <field name="total_revenus" readonly="1"/>
+                                </group>
+                                <group string="Retenues Salariales">
+                                    <field name="cnss_salarie" readonly="1"/>
+                                    <field name="iuts" readonly="1"/>
+                                    <field name="total_retenues_sal" readonly="1"/>
+                                </group>
+                            </group>
+                            <group col="2">
+                                <group string="Charges Patronales">
+                                    <field name="cnss_patronal" readonly="1"/>
+                                    <field name="total_charges_pat" readonly="1"/>
+                                </group>
+                                <group string="Net">
+                                    <field name="net_a_payer" readonly="1"
+                                           style="font-size:1.3em;font-weight:bold;color:#3D2B7A"/>
+                                </group>
+                            </group>
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+
+    <record id="action_rh_bulletin_paie" model="ir.actions.act_window">
+        <field name="name">Bulletins de Paie</field>
+        <field name="res_model">rh.bulletin.paie</field>
+        <field name="view_mode">list,kanban,form</field>
+    </record>
+
+
+    <record id="action_rh_paie" model="ir.actions.act_window">
+        <field name="name">Périodes de Paie</field>
+        <field name="res_model">rh.paie</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+
+</odoo>

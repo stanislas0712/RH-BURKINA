@@ -1,31 +1,41 @@
 {
     'name': 'RH Burkina Faso',
     'version': '18.0.1.0.0',
-    'summary': 'Gestion RH conforme au droit du travail burkinabè',
+    'summary': 'Gestion RH et paie conforme au droit burkinabè (CNSS, IUTS)',
     'description': """
-        Module de gestion des ressources humaines adapté aux spécificités
-        du Burkina Faso : CNSS, IUTS, Code du travail burkinabè.
+Gestion des ressources humaines adaptée au Burkina Faso
+=======================================================
+Recrutement, dossier du personnel, contrats, temps et absences, paie
+(CNSS / CARFO, IUTS), évaluations, formations, discipline et sortie.
+
+Toutes les valeurs légales sont paramétrables et datées. Les valeurs
+initiales fournies sont marquées « à vérifier » et doivent être
+confirmées avant la mise en production.
     """,
     'author': 'KONATÉ Faichal Ismaël Stanislas',
-    'website': 'https://rh_burkina.bf',
-    'license': 'LGPL-3',  # Correction : 'license' avec un 's'
-    'category': 'Human Resources',  # Correction : Doublon supprimé, anglais recommandé
-    'depends': [
-        'base',
-        'hr',  # Suggestion : Souvent indispensable pour les modules RH
-    ],
+    'license': 'LGPL-3',
+    'category': 'Human Resources',
+    'depends': ['base', 'mail', 'hr'],
     'data': [
+        # Sécurité
         'security/res_groups_data.xml',
         'security/ir.model.access.csv',
+        'security/ir_rule.xml',
+        # Données
+        'data/res_currency_data.xml',
         'data/ir_sequence_data.xml',
-        'views/rh_burkina_views.xml',
+        'data/rh_parametres_data.xml',
+        # Vues
+        'views/rh_structure_views.xml',
+        'views/rh_parametres_views.xml',
+        'views/menus.xml',
     ],
     'assets': {
         'web.assets_backend': [
             'rh_burkina/static/src/css/rh_burkina.css',
         ],
     },
+    'post_init_hook': '_post_init_hook',
     'installable': True,
-    'auto_install': False,
     'application': True,
 }

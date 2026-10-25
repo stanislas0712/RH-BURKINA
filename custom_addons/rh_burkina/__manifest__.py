@@ -27,12 +27,16 @@ confirmées avant la mise en production.
         'data/rh_parametres_data.xml',
         'data/rh_type_document_data.xml',
         'data/ir_cron_data.xml',
+        'data/rh_jour_ferie_data.xml',
+        'data/rh_type_conge_data.xml',
         # Vues
         'views/rh_structure_views.xml',
         'views/rh_parametres_views.xml',
         'views/rh_employe_views.xml',
         'views/rh_document_views.xml',
         'views/rh_contrat_views.xml',
+        'views/rh_temps_views.xml',
+        'views/rh_conge_views.xml',
         'views/menus.xml',
     ],
     'assets': {

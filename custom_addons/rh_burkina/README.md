@@ -37,6 +37,10 @@ avant toute mise en production.
 | Licenciement | 25 % (0–5 ans), 30 % (5–10 ans), 40 % (au-delà) ; 12 mois minimum | à vérifier |
 | Conservation des dossiers | 5 ans après la sortie | à vérifier |
 | SMIG et contrats | stage non soumis au SMIG ; temps partiel : SMIG × heures / durée légale ; SMIG horaire à défaut = SMIG mensuel / 173,33 ; consultant non soumis | à vérifier |
+| Jours fériés 2026 | 1/01, 3/01, 8/03, 1/05, 5/08, 15/08, 1/11, 11/12, 25/12 ; fêtes à date variable à saisir chaque année ; 31/10 et 15/05 non saisis | à vérifier |
+| Congés spéciaux | maternité 98 jours calendaires (justificatif) ; mariage, naissance, décès : durées à renseigner ; maladie : certificat | à vérifier |
+| Acquisition des congés | prorata calendaire des jours sous contrat dans le mois ; suspensions non déduites ; solde rattaché à l'année de début du congé | à vérifier |
+| Heures supplémentaires | rang de l'heure compté par semaine et par type d'heures | à vérifier |
 
 **Laissés vides, à renseigner :** barème de la prime d'ancienneté, congés
 supplémentaires pour ancienneté, quotité saisissable, barème CARFO. Tant que
@@ -68,7 +72,7 @@ Le groupe technique « accès aux salaires » protège les champs confidentiels
 | 1 | Squelette, rôles, ACL, règles, structure, paramètres légaux, séquences | ✅ |
 | 2 | Dossier du personnel (extension `hr.employee`), historique, documents, diplômes, contacts | ✅ |
 | 3 | Contrats : période d'essai, CDD, préavis, SMIG | ✅ |
-| 4 | Temps de travail et congés | à venir |
+| 4 | Jours fériés, présences, retards, heures sup., congés | ✅ |
 | 5 | Paie | à venir |
 | 6 | Recrutement | à venir |
 | 7 | Évaluations, formations, discipline | à venir |

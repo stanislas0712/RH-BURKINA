@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- ⚠️ Durées et règles À VÉRIFIER (Code du travail, convention collective).
+         Les durées laissées à 0 sont à renseigner. -->
+    <record id="type_conge_annuel" model="rh.type.conge">
+        <field name="name">Congé annuel payé</field>
+        <field name="code">ANNUEL</field>
+        <field name="sequence">1</field>
+        <field name="categorie">annuel</field>
+        <field name="deductible" eval="True"/>
+        <field name="acquisition_mensuelle" eval="True"/>
+        <field name="paye" eval="True"/>
+        <field name="description">Acquisition mensuelle selon les paramètres généraux (2,5 jours ouvrables par mois de service effectif, à vérifier).</field>
+    </record>
+    <record id="type_conge_maternite" model="rh.type.conge">
+        <field name="name">Congé de maternité</field>
+        <field name="code">MATER</field>
+        <field name="sequence">10</field>
+        <field name="categorie">maternite</field>
+        <field name="justificatif_obligatoire" eval="True"/>
+        <field name="duree_max_jours">98</field>
+        <field name="decompte">calendaire</field>
+        <field name="description">14 semaines (98 jours calendaires) – durée, répartition et prise en charge à vérifier.</field>
+    </record>
+    <record id="type_conge_mariage" model="rh.type.conge">
+        <field name="name">Permission – mariage</field>
+        <field name="code">MARIAGE</field>
+        <field name="sequence">20</field>
+        <field name="categorie">familial</field>
+        <field name="justificatif_obligatoire" eval="True"/>
+        <field name="description">Durée à renseigner (à vérifier).</field>
+    </record>
+    <record id="type_conge_naissance" model="rh.type.conge">
+        <field name="name">Permission – naissance</field>
+        <field name="code">NAISS</field>
+        <field name="sequence">21</field>
+        <field name="categorie">familial</field>
+        <field name="justificatif_obligatoire" eval="True"/>
+        <field name="description">Durée à renseigner (à vérifier).</field>
+    </record>
+    <record id="type_conge_deces" model="rh.type.conge">
+        <field name="name">Permission – décès</field>
+        <field name="code">DECES</field>
+        <field name="sequence">22</field>
+        <field name="categorie">familial</field>
+        <field name="justificatif_obligatoire" eval="True"/>
+        <field name="description">Durée selon le lien de parenté, à renseigner (à vérifier).</field>
+    </record>
+    <record id="type_conge_maladie" model="rh.type.conge">
+        <field name="name">Congé de maladie</field>
+        <field name="code">MALADIE</field>
+        <field name="sequence">30</field>
+        <field name="categorie">maladie</field>
+        <field name="justificatif_obligatoire" eval="True"/>
+        <field name="decompte">calendaire</field>
+        <field name="description">Certificat médical obligatoire. Durée et maintien du salaire à vérifier.</field>
+    </record>
+    <record id="type_conge_sans_solde" model="rh.type.conge">
+        <field name="name">Congé sans solde</field>
+        <field name="code">SANSSOLDE</field>
+        <field name="sequence">40</field>
+        <field name="categorie">sans_solde</field>
+        <field name="paye" eval="False"/>
+    </record>
+    <record id="type_absence_injustifiee" model="rh.type.conge">
+        <field name="name">Absence non justifiée</field>
+        <field name="code">ABSNJ</field>
+        <field name="sequence">50</field>
+        <field name="categorie">absence</field>
+        <field name="paye" eval="False"/>
+        <field name="description">Saisie par les RH ; une retenue est proposée sur le bulletin du mois.</field>
+    </record>
+</odoo>

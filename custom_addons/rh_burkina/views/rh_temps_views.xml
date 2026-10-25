@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ═══════════════ Jours fériés ═══════════════ -->
+    <record id="view_rh_jour_ferie_list" model="ir.ui.view">
+        <field name="name">rh.jour.ferie.list</field>
+        <field name="model">rh.jour.ferie</field>
+        <field name="arch" type="xml">
+            <list editable="bottom" default_order="date desc">
+                <header>
+                    <button name="action_recopier_fetes_fixes" type="object" string="Recopier les fêtes fixes sur l'année suivante" display="always"/>
+                </header>
+                <field name="date"/>
+                <field name="name"/>
+                <field name="type_fete"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="note"/>
+                <field name="active" widget="boolean_toggle"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_jour_ferie_search" model="ir.ui.view">
+        <field name="name">rh.jour.ferie.search</field>
+        <field name="model">rh.jour.ferie</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="annee"/>
+                <filter name="annee_courante" string="Cette année"
+                        domain="[('date', '&gt;=', context_today().strftime('%Y-01-01')), ('date', '&lt;=', context_today().strftime('%Y-12-31'))]"/>
+                <filter name="variables" string="Dates variables" domain="[('type_fete', '=', 'variable')]"/>
+                <filter name="archived" string="Archivés" domain="[('active', '=', False)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_annee" string="Année" context="{'group_by': 'annee'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_rh_jour_ferie_calendar" model="ir.ui.view">
+        <field name="name">rh.jour.ferie.calendar</field>
+        <field name="model">rh.jour.ferie</field>
+        <field name="arch" type="xml">
+            <calendar date_start="date" mode="year" quick_create="0">
+                <field name="name"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="action_rh_jour_ferie" model="ir.actions.act_window">
+        <field name="name">Jours fériés</field>
+        <field name="res_model">rh.jour.ferie</field>
+        <field name="view_mode">list,calendar</field>
+        <field name="context">{'search_default_annee_courante': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Saisir les jours fériés</p>
+            <p>Les fêtes religieuses à date variable sont à saisir chaque année.</p>
+        </field>
+    </record>
+
+    <!-- ═══════════════ Présences ═══════════════ -->
+    <record id="view_rh_presence_list" model="ir.ui.view">
+        <field name="name">rh.presence.list</field>
+        <field name="model">rh.presence</field>
+        <field name="arch" type="xml">
+            <list editable="top" decoration-warning="retard_minutes &gt; 0">
+                <field name="date"/>
+                <field name="employee_id"/>
+                <field name="department_id" optional="hide"/>
+                <field name="heure_prevue" widget="float_time" optional="show"/>
+                <field name="heure_arrivee" widget="float_time"/>
+                <field name="heure_depart" widget="float_time"/>
+                <field name="duree_pause" widget="float_time" optional="show"/>
+                <field name="heures_travaillees" widget="float_time" sum="Total"/>
+                <field name="retard_minutes" sum="Total"/>
+                <field name="retard_ids" column_invisible="True"/>
+                <button name="action_declarer_retard" type="object" string="Déclarer le retard" icon="fa-clock-o"
+                        invisible="not retard_minutes or retard_ids" groups="rh_burkina.group_rh_gestionnaire"/>
+                <field name="note" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_presence_form" model="ir.ui.view">
+        <field name="name">rh.presence.form</field>
+        <field name="model">rh.presence</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="date"/>
+                            <field name="note"/>
+                        </group>
+                        <group>
+                            <field name="heure_prevue" widget="float_time"/>
+                            <field name="heure_arrivee" widget="float_time"/>
+                            <field name="heure_depart" widget="float_time"/>
+                            <field name="duree_pause" widget="float_time"/>
+                            <field name="heures_travaillees" widget="float_time"/>
+                            <field name="retard_minutes"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rh_presence_search" model="ir.ui.view">
+        <field name="name">rh.presence.search</field>
+        <field name="model">rh.presence</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <filter name="aujourdhui" string="Aujourd'hui" domain="[('date', '=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="mois" string="Ce mois" domain="[('date', '&gt;=', context_today().strftime('%Y-%m-01'))]"/>
+                <filter name="en_retard" string="En retard" domain="[('retard_minutes', '&gt;', 0)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_employe" string="Employé" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_department" string="Département" context="{'group_by': 'department_id'}"/>
+                    <filter name="group_mois" string="Mois" context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_rh_presence_pivot" model="ir.ui.view">
+        <field name="name">rh.presence.pivot</field>
+        <field name="model">rh.presence</field>
+        <field name="arch" type="xml">
+            <pivot>
+                <field name="employee_id" type="row"/>
+                <field name="date" interval="month" type="col"/>
+                <field name="heures_travaillees" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_rh_presence" model="ir.actions.act_window">
+        <field name="name">Présences</field>
+        <field name="res_model">rh.presence</field>
+        <field name="view_mode">list,form,pivot</field>
+        <field name="context">{'search_default_mois': 1}</field>
+    </record>
+
+    <!-- ═══════════════ Retards ═══════════════ -->
+    <record id="view_rh_retard_list" model="ir.ui.view">
+        <field name="name">rh.retard.list</field>
+        <field name="model">rh.retard</field>
+        <field name="arch" type="xml">
+            <list decoration-danger="not justifie">
+                <field name="date"/>
+                <field name="employee_id"/>
+                <field name="department_id" optional="hide"/>
+                <field name="duree_minutes" sum="Total"/>
+                <field name="motif"/>
+                <field name="justifie"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_retard_form" model="ir.ui.view">
+        <field name="name">rh.retard.form</field>
+        <field name="model">rh.retard</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="date"/>
+                            <field name="duree_minutes"/>
+                        </group>
+                        <group>
+                            <field name="motif"/>
+                            <field name="justifie"/>
+                            <field name="justificatif" filename="nom_justificatif"/>
+                            <field name="nom_justificatif" invisible="1"/>
+                            <field name="presence_id" readonly="1" invisible="not presence_id"/>
+                        </group>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rh_retard_search" model="ir.ui.view">
+        <field name="name">rh.retard.search</field>
+        <field name="model">rh.retard</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <filter name="mois" string="Ce mois" domain="[('date', '&gt;=', context_today().strftime('%Y-%m-01'))]"/>
+                <filter name="non_justifies" string="Non justifiés" domain="[('justifie', '=', False)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_employe" string="Employé" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_mois" string="Mois" context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_rh_retard_pivot" model="ir.ui.view">
+        <field name="name">rh.retard.pivot</field>
+        <field name="model">rh.retard</field>
+        <field name="arch" type="xml">
+            <pivot string="Cumul mensuel des retards">
+                <field name="employee_id" type="row"/>
+                <field name="date" interval="month" type="col"/>
+                <field name="duree_minutes" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="action_rh_retard" model="ir.actions.act_window">
+        <field name="name">Retards</field>
+        <field name="res_model">rh.retard</field>
+        <field name="view_mode">list,pivot,form</field>
+    </record>
+
+    <!-- ═══════════════ Heures supplémentaires ═══════════════ -->
+    <record id="view_rh_heure_sup_form" model="ir.ui.view">
+        <field name="name">rh.heure.sup.form</field>
+        <field name="model">rh.heure.sup</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_soumettre" type="object" string="Soumettre" class="btn-primary" invisible="state != 'brouillon'"/>
+                    <button name="action_valider_chef" type="object" string="Valider (chef)" class="btn-primary" invisible="state != 'soumis'"
+                            groups="rh_burkina.group_rh_chef_departement,rh_burkina.group_rh_gestionnaire"/>
+                    <button name="action_valider_rh" type="object" string="Valider (RH)" class="btn-primary" invisible="state != 'valide_chef'"
+                            groups="rh_burkina.group_rh_gestionnaire"/>
+                    <button name="action_refuser" type="object" string="Refuser" invisible="state not in ('soumis', 'valide_chef')"
+                            groups="rh_burkina.group_rh_chef_departement,rh_burkina.group_rh_gestionnaire"/>
+                    <field name="state" widget="statusbar" statusbar_visible="brouillon,soumis,valide_chef,valide"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id" readonly="state != 'brouillon'"/>
+                            <field name="date" readonly="state != 'brouillon'"/>
+                            <field name="type_heure" readonly="state != 'brouillon'"/>
+                            <field name="nb_heures" widget="float_time" readonly="state != 'brouillon'"/>
+                        </group>
+                        <group>
+                            <field name="semaine_debut"/>
+                            <field name="repartition"/>
+                            <field name="taux_moyen"/>
+                            <field name="motif_refus" invisible="state != 'refuse'"/>
+                        </group>
+                    </group>
+                    <field name="description" placeholder="Travaux effectués…" readonly="state != 'brouillon'"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rh_heure_sup_list" model="ir.ui.view">
+        <field name="name">rh.heure.sup.list</field>
+        <field name="model">rh.heure.sup</field>
+        <field name="arch" type="xml">
+            <list decoration-info="state == 'brouillon'" decoration-warning="state in ('soumis', 'valide_chef')" decoration-muted="state == 'refuse'">
+                <field name="date"/>
+                <field name="employee_id"/>
+                <field name="department_id" optional="hide"/>
+                <field name="type_heure"/>
+                <field name="nb_heures" widget="float_time" sum="Total"/>
+                <field name="repartition" optional="show"/>
+                <field name="state" widget="badge" decoration-success="state == 'valide'" decoration-warning="state in ('soumis', 'valide_chef')" decoration-danger="state == 'refuse'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_heure_sup_search" model="ir.ui.view">
+        <field name="name">rh.heure.sup.search</field>
+        <field name="model">rh.heure.sup</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <filter name="a_valider_chef" string="À valider (chef)" domain="[('state', '=', 'soumis')]"/>
+                <filter name="a_valider_rh" string="À valider (RH)" domain="[('state', '=', 'valide_chef')]"/>
+                <filter name="validees" string="Validées" domain="[('state', '=', 'valide')]"/>
+                <separator/>
+                <filter name="mois" string="Ce mois" domain="[('date', '&gt;=', context_today().strftime('%Y-%m-01'))]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_employe" string="Employé" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_type" string="Type" context="{'group_by': 'type_heure'}"/>
+                    <filter name="group_semaine" string="Semaine" context="{'group_by': 'semaine_debut'}"/>
+                    <filter name="group_mois" string="Mois" context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_rh_heure_sup_kanban" model="ir.ui.view">
+        <field name="name">rh.heure.sup.kanban</field>
+        <field name="model">rh.heure.sup</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" quick_create="false">
+                <templates>
+                    <t t-name="card">
+                        <field name="employee_id" class="fw-bold"/>
+                        <div><field name="date"/> – <field name="type_heure"/></div>
+                        <div><field name="nb_heures" widget="float_time"/> h</div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="action_rh_heure_sup" model="ir.actions.act_window">
+        <field name="name">Heures supplémentaires</field>
+        <field name="res_model">rh.heure.sup</field>
+        <field name="view_mode">list,kanban,form</field>
+    </record>
+
+    <!-- ═══════════════ Assistant de refus (congés, heures sup.) ═══════════════ -->
+    <record id="view_rh_wizard_refus_form" model="ir.ui.view">
+        <field name="name">rh.wizard.refus.form</field>
+        <field name="model">rh.wizard.refus</field>
+        <field name="arch" type="xml">
+            <form string="Motif du refus">
+                <field name="res_model" invisible="1"/>
+                <field name="res_ids" invisible="1"/>
+                <field name="motif" placeholder="Expliquez la raison du refus…"/>
+                <footer>
+                    <button name="action_valider" type="object" string="Refuser" class="btn-primary"/>
+                    <button special="cancel" string="Annuler" class="btn-secondary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

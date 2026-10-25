@@ -15,3 +15,7 @@ from . import rh_diplome
 from . import rh_contact_urgence
 from . import hr_employee
 from . import rh_contrat
+from . import rh_jour_ferie
+from . import rh_presence
+from . import rh_heure_sup
+from . import rh_conge

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- ⚠️ À VÉRIFIER : liste des fêtes légales fixes du Burkina Faso (2026).
+         Vérifier les textes en vigueur (ajouts ou suppressions récents, ex. 31 octobre,
+         15 mai). Les fêtes à date variable (lundi de Pâques, Ascension, Aïd el-Fitr,
+         Aïd el-Kébir / Tabaski, Maouloud) sont à saisir chaque année.
+         Bouton « Recopier les fêtes fixes » pour générer l année suivante. -->
+    <record id="ferie_2026_nouvel_an" model="rh.jour.ferie">
+        <field name="name">Jour de l'an</field>
+        <field name="date">2026-01-01</field>
+        <field name="type_fete">fixe</field>
+        <field name="note">À vérifier</field>
+    </record>
+    <record id="ferie_2026_soulevement" model="rh.jour.ferie">
+        <field name="name">Anniversaire du soulèvement populaire du 3 janvier 1966</field>
+        <field name="date">2026-01-03</field>
+        <field name="type_fete">fixe</field>
+        <field name="note">À vérifier</field>
+    </record>
+    <record id="ferie_2026_femme" model="rh.jour.ferie">
+        <field name="name">Journée internationale des droits de la femme</field>
+        <field name="date">2026-03-08</field>
+        <field name="type_fete">fixe</field>
+        <field name="note">À vérifier</field>
+    </record>
+    <record id="ferie_2026_travail" model="rh.jour.ferie">
+        <field name="name">Fête du travail</field>
+        <field name="date">2026-05-01</field>
+        <field name="type_fete">fixe</field>
+        <field name="note">À vérifier</field>
+    </record>
+    <record id="ferie_2026_independance" model="rh.jour.ferie">
+        <field name="name">Fête de l'indépendance</field>
+        <field name="date">2026-08-05</field>
+        <field name="type_fete">fixe</field>
+        <field name="note">À vérifier</field>
+    </record>
+    <record id="ferie_2026_assomption" model="rh.jour.ferie">
+        <field name="name">Assomption</field>
+        <field name="date">2026-08-15</field>
+        <field name="type_fete">fixe</field>
+        <field name="note">À vérifier</field>
+    </record>
+    <record id="ferie_2026_toussaint" model="rh.jour.ferie">
+        <field name="name">Toussaint</field>
+        <field name="date">2026-11-01</field>
+        <field name="type_fete">fixe</field>
+        <field name="note">À vérifier</field>
+    </record>
+    <record id="ferie_2026_republique" model="rh.jour.ferie">
+        <field name="name">Proclamation de la République (fête nationale)</field>
+        <field name="date">2026-12-11</field>
+        <field name="type_fete">fixe</field>
+        <field name="note">À vérifier</field>
+    </record>
+    <record id="ferie_2026_noel" model="rh.jour.ferie">
+        <field name="name">Noël</field>
+        <field name="date">2026-12-25</field>
+        <field name="type_fete">fixe</field>
+        <field name="note">À vérifier</field>
+    </record>
+</odoo>

@@ -37,8 +37,39 @@
               groups="group_rh_lecture_personnel"
               sequence="40"/>
 
-    <!-- Les menus Temps & Absences, Paie, etc. sont ajoutés dans les
-         phases suivantes. -->
+    <!-- ═══════════════ Temps & Absences ═══════════════ -->
+    <menuitem id="menu_rh_temps"
+              name="Temps &amp; Absences"
+              parent="menu_rh_root"
+              sequence="30"/>
+    <menuitem id="menu_rh_presences"
+              name="Présences"
+              parent="menu_rh_temps"
+              action="action_rh_presence"
+              sequence="10"/>
+    <menuitem id="menu_rh_retards"
+              name="Retards"
+              parent="menu_rh_temps"
+              action="action_rh_retard"
+              sequence="20"/>
+    <menuitem id="menu_rh_heures_sup"
+              name="Heures supplémentaires"
+              parent="menu_rh_temps"
+              action="action_rh_heure_sup"
+              sequence="30"/>
+    <menuitem id="menu_rh_conges"
+              name="Demandes de congé"
+              parent="menu_rh_temps"
+              action="action_rh_conge"
+              sequence="40"/>
+    <menuitem id="menu_rh_soldes"
+              name="Soldes de congés"
+              parent="menu_rh_temps"
+              action="action_rh_solde_conge"
+              sequence="50"/>
+
+    <!-- Les menus Paie, Recrutement, etc. sont ajoutés dans les phases
+         suivantes. -->
 
     <!-- ═══════════════ Configuration ═══════════════ -->
     <menuitem id="menu_rh_configuration"
@@ -88,6 +119,16 @@
               name="Types"
               parent="menu_rh_configuration"
               sequence="30"/>
+    <menuitem id="menu_rh_config_type_conge"
+              name="Types de congés"
+              parent="menu_rh_config_types"
+              action="action_rh_type_conge"
+              sequence="10"/>
+    <menuitem id="menu_rh_config_jours_feries"
+              name="Jours fériés"
+              parent="menu_rh_configuration"
+              action="action_rh_jour_ferie"
+              sequence="40"/>
     <menuitem id="menu_rh_config_type_document"
               name="Types de documents"
               parent="menu_rh_config_types"

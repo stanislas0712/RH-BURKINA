@@ -140,6 +140,43 @@
                                 </list>
                             </field>
                         </page>
+                        <page string="Congés" name="conges" groups="rh_burkina.group_rh_gestionnaire,rh_burkina.group_rh_paie,rh_burkina.group_rh_dg,rh_burkina.group_rh_auditeur,rh_burkina.group_rh_chef_departement">
+                            <field name="solde_conge_ids" readonly="1">
+                                <list>
+                                    <field name="type_conge_id"/>
+                                    <field name="annee"/>
+                                    <field name="report"/>
+                                    <field name="acquis"/>
+                                    <field name="pris"/>
+                                    <field name="en_attente"/>
+                                    <field name="restant"/>
+                                </list>
+                            </field>
+                            <field name="conge_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="type_conge_id"/>
+                                    <field name="date_debut"/>
+                                    <field name="date_fin"/>
+                                    <field name="nb_jours"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Présences" name="presences" groups="rh_burkina.group_rh_gestionnaire,rh_burkina.group_rh_paie,rh_burkina.group_rh_dg,rh_burkina.group_rh_auditeur,rh_burkina.group_rh_chef_departement">
+                            <group>
+                                <field name="retard_minutes_mois"/>
+                            </group>
+                            <field name="presence_ids" readonly="1">
+                                <list limit="31">
+                                    <field name="date"/>
+                                    <field name="heure_arrivee" widget="float_time"/>
+                                    <field name="heure_depart" widget="float_time"/>
+                                    <field name="heures_travaillees" widget="float_time"/>
+                                    <field name="retard_minutes"/>
+                                </list>
+                            </field>
+                        </page>
                         <page string="Diplômes" name="diplomes">
                             <field name="diplome_ids" context="{'default_employee_id': id}">
                                 <list editable="bottom" delete="0">
@@ -300,6 +337,42 @@
                                     <field name="currency_id" column_invisible="True"/>
                                     <field name="mon_salaire" string="Salaire"/>
                                     <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Mes congés" name="conges">
+                            <field name="solde_conge_ids">
+                                <list>
+                                    <field name="type_conge_id"/>
+                                    <field name="annee"/>
+                                    <field name="acquis"/>
+                                    <field name="pris"/>
+                                    <field name="en_attente"/>
+                                    <field name="restant"/>
+                                </list>
+                            </field>
+                            <field name="conge_ids">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="type_conge_id"/>
+                                    <field name="date_debut"/>
+                                    <field name="date_fin"/>
+                                    <field name="nb_jours"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Mes présences" name="presences">
+                            <group>
+                                <field name="retard_minutes_mois"/>
+                            </group>
+                            <field name="presence_ids">
+                                <list limit="31">
+                                    <field name="date"/>
+                                    <field name="heure_arrivee" widget="float_time"/>
+                                    <field name="heure_depart" widget="float_time"/>
+                                    <field name="heures_travaillees" widget="float_time"/>
+                                    <field name="retard_minutes"/>
                                 </list>
                             </field>
                         </page>

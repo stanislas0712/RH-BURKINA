@@ -232,6 +232,17 @@ class HrEmployee(models.Model):
         compute='_compute_contrat_en_cours', groups=GROUPES_DOSSIER)
     contrat_count = fields.Integer(
         compute='_compute_counts', groups=GROUPES_DOSSIER)
+    conge_ids = fields.One2many(
+        'rh.conge', 'employee_id', string='Congés', groups=GROUPES_DOSSIER)
+    solde_conge_ids = fields.One2many(
+        'rh.solde.conge', 'employee_id', string='Soldes de congés',
+        groups=GROUPES_DOSSIER)
+    presence_ids = fields.One2many(
+        'rh.presence', 'employee_id', string='Présences',
+        groups=GROUPES_DOSSIER)
+    retard_minutes_mois = fields.Integer(
+        string='Retards du mois (min)', compute='_compute_retards_mois',
+        groups=GROUPES_DOSSIER)
     document_count = fields.Integer(
         compute='_compute_counts', groups=GROUPES_DOSSIER)
     peut_gerer_dossier = fields.Boolean(
@@ -320,6 +331,15 @@ class HrEmployee(models.Model):
         for emp in self:
             emp.document_count = len(emp.document_ids)
             emp.contrat_count = len(emp.contrat_ids)
+
+    def _compute_retards_mois(self):
+        debut = fields.Date.context_today(self).replace(day=1)
+        data = self.env['rh.retard'].sudo()._read_group(
+            [('employee_id', 'in', self.ids), ('date', '>=', debut)],
+            ['employee_id'], ['duree_minutes:sum'])
+        cumul = {emp.id: total for emp, total in data}
+        for emp in self:
+            emp.retard_minutes_mois = cumul.get(emp.id, 0)
 
     @api.depends('contrat_ids.state', 'contrat_ids.date_debut')
     @api.depends_context('date')

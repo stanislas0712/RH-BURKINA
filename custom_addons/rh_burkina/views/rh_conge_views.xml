@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ═══════════════ Demandes de congé ═══════════════ -->
+    <record id="view_rh_conge_form" model="ir.ui.view">
+        <field name="name">rh.conge.form</field>
+        <field name="model">rh.conge</field>
+        <field name="arch" type="xml">
+            <form string="Demande de congé">
+                <header>
+                    <button name="action_soumettre" type="object" string="Soumettre" class="btn-primary" invisible="state != 'brouillon'"/>
+                    <button name="action_valider_chef" type="object" string="Valider (chef)" class="btn-primary" invisible="state != 'soumis'"
+                            groups="rh_burkina.group_rh_chef_departement,rh_burkina.group_rh_gestionnaire"/>
+                    <button name="action_approuver" type="object" string="Approuver (RH)" class="btn-primary" invisible="state not in ('soumis', 'valide_chef')"
+                            groups="rh_burkina.group_rh_gestionnaire"/>
+                    <button name="action_refuser" type="object" string="Refuser" invisible="state not in ('soumis', 'valide_chef')"
+                            groups="rh_burkina.group_rh_chef_departement,rh_burkina.group_rh_gestionnaire"/>
+                    <button name="action_annuler" type="object" string="Annuler la demande" invisible="state in ('refuse', 'annule')"
+                            confirm="Annuler cette demande ?"/>
+                    <field name="state" widget="statusbar" statusbar_visible="brouillon,soumis,valide_chef,approuve"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id" readonly="state != 'brouillon'"/>
+                            <field name="type_conge_id" readonly="state != 'brouillon'" options="{'no_create': True}"/>
+                            <field name="date_debut" readonly="state != 'brouillon'"/>
+                            <field name="date_fin" readonly="state != 'brouillon'"/>
+                            <field name="nb_jours"/>
+                            <field name="mode_decompte"/>
+                        </group>
+                        <group>
+                            <field name="solde_id" invisible="not solde_id"/>
+                            <field name="solde_disponible" invisible="not solde_id"/>
+                            <field name="paye"/>
+                            <field name="justificatif" filename="nom_justificatif" readonly="state != 'brouillon'"/>
+                            <field name="nom_justificatif" invisible="1"/>
+                            <field name="validateur_chef_id" invisible="not validateur_chef_id"/>
+                            <field name="approbateur_id" invisible="not approbateur_id"/>
+                        </group>
+                    </group>
+                    <field name="motif" placeholder="Motif de la demande…" readonly="state != 'brouillon'"/>
+                    <group invisible="state != 'refuse'">
+                        <field name="motif_refus"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rh_conge_list" model="ir.ui.view">
+        <field name="name">rh.conge.list</field>
+        <field name="model">rh.conge</field>
+        <field name="arch" type="xml">
+            <list decoration-info="state == 'brouillon'" decoration-warning="state in ('soumis', 'valide_chef')" decoration-muted="state in ('refuse', 'annule')">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="department_id" optional="hide"/>
+                <field name="type_conge_id"/>
+                <field name="date_debut"/>
+                <field name="date_fin"/>
+                <field name="nb_jours" sum="Total"/>
+                <field name="state" widget="badge" decoration-success="state == 'approuve'" decoration-warning="state in ('soumis', 'valide_chef')" decoration-danger="state == 'refuse'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_conge_calendar" model="ir.ui.view">
+        <field name="name">rh.conge.calendar</field>
+        <field name="model">rh.conge</field>
+        <field name="arch" type="xml">
+            <calendar date_start="date_debut" date_stop="date_fin" color="type_conge_id" mode="month" quick_create="0">
+                <field name="employee_id"/>
+                <field name="type_conge_id" filters="1"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="view_rh_conge_kanban" model="ir.ui.view">
+        <field name="name">rh.conge.kanban</field>
+        <field name="model">rh.conge</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" quick_create="false">
+                <templates>
+                    <t t-name="card">
+                        <field name="employee_id" class="fw-bold"/>
+                        <field name="type_conge_id" class="text-muted"/>
+                        <div>Du <field name="date_debut"/> au <field name="date_fin"/></div>
+                        <div><field name="nb_jours"/> jour(s)</div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_rh_conge_search" model="ir.ui.view">
+        <field name="name">rh.conge.search</field>
+        <field name="model">rh.conge</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="type_conge_id"/>
+                <filter name="mes_demandes" string="Mes demandes" domain="[('employee_id.user_id', '=', uid)]"/>
+                <separator/>
+                <filter name="a_valider_chef" string="À valider (chef)" domain="[('state', '=', 'soumis')]"/>
+                <filter name="a_approuver" string="À approuver (RH)" domain="[('state', 'in', ('soumis', 'valide_chef'))]"/>
+                <filter name="approuves" string="Approuvés" domain="[('state', '=', 'approuve')]"/>
+                <separator/>
+                <filter name="en_cours" string="En cours aujourd'hui"
+                        domain="[('state', '=', 'approuve'), ('date_debut', '&lt;=', context_today().strftime('%Y-%m-%d')), ('date_fin', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                <filter name="non_payes" string="Non rémunérés" domain="[('paye', '=', False)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_employe" string="Employé" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_type" string="Type" context="{'group_by': 'type_conge_id'}"/>
+                    <filter name="group_state" string="État" context="{'group_by': 'state'}"/>
+                    <filter name="group_mois" string="Mois" context="{'group_by': 'date_debut:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rh_conge" model="ir.actions.act_window">
+        <field name="name">Demandes de congé</field>
+        <field name="res_model">rh.conge</field>
+        <field name="view_mode">list,calendar,kanban,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Créer une demande de congé</p>
+            <p>Le nombre de jours exclut les week-ends et jours fériés selon le mode de décompte.</p>
+        </field>
+    </record>
+
+    <!-- ═══════════════ Soldes ═══════════════ -->
+    <record id="view_rh_solde_conge_list" model="ir.ui.view">
+        <field name="name">rh.solde.conge.list</field>
+        <field name="model">rh.solde.conge</field>
+        <field name="arch" type="xml">
+            <list editable="bottom" create="0" decoration-danger="restant &lt; 0">
+                <header>
+                    <button name="action_reporter" type="object" string="Reporter sur l'année suivante"
+                            groups="rh_burkina.group_rh_gestionnaire"/>
+                </header>
+                <field name="employee_id" readonly="1"/>
+                <field name="department_id" optional="hide"/>
+                <field name="type_conge_id" readonly="1"/>
+                <field name="annee" readonly="1"/>
+                <field name="report" readonly="reporte"/>
+                <field name="acquis" sum="Total"/>
+                <field name="pris" sum="Total"/>
+                <field name="en_attente" optional="show"/>
+                <field name="restant" sum="Total"/>
+                <field name="disponible" optional="show"/>
+                <field name="reporte" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_solde_conge_form" model="ir.ui.view">
+        <field name="name">rh.solde.conge.form</field>
+        <field name="model">rh.solde.conge</field>
+        <field name="arch" type="xml">
+            <form create="0">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id" readonly="1"/>
+                            <field name="type_conge_id" readonly="1"/>
+                            <field name="annee" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="report" readonly="reporte"/>
+                            <field name="acquis"/>
+                            <field name="pris"/>
+                            <field name="en_attente"/>
+                            <field name="restant"/>
+                            <field name="disponible"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Acquisitions" name="acquisitions">
+                            <field name="acquisition_ids" readonly="1">
+                                <list>
+                                    <field name="mois"/>
+                                    <field name="jours" sum="Total"/>
+                                    <field name="detail"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Demandes" name="demandes">
+                            <field name="conge_ids" readonly="1">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="date_debut"/>
+                                    <field name="date_fin"/>
+                                    <field name="nb_jours"/>
+                                    <field name="state"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_rh_solde_conge_search" model="ir.ui.view">
+        <field name="name">rh.solde.conge.search</field>
+        <field name="model">rh.solde.conge</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="annee"/>
+                <filter name="annee_courante" string="Année en cours"
+                        domain="[('annee', '=', context_today().year)]"/>
+                <filter name="negatifs" string="Soldes négatifs" domain="[('restant', '&lt;', 0)]"/>
+                <group expand="0" string="Regrouper par">
+                    <filter name="group_annee" string="Année" context="{'group_by': 'annee'}"/>
+                    <filter name="group_department" string="Département" context="{'group_by': 'department_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_rh_solde_conge" model="ir.actions.act_window">
+        <field name="name">Soldes de congés</field>
+        <field name="res_model">rh.solde.conge</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_annee_courante': 1}</field>
+    </record>
+
+    <!-- ═══════════════ Types de congé ═══════════════ -->
+    <record id="view_rh_type_conge_list" model="ir.ui.view">
+        <field name="name">rh.type.conge.list</field>
+        <field name="model">rh.type.conge</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="categorie"/>
+                <field name="deductible"/>
+                <field name="acquisition_mensuelle"/>
+                <field name="paye"/>
+                <field name="justificatif_obligatoire"/>
+                <field name="duree_max_jours"/>
+                <field name="decompte"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_rh_type_conge_form" model="ir.ui.view">
+        <field name="name">rh.type.conge.form</field>
+        <field name="model">rh.type.conge</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <widget name="web_ribbon" title="Archivé" bg_color="text-bg-danger" invisible="active"/>
+                    <field name="active" invisible="1"/>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="categorie"/>
+                            <field name="decompte"/>
+                            <field name="duree_max_jours"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="deductible"/>
+                            <field name="acquisition_mensuelle" invisible="not deductible"/>
+                            <field name="paye"/>
+                            <field name="justificatif_obligatoire"/>
+                        </group>
+                    </group>
+                    <field name="description" placeholder="Référence légale, conditions…"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_rh_type_conge" model="ir.actions.act_window">
+        <field name="name">Types de congés</field>
+        <field name="res_model">rh.type.conge</field>
+        <field name="view_mode">list,form</field>
+    </record>
+</odoo>

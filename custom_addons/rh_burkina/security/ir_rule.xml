@@ -193,6 +193,174 @@
         <field name="groups" eval="[Command.link(ref('group_rh_gestionnaire')), Command.link(ref('group_rh_paie')), Command.link(ref('group_rh_dg')), Command.link(ref('group_rh_auditeur'))]"/>
     </record>
 
+    <!-- ═══════════════ Temps de travail et congés ═══════════════ -->
+    <record id="rule_rh_presence_company" model="ir.rule">
+        <field name="name">RH Burkina – Présences : multi-société</field>
+        <field name="model_id" ref="model_rh_presence"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_presence_soi" model="ir.rule">
+        <field name="name">RH Burkina – Présences : les siens</field>
+        <field name="model_id" ref="model_rh_presence"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_employe'))]"/>
+    </record>
+    <record id="rule_rh_presence_chef" model="ir.rule">
+        <field name="name">RH Burkina – Présences : équipe du chef (lecture)</field>
+        <field name="model_id" ref="model_rh_presence"/>
+        <field name="domain_force">['|', ('employee_id.department_id.manager_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_chef_departement'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    <record id="rule_rh_presence_tous" model="ir.rule">
+        <field name="name">RH Burkina – Présences : tous (RH, Paie, DG, Auditeur)</field>
+        <field name="model_id" ref="model_rh_presence"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_gestionnaire')), Command.link(ref('group_rh_paie')), Command.link(ref('group_rh_dg')), Command.link(ref('group_rh_auditeur'))]"/>
+    </record>
+    <record id="rule_rh_retard_company" model="ir.rule">
+        <field name="name">RH Burkina – Retards : multi-société</field>
+        <field name="model_id" ref="model_rh_retard"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_retard_soi" model="ir.rule">
+        <field name="name">RH Burkina – Retards : les siens</field>
+        <field name="model_id" ref="model_rh_retard"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_employe'))]"/>
+    </record>
+    <record id="rule_rh_retard_chef" model="ir.rule">
+        <field name="name">RH Burkina – Retards : équipe du chef (lecture)</field>
+        <field name="model_id" ref="model_rh_retard"/>
+        <field name="domain_force">['|', ('employee_id.department_id.manager_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_chef_departement'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    <record id="rule_rh_retard_tous" model="ir.rule">
+        <field name="name">RH Burkina – Retards : tous (RH, Paie, DG, Auditeur)</field>
+        <field name="model_id" ref="model_rh_retard"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_gestionnaire')), Command.link(ref('group_rh_paie')), Command.link(ref('group_rh_dg')), Command.link(ref('group_rh_auditeur'))]"/>
+    </record>
+    <record id="rule_rh_heure_sup_company" model="ir.rule">
+        <field name="name">RH Burkina – Heures supplémentaires : multi-société</field>
+        <field name="model_id" ref="model_rh_heure_sup"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_heure_sup_soi" model="ir.rule">
+        <field name="name">RH Burkina – Heures supplémentaires : les siens</field>
+        <field name="model_id" ref="model_rh_heure_sup"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_employe'))]"/>
+    </record>
+    <record id="rule_rh_heure_sup_chef" model="ir.rule">
+        <field name="name">RH Burkina – Heures supplémentaires : équipe du chef (lecture)</field>
+        <field name="model_id" ref="model_rh_heure_sup"/>
+        <field name="domain_force">['|', ('employee_id.department_id.manager_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_chef_departement'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    <record id="rule_rh_heure_sup_tous" model="ir.rule">
+        <field name="name">RH Burkina – Heures supplémentaires : tous (RH, Paie, DG, Auditeur)</field>
+        <field name="model_id" ref="model_rh_heure_sup"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_gestionnaire')), Command.link(ref('group_rh_paie')), Command.link(ref('group_rh_dg')), Command.link(ref('group_rh_auditeur'))]"/>
+    </record>
+    <record id="rule_rh_conge_company" model="ir.rule">
+        <field name="name">RH Burkina – Congés : multi-société</field>
+        <field name="model_id" ref="model_rh_conge"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_conge_soi" model="ir.rule">
+        <field name="name">RH Burkina – Congés : les siens</field>
+        <field name="model_id" ref="model_rh_conge"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_employe'))]"/>
+    </record>
+    <record id="rule_rh_conge_chef" model="ir.rule">
+        <field name="name">RH Burkina – Congés : équipe du chef (lecture)</field>
+        <field name="model_id" ref="model_rh_conge"/>
+        <field name="domain_force">['|', ('employee_id.department_id.manager_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_chef_departement'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    <record id="rule_rh_conge_tous" model="ir.rule">
+        <field name="name">RH Burkina – Congés : tous (RH, Paie, DG, Auditeur)</field>
+        <field name="model_id" ref="model_rh_conge"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_gestionnaire')), Command.link(ref('group_rh_paie')), Command.link(ref('group_rh_dg')), Command.link(ref('group_rh_auditeur'))]"/>
+    </record>
+    <record id="rule_rh_solde_conge_company" model="ir.rule">
+        <field name="name">RH Burkina – Soldes de congés : multi-société</field>
+        <field name="model_id" ref="model_rh_solde_conge"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_solde_conge_soi" model="ir.rule">
+        <field name="name">RH Burkina – Soldes de congés : les siens</field>
+        <field name="model_id" ref="model_rh_solde_conge"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_employe'))]"/>
+    </record>
+    <record id="rule_rh_solde_conge_chef" model="ir.rule">
+        <field name="name">RH Burkina – Soldes de congés : équipe du chef (lecture)</field>
+        <field name="model_id" ref="model_rh_solde_conge"/>
+        <field name="domain_force">['|', ('employee_id.department_id.manager_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_chef_departement'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    <record id="rule_rh_solde_conge_tous" model="ir.rule">
+        <field name="name">RH Burkina – Soldes de congés : tous (RH, Paie, DG, Auditeur)</field>
+        <field name="model_id" ref="model_rh_solde_conge"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_gestionnaire')), Command.link(ref('group_rh_paie')), Command.link(ref('group_rh_dg')), Command.link(ref('group_rh_auditeur'))]"/>
+    </record>
+    <record id="rule_rh_acquisition_conge_company" model="ir.rule">
+        <field name="name">RH Burkina – Acquisitions de congés : multi-société</field>
+        <field name="model_id" ref="model_rh_acquisition_conge"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+    <record id="rule_rh_acquisition_conge_soi" model="ir.rule">
+        <field name="name">RH Burkina – Acquisitions de congés : les siens</field>
+        <field name="model_id" ref="model_rh_acquisition_conge"/>
+        <field name="domain_force">[('employee_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_employe'))]"/>
+    </record>
+    <record id="rule_rh_acquisition_conge_chef" model="ir.rule">
+        <field name="name">RH Burkina – Acquisitions de congés : équipe du chef (lecture)</field>
+        <field name="model_id" ref="model_rh_acquisition_conge"/>
+        <field name="domain_force">['|', ('employee_id.department_id.manager_id.user_id', '=', user.id), ('employee_id.parent_id.user_id', '=', user.id)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_chef_departement'))]"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+    </record>
+    <record id="rule_rh_acquisition_conge_tous" model="ir.rule">
+        <field name="name">RH Burkina – Acquisitions de congés : tous (RH, Paie, DG, Auditeur)</field>
+        <field name="model_id" ref="model_rh_acquisition_conge"/>
+        <field name="domain_force">[(1, '=', 1)]</field>
+        <field name="groups" eval="[Command.link(ref('group_rh_gestionnaire')), Command.link(ref('group_rh_paie')), Command.link(ref('group_rh_dg')), Command.link(ref('group_rh_auditeur'))]"/>
+    </record>
+    <record id="rule_rh_jour_ferie_company" model="ir.rule">
+        <field name="name">RH Burkina – Jours fériés : multi-société</field>
+        <field name="model_id" ref="model_rh_jour_ferie"/>
+        <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+    </record>
+    <record id="rule_rh_type_conge_company" model="ir.rule">
+        <field name="name">RH Burkina – Types de congés : multi-société</field>
+        <field name="model_id" ref="model_rh_type_conge"/>
+        <field name="domain_force">[('company_id', 'in', company_ids + [False])]</field>
+    </record>
+
     <record id="rule_rh_historique_salaire" model="ir.rule">
         <field name="name">RH Burkina – Historique : tout (accès salaires)</field>
         <field name="model_id" ref="model_rh_historique_poste"/>
